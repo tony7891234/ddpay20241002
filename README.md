@@ -17,3 +17,8 @@ php artisan vendor:publish --tag=iframe-tab.view
 扩展包
 https://github.com/IronnMan/dcat-admin-packages
 ````
+
+##  指令相关
+````   
+/www/server/php/83/bin/php artisan 
+````
