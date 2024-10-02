@@ -170,7 +170,7 @@ if (!function_exists('createNewRandString')) {
         $returnStr = '';
         $pattern = 'abcdefghijklmnopqrstuvwxyz';
         for ($i = 0; $i < $length; $i++) {
-            $returnStr .= $pattern{mt_rand(0, 25)}; //生成php随机数
+            $returnStr .= $pattern{rand(0, 25)}; //生成php随机数
         }
         return strtolower($returnStr) . rand(10000, 99999);
     }
