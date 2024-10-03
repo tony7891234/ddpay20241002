@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\RechargeOrder;
-use Overtrue\EasySms\Traits\HasHttpRequest;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class Sync
@@ -12,7 +12,6 @@ use Overtrue\EasySms\Traits\HasHttpRequest;
 class Sync extends BaseCommand
 {
 
-    use HasHttpRequest;
 
     /**
      * @var string
@@ -41,7 +40,7 @@ class Sync extends BaseCommand
     {
 
         $type = $this->argument('type');
-        $this->daySync();
+        $this->t2();
 //        if ($type == 'user') {
 //            $this->syncUser();
 //        } elseif ($type == 'order') {
@@ -50,6 +49,16 @@ class Sync extends BaseCommand
 
 //        }
         return true;
+    }
+
+    private function t2()
+    {
+        //  SELECT COUNT(*) AS think_count FROM cd_order WHERE  inizt = '0'  AND completetime BETWEEN 1727712000 AND 1727971199;
+        dump(getTimeString());
+        $res = RechargeOrder::where('inizt', '=', 0)->where('completetime', '>=', 1727712000)->where('completetime', '<=', 1727971199)->count();
+        dump($res);
+        dump(getTimeString());
+
     }
 
 
@@ -61,9 +70,16 @@ class Sync extends BaseCommand
         $user = RechargeOrder::first();
         $model = new RechargeOrder();
         $list = RechargeOrder::limit(1)->get()->toArray();
+        foreach ($list as &$item) {
+            foreach ($item as $key => $value) {
+                if ($value == '') {
+                    $item[$key] = 0;
+                }
+            }
+        }
 
-        dd($list);
-        $count = allUpdateOrAdd('rds', $model->getTable(), array_keys($user->getAttributes()), 'order_id');
+//        dd($list);
+        $count = allUpdateOrAdd('rds', $model->getTable(), array_keys($user->getAttributes()), 'order_id', $list);
 
         dd($count);
     }
@@ -73,33 +89,27 @@ class Sync extends BaseCommand
 //    /**
 //     * 每天同步一次
 //     */
-//    private function daySync1()
-//    {
-//        RechargeOrder::select(['id', 'username', 'user_type', 'topAgentId'])->orderByDesc('id')->chunk(3000, function ($userList) {
-//            $createData = $cheatData = [];
-//            /**
-//             * @var $userList User[]
-//             */
-//            foreach ($userList as $item) {
-//                $createData[] = [
-//                    'id' => $item->getId(),
-//                    'username' => $item->username,
-//                    'user_type' => $item->user_type,
-//                ];
-//
-//                // 外挂多一个顶级ID   方便统计代理日报表
-//                $cheatData[] = [
-//                    'id' => $item->getId(),
-//                    'username' => $item->username,
-//                    'user_type' => $item->user_type,
-//                    'topAgentId' => $item->topAgentId,
-//                ];
-//            }
-//            allUpdateOrAdd('tencent', 'user', ['id', 'username', 'user_type'], 'id', $createData);
-////            $count = allUpdateOrAdd($model->getConnectionName(), $model->getTable(), array_keys($user->getAttributes()), 'id', $arr);
-//
-//        });
-//    }
+    private function daySync1()
+    {
+        $user = RechargeOrder::first();
+        $model = new RechargeOrder();
+        $max = DB::connection('rds')->table('cd_order')->max('order_id');
+        RechargeOrder::select('*')->where('order_id', '>', $max)->orderBy('order_id')->chunk(4001, function ($list) use ($model, $user) {
+
+            $list = $list->toArray();
+            foreach ($list as &$item) {
+                foreach ($item as $key => $value) {
+                    if ($value == '') {
+                        $item[$key] = 0;
+                    }
+                }
+            }
+
+            $count = allUpdateOrAdd('rds', $model->getTable(), array_keys($user->getAttributes()), 'order_id', $list);
+            dump($count);
+            dump(getTimeString());
+        });
+    }
 
 
 }

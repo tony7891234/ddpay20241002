@@ -16,4 +16,5 @@ yarn-error.log
 public/vendor
 dcat-admin-extensions
 app/Admin/Metrics
-
+composer.lock
+tests

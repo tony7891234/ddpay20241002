@@ -22,3 +22,7 @@ https://github.com/IronnMan/dcat-admin-packages
 ````   
 /www/server/php/83/bin/php artisan 
 ````
+curl --request GET \
+--url https://api.pagnovo.com/transactions/:11 \
+--header 'Accept: application/json' \
+--header 'Authorization: Basic {43a5e34a-0a05-4111-ab9d-ea1eb008199b}'
