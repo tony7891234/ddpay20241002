@@ -55,7 +55,7 @@ class MoneyLogCommand extends BaseCommand
         // 2.获取总表得最大 moneylog_id
         $max = DB::connection('rds')->table('cd_moneylog')->max('moneylog_id');
         // 3.移动数据
-        $end_time = time() - 3600 * 24 * 3; // 保留3天
+        $end_time = time() - 3600 * 24 * 2; // 保留3天
         MoneyLogModel::select('*')
             ->where('moneylog_id', '>', $max)
             ->where('create_time', '<', $end_time)
