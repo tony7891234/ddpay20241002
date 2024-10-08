@@ -16,7 +16,7 @@ class Sync extends BaseCommand
     /**
      * @var string
      */
-    protected $signature = 'bx:sync {type?}';
+    protected $signature = 'sync';
 
 
     /**
@@ -39,77 +39,63 @@ class Sync extends BaseCommand
     public function handle()
     {
 
-        $type = $this->argument('type');
-        $this->t2();
-//        if ($type == 'user') {
-//            $this->syncUser();
-//        } elseif ($type == 'order') {
-//            $this->syncOrder();
-//        } else {
 
-//        }
+        for ($i = 1; $i <= 100; $i++) {
+            try {
+                $this->daySyncChunk();
+            } catch (\Exception $exception) {
+                var_dump($i);
+            }
+            var_dump($i);
+        }
         return true;
     }
 
-    private function t2()
-    {
-        //  SELECT COUNT(*) AS think_count FROM cd_order WHERE  inizt = '0'  AND completetime BETWEEN 1727712000 AND 1727971199;
-        dump(getTimeString());
-        $res = RechargeOrder::where('inizt', '=', 0)->where('completetime', '>=', 1727712000)->where('completetime', '<=', 1727971199)->count();
-        dump($res);
-        dump(getTimeString());
-
-    }
-
-
-    /**
-     * 每天同步一次
-     */
-    private function daySync()
-    {
-        $user = RechargeOrder::first();
-        $model = new RechargeOrder();
-        $list = RechargeOrder::limit(1)->get()->toArray();
-        foreach ($list as &$item) {
-            foreach ($item as $key => $value) {
-                if ($value == '') {
-                    $item[$key] = 0;
-                }
-            }
-        }
-
-//        dd($list);
-        $count = allUpdateOrAdd('rds', $model->getTable(), array_keys($user->getAttributes()), 'order_id', $list);
-
-        dd($count);
-    }
 
 
 //
 //    /**
 //     * 每天同步一次
 //     */
-    private function daySync1()
+    private function daySyncChunk()
     {
-        $user = RechargeOrder::first();
+        // 1.获取订单字段
+        $orderInfo = RechargeOrder::first();
         $model = new RechargeOrder();
+        // 2.获取总表得最大 order_id
         $max = DB::connection('rds')->table('cd_order')->max('order_id');
-        RechargeOrder::select('*')->where('order_id', '>', $max)->orderBy('order_id')->chunk(4001, function ($list) use ($model, $user) {
 
-            $list = $list->toArray();
-            foreach ($list as &$item) {
-                foreach ($item as $key => $value) {
-                    if ($value == '') {
-                        $item[$key] = 0;
+        // 3. 删除本地之前得订单
+
+
+        // 4.移动数据
+        $yy = 0;
+        $end_time = time() - 3600 * 24 * 3; // 保留3天
+        RechargeOrder::select('*')
+            ->where('order_id', '>', $max)
+            ->where('create_time', '<', $end_time)
+            ->orderBy('order_id')->chunk(1000, function ($list) use ($model, $orderInfo, $max, $yy) {
+                $yy++;
+                if ($yy > 10) {
+                    dump(1111);
+                    return true;
+                }
+                $list = $list->toArray();
+                foreach ($list as &$item) {
+                    foreach ($item as $key => $value) {
+                        if ($value == '') {
+                            $item[$key] = 0;
+                        }
                     }
                 }
-            }
-
-            $count = allUpdateOrAdd('rds', $model->getTable(), array_keys($user->getAttributes()), 'order_id', $list);
-            dump($count);
-            dump(getTimeString());
-        });
+                RechargeOrder::where('order_id', '<', $max)->limit(5000)->delete();
+                $count = allUpdateOrAdd('rds', $model->getTable(), array_keys($orderInfo->getAttributes()), 'order_id', $list);
+                dump($count);
+                dump(getTimeString());
+//            die;
+            });
     }
 
 
 }
+
