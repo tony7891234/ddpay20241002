@@ -10,6 +10,8 @@ php artisan admin:install
 php artisan vendor:publish --tag=iframe-tab
 php artisan vendor:publish --tag=iframe-tab.config
 php artisan vendor:publish --tag=iframe-tab.view
+
+* * * * *  php  /www/wwwroot/Laravel/T1/ddpay20241002/artisan schedule:run >> /dev/null 2>&1
 ````
 
 ##  资料

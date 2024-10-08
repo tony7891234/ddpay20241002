@@ -13,6 +13,10 @@ class OrderCommand extends BaseCommand
 {
 
 
+    const LIMIT_CHUNK = 2000; // 每次执行条数
+    const LIMIT_TIMES = 50; // 每次执行多少次   一定要在执行频率内执行完毕
+    const LIMIT_DELETE = 3000; // 每次删除条数
+
     /**
      * @var string
      */
@@ -51,13 +55,17 @@ class OrderCommand extends BaseCommand
         // 2.获取总表得最大 order_id
         $max = DB::connection('rds')->table('cd_order')->max('order_id');
         // 3.移动数据
+        $processedCount = 0;
         $end_time = time() - 3600 * 24 * 2; // 保留3天
         RechargeOrder::select('*')
             ->where('order_id', '>', $max)
             ->where('create_time', '<', $end_time)
             ->orderBy('order_id')
-            ->limit(100000)
-            ->chunk(1000, function ($list) use ($model, $orderInfo, $max) {
+            ->chunk(self::LIMIT_CHUNK, function ($list) use ($model, $orderInfo, $max, &$processedCount) {
+                $processedCount++;
+                if ($processedCount > self::LIMIT_TIMES) {
+                    return false;
+                }
                 $list = $list->toArray();
                 foreach ($list as &$item) {
                     foreach ($item as $key => $value) {
@@ -66,7 +74,7 @@ class OrderCommand extends BaseCommand
                         }
                     }
                 }
-                RechargeOrder::where('order_id', '<', $max)->limit(3000)->delete();
+                RechargeOrder::where('order_id', '<', $max)->limit(self::LIMIT_DELETE)->delete();
                 $count = allUpdateOrAdd('rds', $model->getTable(), array_keys($orderInfo->getAttributes()), 'order_id', $list);
                 dump($count);
                 dump(getTimeString());

@@ -13,6 +13,9 @@ class MoneyLogCommand extends BaseCommand
 {
 
 
+    const LIMIT_CHUNK = 3000; // 每次执行条数
+    const LIMIT_TIMES = 50; // 每次执行多少次   一定要在执行频率内执行完毕
+    const LIMIT_DELETE = 3000; // 每次删除条数
     /**
      * @var string
      */
@@ -55,12 +58,16 @@ class MoneyLogCommand extends BaseCommand
         // 2.获取总表得最大 moneylog_id
         $max = DB::connection('rds')->table('cd_moneylog')->max('moneylog_id');
         // 3.移动数据
+        $processedCount = 0;
         $end_time = time() - 3600 * 24 * 2; // 保留3天
         MoneyLogModel::select('*')
             ->where('moneylog_id', '>', $max)
             ->where('create_time', '<', $end_time)
-            ->limit(100000)
-            ->orderBy('moneylog_id')->chunk(3000, function ($list) use ($model, $orderInfo, $max) {
+            ->orderBy('moneylog_id')->chunk(self::LIMIT_CHUNK, function ($list) use ($model, $orderInfo, $max, &$processedCount) {
+                $processedCount++;
+                if ($processedCount > self::LIMIT_TIMES) {
+                    return false;
+                }
                 $list = $list->toArray();
                 foreach ($list as &$item) {
                     foreach ($item as $key => $value) {
@@ -69,7 +76,7 @@ class MoneyLogCommand extends BaseCommand
                         }
                     }
                 }
-                MoneyLogModel::where('moneylog_id', '<', $max)->limit(5000)->delete();
+                MoneyLogModel::where('moneylog_id', '<', $max)->limit(self::LIMIT_DELETE)->delete();
                 $count = allUpdateOrAdd('rds', $model->getTable(), array_keys($orderInfo->getAttributes()), 'moneylog_id', $list);
                 dump($count);
                 dump(getTimeString());
