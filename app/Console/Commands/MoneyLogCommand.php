@@ -59,6 +59,7 @@ class MoneyLogCommand extends BaseCommand
         MoneyLogModel::select('*')
             ->where('moneylog_id', '>', $max)
             ->where('create_time', '<', $end_time)
+            ->limit(100000)
             ->orderBy('moneylog_id')->chunk(3000, function ($list) use ($model, $orderInfo, $max) {
                 $list = $list->toArray();
                 foreach ($list as &$item) {

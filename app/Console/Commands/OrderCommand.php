@@ -55,7 +55,9 @@ class OrderCommand extends BaseCommand
         RechargeOrder::select('*')
             ->where('order_id', '>', $max)
             ->where('create_time', '<', $end_time)
-            ->orderBy('order_id')->chunk(1000, function ($list) use ($model, $orderInfo, $max) {
+            ->orderBy('order_id')
+            ->limit(100000)
+            ->chunk(1000, function ($list) use ($model, $orderInfo, $max) {
                 $list = $list->toArray();
                 foreach ($list as &$item) {
                     foreach ($item as $key => $value) {
