@@ -14,8 +14,8 @@ class MoneyLogCommand extends BaseCommand
 
 
     const LIMIT_CHUNK = 3000; // 每次执行条数
-    const LIMIT_TIMES = 50; // 每次执行多少次   一定要在执行频率内执行完毕
-    const LIMIT_DELETE = 3000; // 每次删除条数
+    const LIMIT_TIMES = 80; // 每次执行多少次   一定要在执行频率内执行完毕
+    const LIMIT_DELETE = 5000; // 每次删除条数
     /**
      * @var string
      */
