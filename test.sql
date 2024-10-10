@@ -12,3 +12,8 @@ CREATE TABLE `cd_fit_data` (
 COMMENT='fit数据'
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB;
+
+
+insert into `cd_fit_data` (`EntryId`, `create_at`, `create_date`, `content`) values
+(0, 202935691731, 1728518400,
+ {"InternalIdentifier":0,"EntryId":0,"Description":"Saldo Inicial","Subtype":21,"EntryDate":"2024-10-10T00:00:00","EntryValue":345316.72,"Type":"InitialBalance","UsedGuaranteed":null,"GuaranteedValue":null,"Details":"Saldo Inicial","ReceiptUrl":null,"BankDetails":null,"DocumentNumber":null,"TransactionId":null,"Bank":null,"BankBranch":null,"BankAccount":null,"BankAccountDigit":null,"OperationId":null,"NoteId":null,"NoteEntry":null,"OperationType":0,"ManualEntryCategory":0,"ReceiptFileName":null,"TotalRows":0,"Tags":[]}))

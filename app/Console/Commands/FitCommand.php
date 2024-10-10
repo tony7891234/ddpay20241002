@@ -60,11 +60,11 @@ class FitCommand extends BaseCommand
                         if ($check) {
                             continue;
                         }
-                        $create_date = strtotime($info['EntryDate']);
+                        $timestamp = strtotime($info['EntryDate']);
                         $arr = [
                             'EntryId' => $info['EntryId'],
-                            'create_at' => strtotime($create_date),
-                            'create_date' => $create_date,
+                            'create_at' => $timestamp,
+                            'create_date' => date('Y-m-d H:i:s', $timestamp),
                             'content' => json_encode($info),
                         ];
                         FitModel::create($arr);
