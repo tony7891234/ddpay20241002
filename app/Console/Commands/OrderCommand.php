@@ -13,7 +13,8 @@ class OrderCommand extends BaseCommand
 {
 
     const LIMIT_CHUNK = 2000; // 每次执行条数
-    const LIMIT_TIMES = 80; // 每次执行多少次   一定要在执行频率内执行完毕
+//    const LIMIT_TIMES = 80; // 每次执行多少次   一定要在执行频率内执行完毕
+    const LIMIT_TIMES = 180; // 每次执行多少次   一定要在执行频率内执行完毕
     const LIMIT_DELETE = 3000; // 每次删除条数
 
     /**
