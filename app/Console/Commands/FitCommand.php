@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 
+use App\Models\FitModel;
+
 /**
  * Class Sync
  * @package App\Console\Commands
@@ -53,6 +55,20 @@ class FitCommand extends BaseCommand
                 if ($response['Entry']) {
                     foreach (json_decode($response['Entry'], true) as $info) {
                         dd($info);
+                        $EntryId = $info['EntryId'];
+
+                        $check = FitModel::where('EntryId', '=', $EntryId)->first();
+                        if ($check) {
+                            continue;
+                        }
+                        $create_date = strtotime($info['EntryDate']);
+                        $arr = [
+                            'EntryId' => $info['EntryId'],
+                            'create_at' => strtotime($create_date),
+                            'create_date' => $create_date,
+                            'content' => json_encode($info),
+                        ];
+                        FitModel::create($arr);
                     }
                 }
             }
