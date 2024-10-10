@@ -46,7 +46,7 @@ class FitCommand extends BaseCommand
 
     private function getData()
     {
-        $page = 2001;
+        $page = 3000;
         while (true) {
             $page++;
             $response = $this->balance($page);
@@ -56,6 +56,7 @@ class FitCommand extends BaseCommand
                     foreach (json_decode($response['Entry'], true) as $info) {
                         $EntryId = $info['EntryId'];
 
+//                        dd($info);
                         $check = FitModel::where('EntryId', '=', $EntryId)->first();
                         if ($check) {
                             continue;
@@ -72,7 +73,7 @@ class FitCommand extends BaseCommand
                 }
             }
 
-            if ($page > 2300) {
+            if ($page > 3300) {
                 break;
             }
         }

@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 //        $schedule->command('sync_order')->everyFiveMinutes();
-        $schedule->command('sync_log')->everyFiveMinutes();
+//        $schedule->command('sync_log')->everyFiveMinutes();
 
     }
 

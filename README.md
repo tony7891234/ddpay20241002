@@ -38,6 +38,7 @@ PASSWORD = INHXT0PjV3xIjqIhQahq
 
 导出数据库
 mysql -u KeY8BWU0K4670FITk2XP -p 4aoypo5gyfoj1kddb1zt <  /www/wwwroot/baxi.sql
+mysqldump -u KeY8BWU0K4670FITk2XP -p 4aoypo5gyfoj1kddb1zt >  /www/wwwroot/baxi.sql
 
 导入数据库
 mysql -h baxi.cbc0my2esp7q.us-east-1.rds.amazonaws.com -u baxi_aws  -p baxi_dev_20241010 < /www/wwwroot/baxi.sql
