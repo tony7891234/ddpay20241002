@@ -48,6 +48,7 @@ class OrderCommand extends BaseCommand
 
     private function minSyncChunk()
     {
+//        echo 1;die;
         // 1.获取订单字段
         $orderInfo = RechargeOrder::first();
         $model = new RechargeOrder();

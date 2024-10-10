@@ -52,6 +52,8 @@ class MoneyLogCommand extends BaseCommand
 //     */
     private function daySyncChunk()
     {
+//        echo 1;
+//        die;
         // 1.获取订单字段
         $orderInfo = MoneyLogModel::first();
         $model = new MoneyLogModel();
