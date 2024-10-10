@@ -46,7 +46,7 @@ class FitCommand extends BaseCommand
 
     private function getData()
     {
-        $page = 2000;
+        $page = 2001;
         while (true) {
             $page++;
             $response = $this->balance($page);
@@ -72,7 +72,7 @@ class FitCommand extends BaseCommand
                 }
             }
 
-            if ($page > 2001) {
+            if ($page > 2300) {
                 break;
             }
         }
