@@ -49,7 +49,13 @@ class FitCommand extends BaseCommand
             $page++;
             $response = $this->balance($page);
 //            echo ($response['Entry']);
-            dd($response);
+            if (isset($response['Success']) && $response['Success'] == true) {
+                if ($response['Entry']) {
+                    foreach ($response['Entry'] as $info) {
+                        dd($info);
+                    }
+                }
+            }
 
             if ($page > 2001) {
                 break;
