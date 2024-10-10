@@ -51,7 +51,7 @@ class FitCommand extends BaseCommand
 //            echo ($response['Entry']);
             if (isset($response['Success']) && $response['Success'] == true) {
                 if ($response['Entry']) {
-                    foreach ($response['Entry'] as $info) {
+                    foreach (json_decode($response['Entry'], true) as $info) {
                         dd($info);
                     }
                 }
