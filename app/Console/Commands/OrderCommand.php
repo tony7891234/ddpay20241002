@@ -55,10 +55,11 @@ class OrderCommand extends BaseCommand
         $max = DB::connection('rds')->table('cd_order')->max('order_id');
         // 3.移动数据
         $processedCount = 0;
-        $end_time = time() - 3600 * 24 * 3; // 保留3天
+        $end_time = time() - 3600 * 2; // 保留3天
         RechargeOrder::select('*')
             ->where('order_id', '>', $max)
             ->where('create_time', '<', $end_time)
+            ->whereIn('status', [RechargeOrder::STATUS_SUCCESS, RechargeOrder::STATUS_FAIL])
             ->orderBy('order_id')
             ->chunk(self::LIMIT_CHUNK, function ($list) use ($model, $orderInfo, $max, &$processedCount) {
                 $processedCount++;
