@@ -16,7 +16,7 @@ class FitModel extends BaseModel
 {
 
     protected $connection = 'rds';
-    protected $table = 'fit_data';
+    protected $table = 'cd_fit_data';
     protected $primaryKey = 'id';
     protected $fillable = [];
     protected $guarded = ['id'];
