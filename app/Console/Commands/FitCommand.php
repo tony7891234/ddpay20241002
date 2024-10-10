@@ -54,7 +54,6 @@ class FitCommand extends BaseCommand
             if (isset($response['Success']) && $response['Success'] == true) {
                 if ($response['Entry']) {
                     foreach (json_decode($response['Entry'], true) as $info) {
-                        dd($info);
                         $EntryId = $info['EntryId'];
 
                         $check = FitModel::where('EntryId', '=', $EntryId)->first();
