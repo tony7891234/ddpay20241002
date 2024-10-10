@@ -28,3 +28,22 @@ curl --request GET \
 --url https://api.pagnovo.com/transactions/:11 \
 --header 'Accept: application/json' \
 --header 'Authorization: Basic {43a5e34a-0a05-4111-ab9d-ea1eb008199b}'
+
+
+##  数据库
+````   
+DATABASE = 4aoypo5gyfoj1kddb1zt
+USERNAME = KeY8BWU0K4670FITk2XP
+PASSWORD = INHXT0PjV3xIjqIhQahq
+
+导出数据库
+mysql -u KeY8BWU0K4670FITk2XP -p 4aoypo5gyfoj1kddb1zt <  /www/wwwroot/baxi.sql
+
+导入数据库
+mysql -h baxi.cbc0my2esp7q.us-east-1.rds.amazonaws.com -u baxi_aws  -p baxi_dev_20241010 < /www/wwwroot/baxi.sql
+
+iseewrlJxRJiIdasdsssrre
+
+mysql -h baxi.cbc0my2esp7q.us-east-1.rds.amazonaws.com -u baxi_aws -p
+
+````
