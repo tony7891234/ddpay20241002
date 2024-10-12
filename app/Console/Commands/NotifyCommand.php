@@ -59,6 +59,12 @@ class NotifyCommand extends BaseCommand
 //            ->limit(1)
 //            ->get();
 
+        $count = RechargeOrder::where('notify_status', 0)
+            ->where('status', '<', 2)
+            ->where('notify_num', '=', 0)
+            ->count();
+        dump($count);
+        
         //  select    count(*)   from   cd_order  where    notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;
         $list = RechargeOrder::where('notify_status', 0)
             ->where('status', '<', 2)
