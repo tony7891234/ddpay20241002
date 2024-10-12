@@ -58,7 +58,7 @@ class NotifyCommand extends BaseCommand
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->orderBy('order_id', 'asc')
-            ->limit(200)
+            ->limit(2)
             ->get();
         if ($list->isEmpty()) {
             sleep(1); // 没有数据，休息1S
@@ -104,7 +104,7 @@ class NotifyCommand extends BaseCommand
             // 添加并发回调数据
             $urlsWithParams[$orderInfo->order_id] = [
                 'request_param' => $data,
-                'request_url' => $notify_url,
+                'notify_url' => $notify_url,
             ];
             $id_arr[] = $orderInfo->getId();
         }
@@ -183,10 +183,10 @@ class NotifyCommand extends BaseCommand
         $chArr = [];
         //2.创建多个cURL资源
         foreach ($allGames as $order_id => $params) {
-            $request_url = $params['request_url'];
+            $notify_url = $params['notify_url'];
             $request_param = $params['request_param'];
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $request_url);
+            curl_setopt($ch, CURLOPT_URL, $notify_url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true); // 设置为 POST 请求
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($request_param)); // 设置 POST 数据
@@ -201,7 +201,11 @@ class NotifyCommand extends BaseCommand
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_multi_add_handle($chHandle, $ch); //2 增加句柄
-            $chArr[$order_id] = $ch; // 保存句柄以便后续使用
+            $chArr[$order_id] = [
+                'ch' => $ch,
+                'request_param' => $request_param,
+                'notify_url' => $notify_url,
+            ]; // 保存句柄以便后续使用
 //            dump($chArr);
         }
 
@@ -211,13 +215,35 @@ class NotifyCommand extends BaseCommand
             curl_multi_select($chHandle); // 等待活动请求完成  可以不要
         } while ($running > 0);
 
-        foreach ($chArr as $order_id => $ch) {
+        foreach ($chArr as $order_id => $ch_data) {
+            $ch = $ch_data['ch'];
+            $request_param = $ch_data['request_param'];
+            $notify_url = $ch_data['notify_url'];
             $result = curl_multi_getcontent($ch); //5 获取句柄的返回值
             if (in_array(strtolower($result), ['success', 'ok'])) {
                 $this->updateNotifyToSuccess($order_id);
             } else {
                 $this->updateNotifyToFail($order_id);
+                $tgMessage = <<<MG
+  ⚠代付通知下游⚠️\r\n
+
+原  因：通知下游失败\r\n
+订单 号 : {$order_id} \r\n
+订单状态：已完成\r\n
+响应结果：{$result} \r\n
+\r\n
+MG;
+
+                $this->TgBotMessage($tgMessage);
             }
+
+//            'logs_abc/df_notify' . date('Ymd') . '.txt',
+            $log_data = [
+                'request' => $request_param,
+                'notify' => $notify_url,
+                'result' => $result,
+            ];
+            logToPublicLog($log_data, 'logs_abc/df_notify' . date('Ymd') . '.txt');
 //            dump('$result' . $result);
 //            dump('$order_id' . $order_id);
             curl_multi_remove_handle($chHandle, $ch);//6 将$chHandle中的句柄移除
@@ -227,4 +253,12 @@ class NotifyCommand extends BaseCommand
     }
 
 
+    private function TgBotMessage($message)
+    {
+        // return;
+        $url = 'https://api.telegram.org/bot7093286182:AAFj5TVK0i89vTg35VGCjGsvPw6O5_AdS7Y/sendMessage?chat_id=-1002079287169&parse_mode=Markdown&text=' . urlencode($message);
+
+        file_get_contents($url);
+
+    }
 }

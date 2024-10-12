@@ -69,6 +69,25 @@ if (!function_exists('logToResponse')) {
     }
 }
 
+
+if (!function_exists('logToPublicLog')) {
+    /**
+     * 添加日志 public
+     * @param $info string|array
+     * @param $file_name string
+     */
+    function logToPublicLog($info, $file_name = '')
+    {
+        $final_file = $file_name ? $file_name : date('Y-m-d') . '.txt';
+        $log_name = '../public/logs_me/' . date('Y-m') . '/' . $final_file;
+
+        $info = is_array($info) ? json_encode($info, JSON_UNESCAPED_UNICODE) : $info;
+        file_put_contents($log_name, date('Y-m-d H:i:s'), FILE_APPEND);
+        file_put_contents($log_name, $info, FILE_APPEND);
+        file_put_contents($log_name, "\n", FILE_APPEND);
+    }
+}
+
 /**
  * 获取设备类型
  */
