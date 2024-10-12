@@ -79,7 +79,7 @@ if (!function_exists('logToPublicLog')) {
     function logToPublicLog($info, $file_name = '')
     {
         $final_file = $file_name ? $file_name : date('Y-m-d') . '.txt';
-        $log_name = '../public/logs_me/' . date('Y-m') . '/' . $final_file;
+        $log_name = public_path('logs_me/' . date('Y-m') . '/' . $final_file);
 
         $info = is_array($info) ? json_encode($info, JSON_UNESCAPED_UNICODE) : $info;
         file_put_contents($log_name, date('Y-m-d H:i:s'), FILE_APPEND);
