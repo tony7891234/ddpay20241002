@@ -57,7 +57,7 @@ class NotifyCommand extends BaseCommand
 //            ->where('notify_status', 0)
 //            ->where('notify_num', '<', 2)
             ->limit(100)
-            ->select();
+            ->get();
         if ($list->isEmpty()) {
             sleep(1); // 没有数据，休息1S
             return true;
