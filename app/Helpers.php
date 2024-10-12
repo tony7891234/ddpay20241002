@@ -78,9 +78,12 @@ if (!function_exists('logToPublicLog')) {
      */
     function logToPublicLog($info, $file_name = '')
     {
-        $final_file = $file_name ? $file_name : date('Y-m-d') . '.txt';
-        $log_name = public_path('logs_me/' . date('Y-m') . '/' . $final_file);
-
+        $file_name = $file_name ? $file_name : date('Y-m-d') . '.txt';
+        $realFolder = public_path('logs_me/' . date('Y-m') . '/');
+        if (!\File::exists($realFolder)) {
+            \File::makeDirectory($realFolder);
+        }
+        $log_name = $realFolder . $file_name;
         $info = is_array($info) ? json_encode($info, JSON_UNESCAPED_UNICODE) : $info;
         file_put_contents($log_name, date('Y-m-d H:i:s'), FILE_APPEND);
         file_put_contents($log_name, $info, FILE_APPEND);
