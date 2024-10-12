@@ -39,7 +39,10 @@ class NotifyCommand extends BaseCommand
     public function handle()
     {
 
-        $this->notify();
+        dump(getTimeString());
+        while (true) {
+            $this->notify();
+        }
 
         return true;
     }
@@ -51,34 +54,38 @@ class NotifyCommand extends BaseCommand
         /**
          * @var $list RechargeOrder[]
          */
-        $list = RechargeOrder::where('status', '<', 2)
-            ->where('order_id', '>=', 117624290)
-            ->where('order_id', '<=', 117624312)
-//            ->where('notify_status', 0)
-//            ->where('notify_num', '<', 2)
-            ->limit(100)
+        $list = RechargeOrder::where('notify_status', 0)
+            ->where('status', '<', 2)
+            ->where('notify_num', '=', 0)
+            ->orderBy('order_id', 'asc')
+            ->limit(200)
             ->get();
         if ($list->isEmpty()) {
             sleep(1); // 没有数据，休息1S
-            dump(111);
+//            dump(111);
             return true;
         }
 
         // 商户ID列表
         $merchant_list = MerchantModel::pluck('secret', 'merchant_id');
-        dump($merchant_list);
+//        dump($merchant_list);
 
         $urlsWithParams = [];
+        $id_arr = [];
         foreach ($list as $k => $orderInfo) {
             //  检查回调状态
             if ($orderInfo->status > 1) {
+//                dump(111);
                 continue;
             }
             // 检查回调地址
             if (filter_var($orderInfo->notifyurl, FILTER_VALIDATE_URL) == false) {
+//                dump(222);
+
                 continue;
             }
             if (!isset($merchant_list[$orderInfo->merchantid])) {
+//                dump(333);
                 continue; // 商户ID不存在
             }
             $merchant_secret = $merchant_list[$orderInfo->merchantid];
@@ -96,15 +103,14 @@ class NotifyCommand extends BaseCommand
             $data['Remarks'] = $orderInfo->remarks;
             $notify_url = $orderInfo->notifyurl;
             // 添加并发回调数据
-            $urlsWithParams[] = [
-                $notify_url => [
-                    'request_param' => $data,
-                    'order_id' => $orderInfo->order_id,
-                ],
+            $urlsWithParams[$orderInfo->order_id] = [
+                'request_param' => $data,
+                'request_url' => $notify_url,
             ];
+            $id_arr[] = $orderInfo->getId();
         }
+
         if ($urlsWithParams) {
-            dump($urlsWithParams);
             $this->curlPostMax($urlsWithParams);
         }
 
@@ -112,31 +118,33 @@ class NotifyCommand extends BaseCommand
 
     /**
      * 更新成 回调失败状态
-     * @param $orderInfo RechargeOrder
+     * @param int $order_id
      * @return bool
      */
-    private function updateNotifyToFail($orderInfo)
+    private function updateNotifyToFail($order_id)
     {
-        $orderInfo->notify_status = RechargeOrder::NOTIFY_STATUS_FAIL;
-        $orderInfo->update_time = time();
-        $orderInfo->completetime = time();
-        $orderInfo->notify_num += 1;
-        $orderInfo->save();
+        RechargeOrder::where('order_id', '=', $order_id)->update([
+            'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
+            'update_time' => time(),
+            'completetime' => time(),
+            'notify_num' => \DB::raw('notify_num + 1'),
+        ]);
         return true;
     }
 
     /**
      * 更新成 回调失败状态
-     * @param $orderInfo RechargeOrder
+     * @param int $order_id
      * @return bool
      */
-    private function updateNotifyToSuccess($orderInfo)
+    private function updateNotifyToSuccess($order_id)
     {
-        $orderInfo->notify_status = RechargeOrder::NOTIFY_STATUS_SUCCESS;
-        $orderInfo->update_time = time();
-        $orderInfo->completetime = time();
-        $orderInfo->notify_num += 1;
-        $orderInfo->save();
+        RechargeOrder::where('order_id', '=', $order_id)->update([
+            'notify_status' => RechargeOrder::NOTIFY_STATUS_SUCCESS,
+            'update_time' => time(),
+            'completetime' => time(),
+            'notify_num' => \DB::raw('notify_num + 1'),
+        ]);
         return true;
     }
 
@@ -162,12 +170,14 @@ class NotifyCommand extends BaseCommand
         $chHandle = curl_multi_init();
         $chArr = [];
         //2.创建多个cURL资源
-        foreach ($allGames as $request_url => $params) {
+        foreach ($allGames as $order_id => $params) {
+            $request_url = $params['request_url'];
+            $request_param = $params['request_param'];
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $request_url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true); // 设置为 POST 请求
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params['request_param'])); // 设置 POST 数据
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($request_param)); // 设置 POST 数据
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36',
                 'Accept: application/json, text/plain, */*',
@@ -179,10 +189,8 @@ class NotifyCommand extends BaseCommand
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_multi_add_handle($chHandle, $ch); //2 增加句柄
-            $curlHandles[$request_url] = [
-                'ch' => $ch,
-                'order_id' => $params['order_id'],
-            ]; // 保存句柄以便后续使用
+            $chArr[$order_id] = $ch; // 保存句柄以便后续使用
+//            dump($chArr);
         }
 
         $running = null;
@@ -191,10 +199,13 @@ class NotifyCommand extends BaseCommand
             curl_multi_select($chHandle); // 等待活动请求完成  可以不要
         } while ($running > 0);
 
-        foreach ($chArr as $request_url => $data) {
-            $ch = $data['ch'];
-            $order_id = $data['order_id']; // 订单ID
+        foreach ($chArr as $order_id => $ch) {
             $result = curl_multi_getcontent($ch); //5 获取句柄的返回值
+            if (in_array(strtolower($result), ['success', 'ok'])) {
+                $this->updateNotifyToSuccess($order_id);
+            } else {
+                $this->updateNotifyToFail($order_id);
+            }
             dump('$result' . $result);
             dump('$order_id' . $order_id);
             curl_multi_remove_handle($chHandle, $ch);//6 将$chHandle中的句柄移除

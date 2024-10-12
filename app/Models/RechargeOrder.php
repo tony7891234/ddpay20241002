@@ -62,7 +62,7 @@ class RechargeOrder extends BaseModel
      */
     public function getId()
     {
-        return $this->id;
+        return $this->order_id;
     }
 
 

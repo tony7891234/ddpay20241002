@@ -87,3 +87,16 @@ and `create_time` >= 1728659040 and `create_time` <= 1728659400 and `status` in 
 
 
 2024-10-11 11:04:00 - 2024-10-11 09:59:59
+
+
+select  count(*)   from   cd_order  where   notify_status=0  and status<2;
+select   create_time  from   cd_order  where   notify_status=0  and status=1;
+select   order_id,     DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS formatted_time from   cd_order  where   notify_status=0  and status<2  order by order_id desc  limit 100;
+select   order_id, create_time from   cd_order  where   notify_status=0  and status=1  order by order_id asc  limit 100;
+
+
+select   order_id,orderid,notify_num,notify_status,inizt   from   cd_order  where
+ notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;
+
+select    count(*)   from   cd_order  where
+ notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;
