@@ -52,14 +52,15 @@ class NotifyCommand extends BaseCommand
          * @var $list RechargeOrder[]
          */
         $list = RechargeOrder::where('status', '<', 2)
-            ->where('order_id', '>=', 117624312)
-            ->where('order_id', '<=', 117624297)
+            ->where('order_id', '>=', 117624290)
+            ->where('order_id', '<=', 117624312)
 //            ->where('notify_status', 0)
 //            ->where('notify_num', '<', 2)
             ->limit(100)
             ->get();
         if ($list->isEmpty()) {
             sleep(1); // 没有数据，休息1S
+            dump(111);
             return true;
         }
 
