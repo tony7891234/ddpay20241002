@@ -95,8 +95,8 @@ select   order_id,     DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS formatte
 select   order_id, create_time from   cd_order  where   notify_status=0  and status=1  order by order_id asc  limit 100;
 
 
-select   order_id,orderid,notify_num,notify_status,inizt   from   cd_order  where
- notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;
+select   order_id,orderid,notify_num,notify_status,inizt,merchantid   from   cd_order  where
+ notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 30;
 
 select    count(*)   from   cd_order  where
  notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;

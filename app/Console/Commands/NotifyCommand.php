@@ -64,7 +64,7 @@ class NotifyCommand extends BaseCommand
             ->where('notify_num', '=', 0)
             ->count();
         dump($count);
-        
+
         //  select    count(*)   from   cd_order  where    notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;
         $list = RechargeOrder::where('notify_status', 0)
             ->where('status', '<', 2)
@@ -153,6 +153,7 @@ class NotifyCommand extends BaseCommand
             $notify_url = $params['notify_url'];
             $request_param = $params['request_param'];
             $inizt = $params['inizt'];
+            $startTime = microtime(true);
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $notify_url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -174,6 +175,7 @@ class NotifyCommand extends BaseCommand
                 'request_param' => $request_param,
                 'notify_url' => $notify_url,
                 'inizt' => $inizt,
+                'startTime' => $startTime,
             ]; // 保存句柄以便后续使用
         }
 
@@ -189,6 +191,7 @@ class NotifyCommand extends BaseCommand
             $notify_url = $ch_data['notify_url'];
             $inizt = $ch_data['inizt'];
             $result = curl_multi_getcontent($ch); //5 获取句柄的返回值
+            $endTime = microtime(true); // 记录结束时间
             if (in_array(strtolower($result), ['success', 'ok'])) {
                 $this->updateNotifyToSuccess($order_id);
             } else {
@@ -199,6 +202,7 @@ class NotifyCommand extends BaseCommand
                 'request' => $request_param,
                 'notify' => $notify_url,
                 'result' => $result,
+                'diff_time' => $endTime - $ch_data['startTime'],
             ];
 
             // https://test107.hulinb.com/logs_me/2024-10/df_notify20241012.txt
