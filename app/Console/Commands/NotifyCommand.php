@@ -206,8 +206,8 @@ class NotifyCommand extends BaseCommand
             } else {
                 $this->updateNotifyToFail($order_id);
             }
-            dump('$result' . $result);
-            dump('$order_id' . $order_id);
+//            dump('$result' . $result);
+//            dump('$order_id' . $order_id);
             curl_multi_remove_handle($chHandle, $ch);//6 将$chHandle中的句柄移除
             curl_close($ch);
         }
