@@ -75,17 +75,16 @@ class NotifyCommand extends BaseCommand
         foreach ($list as $k => $orderInfo) {
             //  检查回调状态
             if ($orderInfo->status > 1) {
-//                dump(111);
+                $this->updateNotifyStatusToFail($orderInfo->getId());
                 continue;
             }
             // 检查回调地址
             if (filter_var($orderInfo->notifyurl, FILTER_VALIDATE_URL) == false) {
-//                dump(222);
-
+                $this->updateNotifyStatusToFail($orderInfo->getId());
                 continue;
             }
             if (!isset($merchant_list[$orderInfo->merchantid])) {
-//                dump(333);
+                $this->updateNotifyStatusToFail($orderInfo->getId());
                 continue; // 商户ID不存在
             }
             $merchant_secret = $merchant_list[$orderInfo->merchantid];
@@ -128,6 +127,19 @@ class NotifyCommand extends BaseCommand
             'update_time' => time(),
             'completetime' => time(),
             'notify_num' => \DB::raw('notify_num + 1'),
+        ]);
+        return true;
+    }
+
+    /**
+     *  这个是没有地址  或者商户的情况，只改状态
+     * @param int $order_id
+     * @return bool
+     */
+    private function updateNotifyStatusToFail($order_id)
+    {
+        RechargeOrder::where('order_id', '=', $order_id)->update([
+            'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
         ]);
         return true;
     }
@@ -212,62 +224,6 @@ class NotifyCommand extends BaseCommand
             curl_close($ch);
         }
         curl_multi_close($chHandle); //7 关闭全部句柄
-    }
-
-
-    /**
-     * 并发之后的处理
-     * @param $order_id int
-     * @return bool
-     */
-    private function afterCurl($order_id)
-    {
-        $orderInfo = [];
-        if (empty($notify_url)) {
-            $orderInfo->notify_status = 2; // 可能是失败的
-        } else {
-            if (filter_var($notify_url, FILTER_VALIDATE_URL) == false) {
-                $orderInfo->notify_status = 2;
-                $orderInfo->update_time = time();
-                $orderInfo->completetime = time();
-                $orderInfo->notify_num += 1;
-                $orderInfo->save();
-                return false;
-            }
-
-//
-//                $orderInfo->update_time = time();
-//                $orderInfo->save();
-
-//                if ($result == 'success' || strtolower($result) == 'success' || strtolower($result) == 'ok') {
-//
-//                    $orderInfo->notify_status = 1;
-//                    $orderInfo->update_time = time();
-//                    $orderInfo->completetime = time();
-//                    $orderInfo->notify_num += 1;
-//                    $orderInfo->save();
-//                } else {
-//                    $orderInfo->update_time = time();
-//                    $orderInfo->completetime = time();
-//                    $orderInfo->notify_num += 1;
-//                    $orderInfo->save();
-//                    $tgMessage = <<<MG
-//  ⚠代付通知下游⚠️\r\n
-//
-//原  因：通知下游失败\r\n
-//订单 号 : {$orderInfo['orderid']} \r\n
-//订单状态：已完成\r\n
-//通知地址：{$notify_url} \r\n
-//响应结果：{$result} \r\n
-//请求数据: {$data}
-//
-//\r\n
-//MG;
-//
-//                    TgBotMessage($tgMessage);
-//                }
-        }
-
     }
 
 

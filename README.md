@@ -48,3 +48,5 @@ iseewrlJxRJiIdasdsssrre
 mysql -h baxi.cbc0my2esp7q.us-east-1.rds.amazonaws.com -u baxi_aws -p
 
 ````
+
+ps -ef |grep 'php -c /etc/php-cli.ini artisan notify'
