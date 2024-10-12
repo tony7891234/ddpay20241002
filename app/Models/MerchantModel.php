@@ -3,23 +3,13 @@
 namespace App\Models;
 
 /**
- * 通道模型
- * Class Job
+ * 商户
+ * @param int merchant_id  商户ID
+ * @param string secret  密钥
+ * Class MerchantModel
  * @package App\Models
- * @property int order_id  三方单号
- * @property string orderid  三方单号
- * @property string sysorderid  系统订单号  doOrderSn('api_pay' . $merchant['merchant_id']),
- * @property int merchantid 商户号
- * @property int update_time 更新时间
- * @property float amount 订单金额
- * @property int status
- * @property string remarks
- * @property string notifyurl 回调地址
- * @property int notify_status 回调状态 0=未回调;1=已经回调
- * @property int notify_num 回调次数
- * @property int completetime 完成时间(下游接收时间)
  */
-class RechargeOrder extends BaseModel
+class MerchantModel extends BaseModel
 {
 
     protected $connection = 'mysql';
