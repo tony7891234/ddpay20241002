@@ -38,11 +38,10 @@ class NotifyCommand extends BaseCommand
      */
     public function handle()
     {
-
         dump(getTimeString());
-        while (true) {
-            $this->notify();
-        }
+//        while (true) {
+        $this->notify();
+//        }
 
         return true;
     }
@@ -54,22 +53,27 @@ class NotifyCommand extends BaseCommand
         /**
          * @var $list RechargeOrder[]
          */
+        // 测试
+//        $list = RechargeOrder::where('order_id', '=', 119788963)
+//            ->orderBy('order_id', 'desc')
+//            ->limit(1)
+//            ->get();
+
+        //  select    count(*)   from   cd_order  where    notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;
         $list = RechargeOrder::where('notify_status', 0)
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
-            ->orderBy('order_id', 'asc')
-            ->limit(2)
+            ->orderBy('order_id', 'desc')
+            ->limit(200)
             ->get();
+
         if ($list->isEmpty()) {
             sleep(1); // 没有数据，休息1S
-//            dump(111);
             return true;
         }
 
         // 商户ID列表
         $merchant_list = MerchantModel::pluck('secret', 'merchant_id');
-//        dump($merchant_list);
-
         $urlsWithParams = [];
         $id_arr = [];
         foreach ($list as $k => $orderInfo) {
@@ -105,6 +109,7 @@ class NotifyCommand extends BaseCommand
             $urlsWithParams[$orderInfo->order_id] = [
                 'request_param' => $data,
                 'notify_url' => $notify_url,
+                'inizt' => $orderInfo->inizt,
             ];
             $id_arr[] = $orderInfo->getId();
         }
@@ -114,6 +119,95 @@ class NotifyCommand extends BaseCommand
         }
 
     }
+
+
+    private function newSign($params, $secret)
+    {
+        if (!empty($params)) {
+            $p = ksort($params);
+            if ($p) {
+                $str = '';
+                foreach ($params as $k => $v) {
+                    $str .= $k . '=' . $v . '&';
+                }
+            }
+            $strs = rtrim($str, '&') . $secret;
+            return md5($strs);
+        }
+        return false;
+    }
+
+    private function curlPostMax($allGames)
+    {
+        //1 创建批处理cURL句柄
+        $chHandle = curl_multi_init();
+        $chArr = [];
+        //2.创建多个cURL资源
+        foreach ($allGames as $order_id => $params) {
+            $notify_url = $params['notify_url'];
+            $request_param = $params['request_param'];
+            $inizt = $params['inizt'];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $notify_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true); // 设置为 POST 请求
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($request_param)); // 设置 POST 数据
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36',
+                'Accept: application/json, text/plain, */*',
+                'Accept-Language: en-US,en;q=0.9',
+                'Connection: keep-alive'
+            ]);
+
+            curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_multi_add_handle($chHandle, $ch); //2 增加句柄
+            $chArr[$order_id] = [
+                'ch' => $ch,
+                'request_param' => $request_param,
+                'notify_url' => $notify_url,
+                'inizt' => $inizt,
+            ]; // 保存句柄以便后续使用
+        }
+
+        $running = null;
+        do {
+            curl_multi_exec($chHandle, $running); //3 执行批处理句柄
+            curl_multi_select($chHandle); // 等待活动请求完成  可以不要
+        } while ($running > 0);
+
+        foreach ($chArr as $order_id => $ch_data) {
+            $ch = $ch_data['ch'];
+            $request_param = $ch_data['request_param'];
+            $notify_url = $ch_data['notify_url'];
+            $inizt = $ch_data['inizt'];
+            $result = curl_multi_getcontent($ch); //5 获取句柄的返回值
+            if (in_array(strtolower($result), ['success', 'ok'])) {
+                $this->updateNotifyToSuccess($order_id);
+            } else {
+                $this->updateNotifyToFail($order_id);
+            }
+
+            $log_data = [
+                'request' => $request_param,
+                'notify' => $notify_url,
+                'result' => $result,
+            ];
+
+            // https://test107.hulinb.com/logs_me/2024-10/df_notify20241012.txt
+            if ($inizt == RechargeOrder::INIZT_RECHARGE) {
+                $file = ('ds_notify' . date('Ymd') . '.txt');
+            } else {
+                $file = ('df_notify' . date('Ymd') . '.txt');
+            }
+            logToPublicLog($log_data, $file); // 记录文件
+            curl_multi_remove_handle($chHandle, $ch);//6 将$chHandle中的句柄移除
+            curl_close($ch);
+        }
+        curl_multi_close($chHandle); //7 关闭全部句柄
+    }
+
 
     /**
      * 更新成 回调失败状态
@@ -160,105 +254,4 @@ class NotifyCommand extends BaseCommand
         return true;
     }
 
-    private function newSign($params, $secret)
-    {
-        if (!empty($params)) {
-            $p = ksort($params);
-            if ($p) {
-                $str = '';
-                foreach ($params as $k => $v) {
-                    $str .= $k . '=' . $v . '&';
-                }
-            }
-            $strs = rtrim($str, '&') . $secret;
-            return md5($strs);
-        }
-        return false;
-    }
-
-    private function curlPostMax($allGames)
-    {
-        //1 创建批处理cURL句柄
-        $chHandle = curl_multi_init();
-        $chArr = [];
-        //2.创建多个cURL资源
-        foreach ($allGames as $order_id => $params) {
-            $notify_url = $params['notify_url'];
-            $request_param = $params['request_param'];
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $notify_url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true); // 设置为 POST 请求
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($request_param)); // 设置 POST 数据
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36',
-                'Accept: application/json, text/plain, */*',
-                'Accept-Language: en-US,en;q=0.9',
-                'Connection: keep-alive'
-            ]);
-
-            curl_setopt($ch, CURLOPT_TIMEOUT, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-            curl_multi_add_handle($chHandle, $ch); //2 增加句柄
-            $chArr[$order_id] = [
-                'ch' => $ch,
-                'request_param' => $request_param,
-                'notify_url' => $notify_url,
-            ]; // 保存句柄以便后续使用
-//            dump($chArr);
-        }
-
-        $running = null;
-        do {
-            curl_multi_exec($chHandle, $running); //3 执行批处理句柄
-            curl_multi_select($chHandle); // 等待活动请求完成  可以不要
-        } while ($running > 0);
-
-        foreach ($chArr as $order_id => $ch_data) {
-            $ch = $ch_data['ch'];
-            $request_param = $ch_data['request_param'];
-            $notify_url = $ch_data['notify_url'];
-            $result = curl_multi_getcontent($ch); //5 获取句柄的返回值
-            if (in_array(strtolower($result), ['success', 'ok'])) {
-                $this->updateNotifyToSuccess($order_id);
-            } else {
-                $this->updateNotifyToFail($order_id);
-                $tgMessage = <<<MG
-  ⚠代付通知下游⚠️\r\n
-
-原  因：通知下游失败\r\n
-订单 号 : {$order_id} \r\n
-订单状态：已完成\r\n
-响应结果：{$result} \r\n
-\r\n
-MG;
-
-                $this->TgBotMessage($tgMessage);
-            }
-
-//            'logs_abc/df_notify' . date('Ymd') . '.txt',
-            $log_data = [
-                'request' => $request_param,
-                'notify' => $notify_url,
-                'result' => $result,
-            ];
-            logToPublicLog($log_data, 'logs_abc/df_notify' . date('Ymd') . '.txt');
-//            dump('$result' . $result);
-//            dump('$order_id' . $order_id);
-            curl_multi_remove_handle($chHandle, $ch);//6 将$chHandle中的句柄移除
-            curl_close($ch);
-        }
-        curl_multi_close($chHandle); //7 关闭全部句柄
-    }
-
-
-    private function TgBotMessage($message)
-    {
-        // return;
-        $url = 'https://api.telegram.org/bot7093286182:AAFj5TVK0i89vTg35VGCjGsvPw6O5_AdS7Y/sendMessage?chat_id=-1002079287169&parse_mode=Markdown&text=' . urlencode($message);
-
-        file_get_contents($url);
-
-    }
 }
