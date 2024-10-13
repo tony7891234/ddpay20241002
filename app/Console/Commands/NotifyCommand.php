@@ -40,9 +40,9 @@ class NotifyCommand extends BaseCommand
     public function handle()
     {
         dump(getTimeString());
-//        while (true) {
-        $this->notify();
-//        }
+        while (true) {
+            $this->notify();
+        }
 
         return true;
     }
@@ -50,6 +50,11 @@ class NotifyCommand extends BaseCommand
     public function notify()
     {
 
+        $count = RechargeOrder::where('notify_status', 0)
+            ->where('status', '<', 2)
+            ->where('notify_num', '=', 0)
+            ->count();
+        dump($count);
         /**
          * @var $list RechargeOrder[]
          */
@@ -163,7 +168,7 @@ class NotifyCommand extends BaseCommand
             curl_setopt($ch, CURLOPT_URL, $notify_url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true); // 设置为 POST 请求
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($request_param)); // 设置 POST 数据
+            curl_setopt($ch, CURLOPT_POSTFIELDS, ($request_param)); // 设置 POST 数据
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36',
                 'Accept: application/json, text/plain, */*',
