@@ -79,7 +79,7 @@ class NotifyCommand extends BaseCommand
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->orderBy('order_id', 'desc')
-            ->limit(300)
+            ->limit(500)
             ->get();
 
 
