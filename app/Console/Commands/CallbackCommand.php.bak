@@ -50,7 +50,6 @@ class CallbackCommand extends BaseCommand
         $end_at = 1728821760;//  20.16
 
 //        $start_at = 1728820800;//  20.00
-//        $start_at = 1728821160;//  20.06
 //        $end_at = 1728821220;//  20.07
 //
 //        $start_at = 1728819600;//  19.40
@@ -59,10 +58,9 @@ class CallbackCommand extends BaseCommand
 
         $i = 0;
         RechargeOrder::select(['order_id', 'orderid', 'create_time'])
-//            ->where('orderid', '=', '2117470364646809')  // 22：56
             ->where('create_time', '>=', $start_at)  // 22：56
             ->where('create_time', '<=', $end_at) //  22：53
-            ->orderBy('order_id')->chunk(200, function ($list) use ($i) {
+            ->orderBy('order_id')->chunk(1000, function ($list) use ($i) {
                 $list = $list->toArray();
                 $response = [];
                 foreach ($list as $item) {
@@ -80,7 +78,8 @@ class CallbackCommand extends BaseCommand
     }
 
 
-    private function curlPostMax($allGames)
+    private
+    function curlPostMax($allGames)
     {
 
         //1 创建批处理cURL句柄

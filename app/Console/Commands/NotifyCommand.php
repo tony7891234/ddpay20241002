@@ -176,7 +176,7 @@ class NotifyCommand extends BaseCommand
                 'Connection: keep-alive'
             ]);
 
-            curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_multi_add_handle($chHandle, $ch); //2 增加句柄
@@ -200,6 +200,11 @@ class NotifyCommand extends BaseCommand
             $request_param = $ch_data['request_param'];
             $notify_url = $ch_data['notify_url'];
             $inizt = $ch_data['inizt'];
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // 获取 HTTP 状态码
+            if ($httpCode != 200) {
+                continue; // 这次请求没成功，不做处理
+//                dump('$httpCode--' . $order_id . '---' . $httpCode . '---' . $result);
+            }
             $result = curl_multi_getcontent($ch); //5 获取句柄的返回值
             $endTime = microtime(true); // 记录结束时间
             if (in_array(strtolower($result), ['success', 'ok'])) {
