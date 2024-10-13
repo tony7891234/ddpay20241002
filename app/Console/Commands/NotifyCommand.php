@@ -78,8 +78,8 @@ class NotifyCommand extends BaseCommand
             ->where('notify_status', 0)
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
-            ->orderBy('order_id', 'desc')
-            ->limit(10)
+            ->orderBy('order_id', 'asc')
+            ->limit(500)
             ->get();
 
 
@@ -210,10 +210,17 @@ class NotifyCommand extends BaseCommand
             }
             $result = curl_multi_getcontent($ch); //5 获取句柄的返回值
             $endTime = microtime(true); // 记录结束时间
-            if (in_array(strtolower($result), ['success', 'ok'])) {
+            $result = strtolower($result);
+            if (in_array($result, ['success', 'ok'])) {
                 $this->updateNotifyToSuccess($order_id);
             } else {
-                $this->updateNotifyToFail($order_id);
+                if ($result) {
+                    $this->updateNotifyToFail($order_id);
+                } else {
+                    $file = ('long_time' . date('Ymd') . '.txt');
+                    //  什么都没返回
+                    logToPublicLog($order_id . '--', $file); // 记录文件
+                }
             }
 
             $log_data = [
@@ -235,7 +242,7 @@ class NotifyCommand extends BaseCommand
             } else {
                 $file = ('df_notify' . date('Ymd') . '.txt');
             }
-            dump($log_data);
+//            dump($log_data);
             logToPublicLog($log_data, $file); // 记录文件
             curl_multi_remove_handle($chHandle, $ch);//6 将$chHandle中的句柄移除
             curl_close($ch);
@@ -251,14 +258,14 @@ class NotifyCommand extends BaseCommand
      */
     private function updateNotifyToFail($order_id)
     {
-        dump($order_id . '--updateNotifyToFail');
+//        dump($order_id . '--updateNotifyToFail');
 
-//        RechargeOrder::where('order_id', '=', $order_id)->update([
-//            'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
-//            'update_time' => time(),
-//            'completetime' => time(),
-//            'notify_num' => \DB::raw('notify_num + 1'),
-//        ]);
+        RechargeOrder::where('order_id', '=', $order_id)->update([
+            'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
+            'update_time' => time(),
+            'completetime' => time(),
+            'notify_num' => \DB::raw('notify_num + 1'),
+        ]);
         return true;
     }
 
@@ -269,10 +276,10 @@ class NotifyCommand extends BaseCommand
      */
     private function updateNotifyStatusToFail($order_id)
     {
-        dump($order_id . '--updateNotifyStatusToFail');
-//        RechargeOrder::where('order_id', '=', $order_id)->update([
-//            'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
-//        ]);
+//        dump($order_id . '--updateNotifyStatusToFail');
+        RechargeOrder::where('order_id', '=', $order_id)->update([
+            'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
+        ]);
         return true;
     }
 
