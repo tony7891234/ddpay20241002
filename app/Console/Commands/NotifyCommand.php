@@ -235,6 +235,7 @@ class NotifyCommand extends BaseCommand
             } else {
                 $file = ('df_notify' . date('Ymd') . '.txt');
             }
+            dump($log_data);
             logToPublicLog($log_data, $file); // 记录文件
             curl_multi_remove_handle($chHandle, $ch);//6 将$chHandle中的句柄移除
             curl_close($ch);
