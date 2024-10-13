@@ -59,11 +59,11 @@ class NotifyCommand extends BaseCommand
 //            ->limit(1)
 //            ->get();
 
-        $count = RechargeOrder::where('notify_status', 0)
-            ->where('status', '<', 2)
-            ->where('notify_num', '=', 0)
-            ->count();
-        dump($count);
+//        $count = RechargeOrder::where('notify_status', 0)
+//            ->where('status', '<', 2)
+//            ->where('notify_num', '=', 0)
+//            ->count();
+//        dump($count);
 
         $arr_id = [
             121613000, //424收款
@@ -75,12 +75,19 @@ class NotifyCommand extends BaseCommand
             121620122, // 507付款
         ];
         //  select    count(*)   from   cd_order  where    notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;
-        $list = RechargeOrder::where('notify_status', 0)
-            ->where('status', '<', 2)
-            ->where('notify_num', '=', 0)
+        $list = RechargeOrder::whereIn('order_id', $arr_id)
             ->orderBy('order_id', 'desc')
             ->limit(200)
             ->get();
+
+        /*********************** 以下是正式，上面是测试 ********************************/
+//        $list = RechargeOrder::where('notify_status', 0)
+//            ->where('status', '<', 2)
+//            ->where('notify_num', '=', 0)
+//            ->orderBy('order_id', 'desc')
+//            ->limit(200)
+//            ->get();
+
 
         if ($list->isEmpty()) {
             sleep(1); // 没有数据，休息1S
