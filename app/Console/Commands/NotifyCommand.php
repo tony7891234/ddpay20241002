@@ -54,7 +54,7 @@ class NotifyCommand extends BaseCommand
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->count();
-        dump($count);
+        dump(getTimeString() . '  ' . $count);
         /**
          * @var $list RechargeOrder[]
          */
