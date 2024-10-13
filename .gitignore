@@ -19,4 +19,5 @@ resources/lang/vendor
 resources/lang/
 resources/views
 composer.lock
+tests
 

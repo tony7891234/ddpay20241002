@@ -65,6 +65,15 @@ class NotifyCommand extends BaseCommand
             ->count();
         dump($count);
 
+        $arr_id = [
+            121613000, //424收款
+            121620698, //382收款
+            121620643, //88收款
+
+            121617410, //424付款
+            121620132, // 452付款
+            121620122, // 507付款
+        ];
         //  select    count(*)   from   cd_order  where    notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;
         $list = RechargeOrder::where('notify_status', 0)
             ->where('status', '<', 2)
