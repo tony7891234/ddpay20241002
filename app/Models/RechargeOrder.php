@@ -14,6 +14,7 @@ namespace App\Models;
  * @property float amount 订单金额
  * @property int status
  * @property string remarks
+ * @property string realname
  * @property string notifyurl 回调地址
  * @property int notify_status 回调状态 0=未回调;1=已经回调
  * @property int notify_num 回调次数

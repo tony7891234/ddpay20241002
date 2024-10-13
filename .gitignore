@@ -20,4 +20,5 @@ resources/lang/
 resources/views
 composer.lock
 tests
+app/Console/Commands/NotifyCommand.php.bak
 

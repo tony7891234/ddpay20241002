@@ -12,6 +12,7 @@ use App\Models\RechargeOrder;
 class NotifyCommand extends BaseCommand
 {
 
+    const MAX_TIME = 5;// 超时多少秒，需要记录 log
 
     /**
      * @var string
@@ -49,44 +50,32 @@ class NotifyCommand extends BaseCommand
     public function notify()
     {
 
-//        $merchant_list = Mer
         /**
          * @var $list RechargeOrder[]
          */
-        // 测试
-//        $list = RechargeOrder::where('order_id', '=', 119788963)
-//            ->orderBy('order_id', 'desc')
-//            ->limit(1)
-//            ->get();
-
-//        $count = RechargeOrder::where('notify_status', 0)
-//            ->where('status', '<', 2)
-//            ->where('notify_num', '=', 0)
-//            ->count();
-//        dump($count);
-
-        $arr_id = [
-            121613000, //424收款
-            121620698, //382收款
-            121620643, //88收款
-
-            121617410, //424付款
-            121620132, // 452付款
-            121620122, // 507付款
-        ];
-        //  select    count(*)   from   cd_order  where    notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;
-        $list = RechargeOrder::whereIn('order_id', $arr_id)
+        /*********************** 以下是正式，上面是测试 ********************************/
+        $list = RechargeOrder::select([
+            'amount',
+            'order_id',
+            'sysorderid',
+            'merchantid',
+            'update_time',
+            'completetime',
+            'notify_num',
+            'remarks',
+            'realname',
+            'orderid',
+            'status',
+            'notify_status',
+            'notifyurl',
+            'inizt'
+        ])
+            ->where('notify_status', 0)
+            ->where('status', '<', 2)
+            ->where('notify_num', '=', 0)
             ->orderBy('order_id', 'desc')
             ->limit(200)
             ->get();
-
-        /*********************** 以下是正式，上面是测试 ********************************/
-//        $list = RechargeOrder::where('notify_status', 0)
-//            ->where('status', '<', 2)
-//            ->where('notify_num', '=', 0)
-//            ->orderBy('order_id', 'desc')
-//            ->limit(200)
-//            ->get();
 
 
         if ($list->isEmpty()) {
@@ -125,7 +114,7 @@ class NotifyCommand extends BaseCommand
             ksort($data);
 
             $data['Sign'] = strtoupper($this->newSign($data, $merchant_secret));
-            $data['Remarks'] = $orderInfo->remarks;
+            $data['Remarks'] = $orderInfo->status == RechargeOrder::STATUS_SUCCESS ? $orderInfo->remarks : $orderInfo->realname;
             $notify_url = $orderInfo->notifyurl;
             // 添加并发回调数据
             $urlsWithParams[$orderInfo->order_id] = [
@@ -220,6 +209,11 @@ class NotifyCommand extends BaseCommand
                 'result' => $result,
                 'diff_time' => $endTime - $ch_data['startTime'],
             ];
+            // 超时回调记录
+            if ($log_data['diff_time'] > self::MAX_TIME) {
+                $file = ('long_time' . date('Ymd') . '.txt');
+                logToPublicLog($log_data, $file); // 记录文件
+            }
 
             // https://test107.hulinb.com/logs_me/2024-10/df_notify20241012.txt
             if ($inizt == RechargeOrder::INIZT_RECHARGE) {

@@ -100,3 +100,15 @@ select   order_id,orderid,notify_num,notify_status,inizt,merchantid   from   cd_
 
 select    count(*)   from   cd_order  where
  notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;
+
+
+select  amount,order_id,update_time,completetime,notify_num,remarks,realname,merchantid,orderid,sysorderid,status,notify_status,notifyurl
+ from cd_order  where  order_id in (
+           121613000,
+            121620698,
+            121620643,
+
+            121617410,
+            121620132,
+            121620122
+ );
