@@ -40,9 +40,9 @@ class NotifyCommand extends BaseCommand
     public function handle()
     {
         dump(getTimeString());
-        while (true) {
-            $this->notify();
-        }
+//        while (true) {
+        $this->notify();
+//        }
 
         return true;
     }

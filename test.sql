@@ -116,7 +116,16 @@ select  amount,order_id,update_time,completetime,notify_num,remarks,realname,mer
 
 select   *   from   cd_order   where   orderid='pay_1062_20241013121140wHZYO'   and  create_time>=   1728821220   and   create_time<=1728821760;
 select   *   from   cd_order   where   orderid='2117470364646809'   and  create_time>=   1728821160   and   create_time<=1728821220;
-select    notify_status,notify_num ,status   from   cd_order   where   orderid='THRP172882115470912614'  ;
+
+select    notify_status,notify_num ,status   from   cd_order   where   orderid  in (
+'THRP172883154208036185',
+'2117470004287285',
+'2117470496133283',
+'2117470238429159',
+'TX17288315586878639144'
+)  ;
+
+
 select    notify_status,notify_num ,status   from   cd_order   where   orderid='tx_1094_20241013121020Vcruw'  ;
 select    notify_status,notify_num ,status   from   cd_order   where   orderid='2117470364646809'  ;
 select    notify_status,notify_num ,status   from   cd_order   where   orderid='2117470364646809'  ;
