@@ -211,6 +211,7 @@ class NotifyCommand extends BaseCommand
             $inizt = $ch_data['inizt'];
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // 获取 HTTP 状态码
             if ($httpCode != 200) {
+                $this->updateNotifyNum($order_id);
                 $file = ('no_200_' . date('Ymd') . '.txt');
                 $log_data = '---' . $order_id . '--' . $httpCode;
                 logToPublicLog($log_data, $file); // 记录文件
@@ -288,6 +289,21 @@ class NotifyCommand extends BaseCommand
 //        dump($order_id . '--updateNotifyStatusToFail');
         RechargeOrder::where('order_id', '=', $order_id)->update([
             'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
+        ]);
+        return true;
+    }
+
+    /**
+     *   更新次数  400的
+     * @param int $order_id
+     * @return bool
+     */
+    private function updateNotifyNum($order_id)
+    {
+        RechargeOrder::where('order_id', '=', $order_id)->update([
+            'update_time' => time(),
+            'completetime' => time(),
+            'notify_num' => \DB::raw('notify_num + 1'),
         ]);
         return true;
     }

@@ -53,11 +53,7 @@ class TestCommand extends BaseCommand
             ->count();
         dump(getTimeString() . '  ' . $count);
         $arr = [
-            'pay_1092_20241013121142YsLcu', //  success
-            'pay_1092_20241013121149bXmfG',
-            'pay_1092_20241013121137usxux',
-            'pay_1092_20241013121230HazPW',
-            'pay_1092_20241013121217CcEcN',
+            'W612020241013144751862343803', //  success
         ];
         /**
          * @var $list RechargeOrder[]

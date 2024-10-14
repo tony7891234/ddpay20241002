@@ -126,7 +126,8 @@ select    notify_status,notify_num ,status   from   cd_order   where   orderid  
 )  ;
 
 
-select    notify_status,notify_num ,status   from   cd_order   where   orderid='tx_1094_20241013121020Vcruw'  ;
+select    notify_status,notify_num ,status   from   cd_order   where   orderid='W906120241013140309752537329'  ;
+select    notify_status,notify_num ,status   from   cd_order   where   orderid='2117470364646809'  ;
 select    notify_status,notify_num ,status   from   cd_order   where   orderid='2117470364646809'  ;
 select    notify_status,notify_num ,status   from   cd_order   where   orderid='2117470364646809'  ;
 select    notify_status,notify_num ,status   from   cd_order   where   orderid='2117470364646809'  ;
