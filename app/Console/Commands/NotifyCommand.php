@@ -159,6 +159,9 @@ class NotifyCommand extends BaseCommand
         return false;
     }
 
+    /**
+     * @param $allGames
+     */
     private function curlPostMax($allGames)
     {
         //1 创建批处理cURL句柄
@@ -209,7 +212,7 @@ class NotifyCommand extends BaseCommand
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // 获取 HTTP 状态码
             if ($httpCode != 200) {
                 $file = ('no_200_' . date('Ymd') . '.txt');
-                $log_data = $order_id . '--' . $httpCode;
+                $log_data = '---' . $order_id . '--' . $httpCode;
                 logToPublicLog($log_data, $file); // 记录文件
                 continue; // 这次请求没成功，不做处理
 
