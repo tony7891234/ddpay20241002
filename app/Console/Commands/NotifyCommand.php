@@ -13,6 +13,8 @@ class NotifyCommand extends BaseCommand
 {
 
     const MAX_TIME = 5;// 超时多少秒，需要记录 log
+    const FILE_NAME_LONG_TIME = 'long_'; // 超时5S没信息的
+    const FILE_NAME_RESPONSE_NULL = 'nothing_'; // 什么否没有返回的
 
     /**
      * @var string
@@ -40,9 +42,9 @@ class NotifyCommand extends BaseCommand
     public function handle()
     {
         dump(getTimeString());
-//        while (true) {
-        $this->notify();
-//        }
+        while (true) {
+            $this->notify();
+        }
 
         return true;
     }
@@ -55,6 +57,10 @@ class NotifyCommand extends BaseCommand
             ->where('notify_num', '=', 0)
             ->count();
         dump(getTimeString() . '  ' . $count);
+        if ($count == 0) {
+            sleep(1); // 没有数据，休息1S
+            return true;
+        }
         /**
          * @var $list RechargeOrder[]
          */
@@ -83,10 +89,10 @@ class NotifyCommand extends BaseCommand
             ->get();
 
 
-        if ($list->isEmpty()) {
-            sleep(1); // 没有数据，休息1S
-            return true;
-        }
+//        if ($list->isEmpty()) {
+//            sleep(1); // 没有数据，休息1S
+//            return true;
+//        }
 
         // 商户ID列表
         $merchant_list = MerchantModel::pluck('secret', 'merchant_id');
@@ -217,7 +223,7 @@ class NotifyCommand extends BaseCommand
                 if ($result) {
                     $this->updateNotifyToFail($order_id);
                 } else {
-                    $file = ('long_time' . date('Ymd') . '.txt');
+                    $file = (self::FILE_NAME_RESPONSE_NULL . date('Ymd') . '.txt');
                     //  什么都没返回
                     logToPublicLog($order_id . '--', $file); // 记录文件
                 }
@@ -232,7 +238,7 @@ class NotifyCommand extends BaseCommand
             ];
             // 超时回调记录
             if ($log_data['diff_time'] > self::MAX_TIME) {
-                $file = ('long_time' . date('Ymd') . '.txt');
+                $file = (self::FILE_NAME_LONG_TIME . date('Ymd') . '.txt');
                 logToPublicLog($log_data, $file); // 记录文件
             }
 
@@ -300,3 +306,4 @@ class NotifyCommand extends BaseCommand
     }
 
 }
+
