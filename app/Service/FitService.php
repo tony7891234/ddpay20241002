@@ -36,24 +36,15 @@ class FitService extends BaseService
             $mainResponseData = $this->postRequestJsonForAuth('GetAccountEntryPaged', $requestParam);
             if ($mainResponseData['Success'] === 'true') {
                 return [
-                    'status' => 'success',
-                    'code' => 0,
-                    'mainBalance' => [
-                        'balance' => $mainResponseData['Balance'],
-                        // 'block'=> $mainResponseData['BlockedBalance']
-                    ],
-                    'feeBalance' => [
-                        'balance' => $responseData['Balance'],
-                        // 'block'=> $responseData['BlockedBalance']
-                    ],
+                    'balance' => $mainResponseData['Balance'], // 余额
+                    'fee' => $responseData['Balance'], // 手续费
                 ];
+            } else {
+                return false;
             }
+        } else {
+            return false;
         }
-        return [
-            'balance' => $mainResponseData['Balance'], // 余额
-            'fee' => $responseData['Balance'], // 手续费
-        ];
-
     }
 
     protected function postRequestJsonForAuth($path, $data)
