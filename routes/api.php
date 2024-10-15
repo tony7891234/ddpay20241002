@@ -19,6 +19,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+Route::get('/test/', 'TestController@test');
+
 Route::get('/getChatList/', 'TelegramController@getChatList');
 // 创建一个 web hook
 Route::get('/createWebHook/', 'TelegramController@createWebHook');
