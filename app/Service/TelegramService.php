@@ -88,35 +88,39 @@ class TelegramService extends BaseService
     {
         //  使用空格做区分
         $arr = array_values(array_filter(explode(" ", $this->message_text)));
-        if (count($arr) != 2) {
+        if (count($arr) < 2) {
             return '格式有误';
         }
         $start_at = $arr[0];
         $end_at = $arr[1];
+        $merchant_id = isset($arr[2]) ? $arr[2] : 0; // 商户ID
         $start_at = strtotime(date('Y-m-d ') . $start_at);
         $end_at = strtotime(date('Y-m-d ') . $end_at);
         if ($end_at - $start_at > 300) {
             return '时间间隔最多只能是5分钟';
         }
         date_default_timezone_set('PRC');
-        RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
+        $query = RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
             ->where('create_time', '>=', $start_at)
-            ->where('create_time', '<=', $end_at)
-            ->orderBy('order_id')->chunk(300, function ($list) {
-                $list = $list->toArray();
-                $response = [];
-                foreach ($list as $item) {
-                    $order_id = $item['order_id'];
-                    if ($item['inizt'] == 0) {
-                        //  收
-                        $url = 'https://hulinb.com/api/order/notify?order_id_index=' . $order_id;
-                    } else {
-                        $url = 'https://hulinb.com/api/df/notify?order_id_index=' . $order_id;
-                    }
-                    $response[] = $url;
+            ->where('create_time', '<=', $end_at);
+        if ($merchant_id) {
+            $query = $query->where('merchant_id', '=', $merchant_id);
+        }
+        $query->orderBy('order_id')->chunk(300, function ($list) {
+            $list = $list->toArray();
+            $response = [];
+            foreach ($list as $item) {
+                $order_id = $item['order_id'];
+                if ($item['inizt'] == 0) {
+                    //  收
+                    $url = 'https://hulinb.com/api/order/notify?order_id_index=' . $order_id;
+                } else {
+                    $url = 'https://hulinb.com/api/df/notify?order_id_index=' . $order_id;
                 }
-                curlManyRequest($response);
-            });
+                $response[] = $url;
+            }
+            curlManyRequest($response);
+        });
 
         $count = RechargeOrder::where('create_time', '>=', $start_at)  // 22：56
         ->where('create_time', '<=', $end_at)
