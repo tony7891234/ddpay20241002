@@ -93,8 +93,13 @@ class TelegramService extends BaseService
 
     private function checkFitBalance()
     {
-        $arr = array_values(array_filter(explode(PHP_EOL, $this->message_text)));
-
+        $service = new FitService();
+        $check_time = trim($this->message_text);
+        $response = $service->balance($check_time);
+        if (isset($response['balance']) && isset($response['fee'])) {
+            return $this->message_text . '   余额:' . $response['balance'] . '   手续费:' . $response['fee'];
+        }
+        return '查询失败';
     }
 
 
