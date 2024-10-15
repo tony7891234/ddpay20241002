@@ -91,7 +91,6 @@ class TelegramService extends BaseService
         if (count($arr) < 2) {
             return '格式有误';
         }
-        return implode('+++', $arr);
         $start_at = $arr[0];
         $end_at = $arr[1];
         $merchant_id = isset($arr[2]) ? $arr[2] : 0; // 商户ID
@@ -126,7 +125,7 @@ class TelegramService extends BaseService
         $count = RechargeOrder::where('create_time', '>=', $start_at)  // 22：56
         ->where('create_time', '<=', $end_at)
             ->count();
-        return '执行完毕,总条数:' . $count . ' 开始时间' . formatTimeToString($start_at) . ' 结束时间:' . formatTimeToString($end_at);
+        return '执行完毕,总条数:' . $count . ' 开始时间' . formatTimeToString($start_at) . ' 结束时间:' . formatTimeToString($end_at) . ' 商户ID:' . $merchant_id;
     }
 
 }
