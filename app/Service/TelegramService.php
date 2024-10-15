@@ -73,6 +73,14 @@ class TelegramService extends BaseService
             }
             return true;
         }
+        //  查询 fit balance
+        if ($this->chat_id == config('telegram.group.fit_balance')) {
+            $response_text = $this->checkFitBalance();
+            if ($response_text) {
+                return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
+            }
+            return true;
+        }
 
 
         return $this->getTelegramRepository()->replayMessage($this->chat_id, $this->chat_id);
@@ -81,6 +89,12 @@ class TelegramService extends BaseService
         logToMe('new_telegram   ' . $this->chat_id . '   ' . $this->errorMessage); // 新添加机器人的时候要打开 识别新的机器人
 
         return true;
+    }
+
+    private function checkFitBalance()
+    {
+        $arr = array_values(array_filter(explode(PHP_EOL, $this->message_text)));
+
     }
 
 

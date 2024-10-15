@@ -5,6 +5,7 @@ return [
     // 这些都是已知道的群
     'group' => [
         'callback' => '-1002277599317',// 自动回调
+        'fit_balance' => '-444',// 查询 fit balance余额
     ],
 
     'bots' => [
