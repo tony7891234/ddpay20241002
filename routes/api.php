@@ -17,3 +17,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::get('/getChatList/', 'TelegramController@getChatList');
+// 创建一个 web hook
+Route::get('/createWebHook/', 'TelegramController@createWebHook');
+// 发送信息
+//    Route::get('/sendMessage/', 'TelegramController@sendMessage');
+// 删除对话   https://xx/api/createWebHook
+Route::get('/removeWebHook/', 'TelegramController@removeWebHook');
+
+//接收发送给我的信息
+Route::post('/telegram/webhook/', 'TelegramController@ListenWebHook');
+
