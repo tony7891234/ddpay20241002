@@ -46,7 +46,7 @@ class T2Command extends BaseCommand
     private function t2()
     {
         $service = new FitService();
-        $check_time = 1;
+        $check_time = '2024-10-16 02:53:32';
         $response = $service->balance($check_time);
         dump($response);
     }

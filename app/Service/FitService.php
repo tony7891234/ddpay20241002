@@ -24,6 +24,7 @@ class FitService extends BaseService
 
         $mainResponseData = [];
         $responseData = $this->postRequestJsonForAuth('GetAccountEntryPaged', $requestParam);
+        dump($responseData);
         if ($responseData['Success'] === 'true') {
             $pixBalanceMap = [
                 'Bank' => self::ARR_API_PARAM['bankInfo']['Bank'],
