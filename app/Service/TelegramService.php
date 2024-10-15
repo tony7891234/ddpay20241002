@@ -94,8 +94,8 @@ class TelegramService extends BaseService
         $start_at = $arr[0];
         $end_at = $arr[1];
         $merchant_id = isset($arr[2]) ? $arr[2] : 0; // 商户ID
-        $start_at = strtotime(date('Y-m-d ') . $start_at);
-        $end_at = strtotime(date('Y-m-d ') . $end_at);
+        $start_at = strtotime($start_at);
+        $end_at = strtotime($end_at);
         if ($end_at - $start_at > 300) {
             return '时间间隔最多只能是5分钟';
         }
