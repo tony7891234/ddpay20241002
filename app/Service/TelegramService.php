@@ -99,7 +99,7 @@ class TelegramService extends BaseService
         if ($end_at - $start_at > 300) {
             return '时间间隔最多只能是5分钟';
         }
-//        date_default_timezone_set('PRC');
+        date_default_timezone_set('PRC');
 //        $query = RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
 //            ->where('create_time', '>=', $start_at)
 //            ->where('create_time', '<=', $end_at);
@@ -125,7 +125,7 @@ class TelegramService extends BaseService
         $query = RechargeOrder::where('create_time', '>=', $start_at)  // 22：56
         ->where('create_time', '<=', $end_at);
         if ($merchant_id) {
-            $query = $query->where('merchant_id', '=', $merchant_id);
+            $query = $query->where('merchantid', '=', $merchant_id);
         }
         $count = $query->count();
         return '执行完毕,总条数:' . $count . ' 开始时间' . formatTimeToString($start_at) . ' 结束时间:' . formatTimeToString($end_at) . ' 商户ID:' . $merchant_id;

@@ -25,7 +25,7 @@ class TestController extends ApiController
         $query = RechargeOrder::where('create_time', '>=', $start_at)  // 22：56
         ->where('create_time', '<=', $end_at);
         if ($merchant_id) {
-            $query = $query->where('merchant_id', '=', $merchant_id);
+            $query = $query->where('merchantid', '=', $merchant_id);
         }
         $count = $query->count();
         dd($count);
