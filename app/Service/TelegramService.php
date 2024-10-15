@@ -106,7 +106,7 @@ class TelegramService extends BaseService
         if ($merchantid) {
             $query = $query->where('merchantid', '=', $merchantid);
         }
-        $query->orderBy('order_id')->chunk(300, function ($list) {
+        $query->orderBy('order_id')->chunk(200, function ($list) {
             $list = $list->toArray();
             $response = [];
             foreach ($list as $item) {
