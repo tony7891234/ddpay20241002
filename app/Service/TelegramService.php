@@ -94,12 +94,12 @@ class TelegramService extends BaseService
         $start_at = $arr[0];
         $end_at = $arr[1];
         $merchantid = isset($arr[2]) ? $arr[2] : 0; // 商户ID
+        date_default_timezone_set('PRC');
         $start_at = strtotime(date($start_at));
         $end_at = strtotime(date($end_at));
         if ($end_at - $start_at > 300) {
             return '时间间隔最多只能是5分钟';
         }
-        date_default_timezone_set('PRC');
         $query = RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
             ->where('create_time', '>=', $start_at)
             ->where('create_time', '<=', $end_at);
