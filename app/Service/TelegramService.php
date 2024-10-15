@@ -87,7 +87,7 @@ class TelegramService extends BaseService
     private function callback()
     {
         //  使用空格做区分
-        $arr = array_values(array_filter(explode(" ", $this->message_text)));
+        $arr = array_values(array_filter(explode(PHP_EOL, $this->message_text)));
         if (count($arr) < 2) {
             return '格式有误';
         }
