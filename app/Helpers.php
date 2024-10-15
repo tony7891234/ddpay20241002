@@ -1,5 +1,51 @@
 <?php
 
+if (!function_exists('curlManyRequest')) {
+    /**
+     * 并发请求
+     * @param $allGames
+     */
+    function curlManyRequest($allGames)
+    {
+        //1 创建批处理cURL句柄
+        $chHandle = curl_multi_init();
+        $chArr = [];
+        //2.创建多个cURL资源
+        foreach ($allGames as $gameUrl) {
+            $chArr[$gameUrl] = curl_init();
+            curl_setopt($chArr[$gameUrl], CURLOPT_URL, $gameUrl);
+            curl_setopt($chArr[$gameUrl], CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($chArr[$gameUrl], CURLOPT_TIMEOUT, 10);
+            curl_setopt($chArr[$gameUrl], CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($chArr[$gameUrl], CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_multi_add_handle($chHandle, $chArr[$gameUrl]); //2 增加句柄
+        }
+
+        $active = null;
+        /**常量
+         * CURLM_CALL_MULTI_PERFORM==-1
+         * // CURLM_OK == 0
+         **/
+
+        do {
+            $mrc = curl_multi_exec($chHandle, $active); //3 执行批处理句柄
+        } while ($mrc == CURLM_CALL_MULTI_PERFORM); //4
+
+        while ($active && $mrc == CURLM_OK) {
+            if (curl_multi_select($chHandle) != CURLM_CALL_MULTI_PERFORM) {//$chHandle批处理中还有可执行的$ch句柄，curl_multi_select($chHandle) != -1程序退出阻塞状态。
+                do {
+                    $mrc = curl_multi_exec($chHandle, $active);//继续执行需要处理的$ch句柄。
+                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+            }
+        }
+
+        foreach ($chArr as $k => $ch) {
+            $result[$k] = curl_multi_getcontent($ch); //5 获取句柄的返回值,不需要
+            curl_multi_remove_handle($chHandle, $ch);//6 将$chHandle中的句柄移除
+        }
+        curl_multi_close($chHandle); //7 关闭全部句柄
+    }
+}
 if (!function_exists('curlPost')) {
     /**
      * @param $url

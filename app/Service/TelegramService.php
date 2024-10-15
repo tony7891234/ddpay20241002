@@ -3,6 +3,8 @@
 namespace App\Service;
 
 
+use App\Models\RechargeOrder;
+
 /**
  *  为了避免出现通讯异常，所有处理直接使用 try catch
  * Class TelegramService
@@ -63,9 +65,9 @@ class TelegramService extends BaseService
             return false; // 这条消息不发送给飞机群 所以是 false
         }
 
-        //  站内转账(上分)
-        if ($this->chat_id == config('telegram.group.transfer_in')) {
-            $response_text = $this->transferIn();
+        //  自动回调
+        if ($this->chat_id == config('telegram.group.callback')) {
+            $response_text = $this->callback();
             if ($response_text) {
                 return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
             }
@@ -81,5 +83,45 @@ class TelegramService extends BaseService
         return true;
     }
 
+
+    private function callback()
+    {
+        //  使用空格做区分
+        $arr = array_values(array_filter(explode(" ", $this->message_text)));
+        if (count($arr) != 2) {
+            return '格式有误';
+        }
+        $start_at = $arr[0];
+        $end_at = $arr[1];
+        $start_at = strtotime(date('Y-m-d ') . $start_at);
+        $end_at = strtotime(date('Y-m-d ') . $end_at);
+        if ($end_at - $start_at > 300) {
+            return '时间间隔最多只能是5分钟';
+        }
+        date_default_timezone_set('PRC');
+        RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
+            ->where('create_time', '>=', $start_at)
+            ->where('create_time', '<=', $end_at)
+            ->orderBy('order_id')->chunk(300, function ($list) {
+                $list = $list->toArray();
+                $response = [];
+                foreach ($list as $item) {
+                    $order_id = $item['order_id'];
+                    if ($item['inizt'] == 0) {
+                        //  收
+                        $url = 'https://hulinb.com/api/order/notify?order_id_index=' . $order_id;
+                    } else {
+                        $url = 'https://hulinb.com/api/df/notify?order_id_index=' . $order_id;
+                    }
+                    $response[] = $url;
+                }
+                curlManyRequest($response);
+            });
+
+        $count = RechargeOrder::where('create_time', '>=', $start_at)  // 22：56
+        ->where('create_time', '<=', $end_at)
+            ->count();
+        return '执行完毕,总条数:' . $count . ' 开始时间' . formatTimeToString($start_at) . ' 结束时间:' . formatTimeToString($end_at);
+    }
 
 }

@@ -1,13 +1,10 @@
 <?php
 
 return [
-    'user_check' => '-xx',
 
     // 这些都是已知道的群
     'group' => [
-
-        'urtNotice' => '-4186227418',// utr
-
+        'callback' => '-4561992198',// 自动回调
     ],
 
     'bots' => [
