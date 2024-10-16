@@ -81,7 +81,7 @@ class NotifyCommand extends BaseCommand
             'notifyurl',
             'inizt'
         ])
-            ->where('notify_status', 0)
+            ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->orderBy('order_id', 'asc')
