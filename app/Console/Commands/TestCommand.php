@@ -52,7 +52,7 @@ class TestCommand extends BaseCommand
         $start_at = time();
 
         // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
-        $count = RechargeOrder::whereIn('order_id', [124853410,124880144,124797359])
+        $count = RechargeOrder::whereIn('order_id', [124853410, 124880144, 124797359])
             ->count();
         $end_at = time();
 
@@ -77,8 +77,7 @@ class TestCommand extends BaseCommand
             'notify_status',
             'notifyurl',
             'inizt'
-        ])->whereIn('orderid', ['tx_1062_20241017112548uQCbX','013117510028734697'])
-
+        ])->whereIn('orderid', ['tx_1062_20241017112548uQCbX', '013117510028734697'])
             ->orderBy('order_id', 'asc')
             ->limit(500)
             ->get();
@@ -161,6 +160,9 @@ class TestCommand extends BaseCommand
      */
     private function curlPostMax($allGames)
     {
+        $start_at = time();
+        dump('start  '.getTimeString());
+
         //1 创建批处理cURL句柄
         $chHandle = curl_multi_init();
         $chArr = [];
@@ -182,7 +184,7 @@ class TestCommand extends BaseCommand
                 'Connection: keep-alive'
             ]);
 
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 20);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_multi_add_handle($chHandle, $ch); //2 增加句柄
@@ -208,7 +210,7 @@ class TestCommand extends BaseCommand
             $inizt = $ch_data['inizt'];
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // 获取 HTTP 状态码
             if ($httpCode != 200) {
-                dump($httpCode.'---'.$order_id);
+                dump($httpCode . '---' . $order_id);
                 $this->updateNotifyNum($order_id);
                 $file = ('no_200_' . date('Ymd') . '.txt');
                 $log_data = '---' . $order_id . '--' . $httpCode;
@@ -251,6 +253,10 @@ class TestCommand extends BaseCommand
             curl_close($ch);
         }
         curl_multi_close($chHandle); //7 关闭全部句柄
+
+        dump('end  '.getTimeString());
+
+        dump('diff  '.(time() - $start_at));
     }
 
 

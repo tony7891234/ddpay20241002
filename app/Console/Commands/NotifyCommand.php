@@ -50,9 +50,9 @@ class NotifyCommand extends BaseCommand
     public function handle()
     {
         dump('restart ' . (getTimeString()) . '  ');
-//        while (true) {
-        $this->notify();
-//        }
+        while (true) {
+            $this->notify();
+        }
 
         return true;
     }
