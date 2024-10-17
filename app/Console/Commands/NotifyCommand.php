@@ -54,7 +54,7 @@ class NotifyCommand extends BaseCommand
         $start_at = time();
 
         // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
-        $create_time = time() - 3600;
+        $create_time = time() - 3600 * 2;
         $count = RechargeOrder::where('create_time', '>', $create_time)
             ->where('notify_status', 0)
             ->where('status', '<', 2)

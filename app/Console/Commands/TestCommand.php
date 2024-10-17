@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-
-use App\Models\FitModel;
+use App\Models\MerchantModel;
+use App\Models\RechargeOrder;
 
 /**
  * Class Sync
@@ -12,6 +12,9 @@ use App\Models\FitModel;
 class TestCommand extends BaseCommand
 {
 
+    const MAX_TIME = 5;// 超时多少秒，需要记录 log
+    const FILE_NAME_LONG_TIME = 'long_'; // 超时5S没信息的
+    const FILE_NAME_RESPONSE_NULL = 'nothing_'; // 什么否没有返回的
 
     /**
      * @var string
@@ -22,7 +25,7 @@ class TestCommand extends BaseCommand
     /**
      * @var string
      */
-    protected $description = '同步数据';
+    protected $description = '回调';
 
     /**
      * KG_Init constructor.
@@ -38,145 +41,285 @@ class TestCommand extends BaseCommand
      */
     public function handle()
     {
-        $response = $this->getData();
-        dd($response);
+        dump('restart ' . (getTimeString()) . '  ');
+        $this->notify();
 
         return true;
     }
 
-
-    private function getData()
+    public function notify()
     {
-        $response = $this->balance(1);
+        $start_at = time();
 
-        dd($response);
+        // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
+        $count = RechargeOrder::whereIn('order_id', [124853410,124880144,124797359])
+            ->count();
+        $end_at = time();
 
-    }
+        dump((getTimeString()) . '  ' . $count . '  diff:' . ($end_at - $start_at));
 
-    public function balance($page = 2)
-    {
-        $requestParam = [
-            'Method' => 'GetAccountEntryPaged',
-            'PartnerId' => $this->apiParam['partnerId'],
-            'BusinessUnitId' => $this->apiParam['businessUnitId'],
-            'TaxNumber' => $this->apiParam['taxNumberRaw'],
-            'StartDate' => '2024/10/10',
-            'EndDate' => '2024/10/11',
-            "DateTime" => "2022-10-14T00:00:00",
-            'PageSize' => 1,
-            'PageIndex' => 1,
-            'OnlyBalance' => 'true',
-        ];
-//       $requestParam = [
-//            'Method' => 'GetAccountEntryPaged',
-//            'PartnerId' => $this->apiParam['partnerId'],
-//            'BusinessUnitId' => $this->apiParam['businessUnitId'],
-//            'TaxNumber' => $this->apiParam['taxNumberRaw'],
-//            'StartDate' => '2024/04/20',
-//            'EndDate' => '2024/05/20',
-//            'PageSize' => 0,
-//            'PageIndex' => 10,
-//            'OnlyBalance' => 'true',
-//        ];
+        /**
+         * @var $list RechargeOrder[]
+         */
+        /*********************** 以下是正式，上面是测试 ********************************/
+        $list = RechargeOrder::select([
+            'amount',
+            'order_id',
+            'sysorderid',
+            'merchantid',
+            'update_time',
+            'completetime',
+            'notify_num',
+            'remarks',
+            'realname',
+            'orderid',
+            'status',
+            'notify_status',
+            'notifyurl',
+            'inizt'
+        ])->whereIn('order_id', [124853410,124880144,124797359])
 
-        $responseData = $this->postRequestJsonForAuth('GetAccountEntryPaged', $requestParam);
-        dd($responseData);
+            ->orderBy('order_id', 'asc')
+            ->limit(500)
+            ->get();
 
+        // 商户ID列表
+        $merchant_list = MerchantModel::pluck('secret', 'merchant_id');
+        $urlsWithParams = [];
+        $id_arr = [];
+        foreach ($list as $k => $orderInfo) {
+            dump($orderInfo->orderid);
+            //  检查回调状态
+            if ($orderInfo->status > 1) {
+                dump(11111);
+                $this->updateNotifyStatusToFail($orderInfo->getId());
+                continue;
+            }
+            // 检查回调地址
+            if (filter_var($orderInfo->notifyurl, FILTER_VALIDATE_URL) == false) {
+                dump(222);
 
-        if ($responseData['Success'] === 'true') {
+                $this->updateNotifyStatusToFail($orderInfo->getId());
+                continue;
+            }
+            if (!isset($merchant_list[$orderInfo->merchantid])) {
+                dump(333);
 
-            $pixBalanceMap = [
-                'Bank' => $this->apiParam['bankInfo']['Bank'],
-                'BankBranch' => $this->apiParam['bankInfo']['BankBranch'],
-                'BankAccount' => $this->apiParam['taxNumberRaw'],
-                'BankAccountDigit' => 1,
+                $this->updateNotifyStatusToFail($orderInfo->getId());
+                continue; // 商户ID不存在
+            }
+            $merchant_secret = $merchant_list[$orderInfo->merchantid];
+            $data = [
+                'OrderID' => $orderInfo->orderid,
+                'SysOrderID' => $orderInfo->sysorderid,
+                'MerchantID' => $orderInfo->merchantid,
+                'CompleteTime' => date('YmdHis', $orderInfo->update_time),
+                'Amount' => $orderInfo->amount,
+                'Status' => $orderInfo->status
             ];
-            $requestParam = array_merge($requestParam, $pixBalanceMap);
-            $mainResponseData = $this->postRequestJsonForAuth('GetAccountEntryPaged', $requestParam);
-            return $mainResponseData;
-        } else {
-            return [
-                'code' => 500,
-                'status' => 'error',
-                'msg' => $responseData['Message'],
+            ksort($data);
+
+            $data['Sign'] = strtoupper($this->newSign($data, $merchant_secret));
+            $data['Remarks'] = $orderInfo->status == RechargeOrder::STATUS_SUCCESS ? $orderInfo->remarks : $orderInfo->realname;
+            $notify_url = $orderInfo->notifyurl;
+            // 添加并发回调数据
+            $urlsWithParams[$orderInfo->order_id] = [
+                'request_param' => $data,
+                'notify_url' => $notify_url,
+                'inizt' => $orderInfo->inizt,
             ];
+            $id_arr[] = $orderInfo->getId();
         }
+
+
+        if ($urlsWithParams) {
+            dump($urlsWithParams);
+            $this->curlPostMax($urlsWithParams);
+        }
+
     }
 
-    protected function postRequestJsonForAuth($path, $data)
+
+    private function newSign($params, $secret)
     {
-        $url = $this->apiParam['baseUrl'] . $path;
+        if (!empty($params)) {
+            $p = ksort($params);
+            if ($p) {
+                $str = '';
+                foreach ($params as $k => $v) {
+                    $str .= $k . '=' . $v . '&';
+                }
+            }
+            $strs = rtrim($str, '&') . $secret;
+            return md5($strs);
+        }
+        return false;
+    }
 
-        $startTime = microtime(true);
+    /**
+     * @param $allGames
+     */
+    private function curlPostMax($allGames)
+    {
+        //1 创建批处理cURL句柄
+        $chHandle = curl_multi_init();
+        $chArr = [];
+        //2.创建多个cURL资源
+        foreach ($allGames as $order_id => $params) {
+            $notify_url = $params['notify_url'];
+            $request_param = $params['request_param'];
+            $inizt = $params['inizt'];
+            $startTime = microtime(true);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $notify_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true); // 设置为 POST 请求
+            curl_setopt($ch, CURLOPT_POSTFIELDS, ($request_param)); // 设置 POST 数据
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36',
+                'Accept: application/json, text/plain, */*',
+                'Accept-Language: en-US,en;q=0.9',
+                'Connection: keep-alive'
+            ]);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type:application/json',
-            'authorization:Basic ' . base64_encode($this->apiParam['username'] . ':' . $this->apiParam['password']),
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_multi_add_handle($chHandle, $ch); //2 增加句柄
+            $chArr[$order_id] = [
+                'ch' => $ch,
+                'request_param' => $request_param,
+                'notify_url' => $notify_url,
+                'inizt' => $inizt,
+                'startTime' => $startTime,
+            ]; // 保存句柄以便后续使用
+        }
+
+        $running = null;
+        do {
+            curl_multi_exec($chHandle, $running); //3 执行批处理句柄
+            curl_multi_select($chHandle); // 等待活动请求完成  可以不要
+        } while ($running > 0);
+
+        foreach ($chArr as $order_id => $ch_data) {
+            $ch = $ch_data['ch'];
+            $request_param = $ch_data['request_param'];
+            $notify_url = $ch_data['notify_url'];
+            $inizt = $ch_data['inizt'];
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // 获取 HTTP 状态码
+            if ($httpCode != 200) {
+                dump($httpCode.'---'.$order_id);
+                $this->updateNotifyNum($order_id);
+                $file = ('no_200_' . date('Ymd') . '.txt');
+                $log_data = '---' . $order_id . '--' . $httpCode;
+//                logToPublicLog($log_data, $file); // 记录文件
+                continue; // 这次请求没成功，不做处理
+
+            }
+            $result = curl_multi_getcontent($ch); //5 获取句柄的返回值
+            $endTime = microtime(true); // 记录结束时间
+            $result = strtolower($result);
+            if (in_array($result, ['success', 'ok'])) {
+                $this->updateNotifyToSuccess($order_id);
+            } else {
+                if ($result) {
+                    $this->updateNotifyToFail($order_id);
+                } else {
+                    $file = (self::FILE_NAME_RESPONSE_NULL . date('Ymd') . '.txt');
+                    //  什么都没返回
+                    logToPublicLog($order_id . '--', $file); // 记录文件
+                }
+            }
+
+            $log_data = [
+                'httpCode' => $httpCode,
+                'diff_time' => $endTime - $ch_data['startTime'],
+                'result' => $result,
+                'request' => $request_param,
+                'notify' => $notify_url,
+            ];
+
+
+            // https://test107.hulinb.com/logs_me/2024-10/df_notify20241012.txt
+            if ($inizt == RechargeOrder::INIZT_RECHARGE) {
+                $file = ('ds_notify' . date('Ymd') . '.txt');
+            } else {
+                $file = ('df_notify' . date('Ymd') . '.txt');
+            }
+            dump($log_data);
+            curl_multi_remove_handle($chHandle, $ch);//6 将$chHandle中的句柄移除
+            curl_close($ch);
+        }
+        curl_multi_close($chHandle); //7 关闭全部句柄
+    }
+
+
+    /**
+     * 更新成 回调失败状态
+     * @param int $order_id
+     * @return bool
+     */
+    private function updateNotifyToFail($order_id)
+    {
+//        dump($order_id . '--updateNotifyToFail');
+
+        RechargeOrder::where('order_id', '=', $order_id)->update([
+            'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
+            'update_time' => time(),
+            'completetime' => time(),
+            'notify_num' => \DB::raw('notify_num + 1'),
         ]);
-        $result = curl_exec($ch);
-
-        $endTime = microtime(true);
-        if ($result === false) {
-            $curlInfo = curl_getinfo($ch);
-
-            return false;
-        }
-        curl_close($ch);
-        $resultFinal = json_decode($result, true);
-        $endTime = microtime(true);
-
-        return $resultFinal;
+        return true;
     }
 
+    /**
+     *  这个是没有地址  或者商户的情况，只改状态
+     * @param int $order_id
+     * @return bool
+     */
+    private function updateNotifyStatusToFail($order_id)
+    {
+        return true;
+//        dump($order_id . '--updateNotifyStatusToFail');
+        RechargeOrder::where('order_id', '=', $order_id)->update([
+            'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
+        ]);
+        return true;
+    }
 
-    var $apiParam = [
-        'baseUrl' => 'https://apiv2.payments.fitbank.com.br/main/execute/',
+    /**
+     *   更新次数  400的
+     * @param int $order_id
+     * @return bool
+     */
+    private function updateNotifyNum($order_id)
+    {
+//        return true;
+        RechargeOrder::where('order_id', '=', $order_id)->update([
+            'update_time' => time(),
+            'completetime' => time(),
+            'notify_num' => \DB::raw('notify_num + 1'),
+        ]);
+        return true;
+    }
 
-        // 旧的
-        // 'username'       => 'fb66c3d2-a877-40df-ad2c-38863a21b425',
-        // 'password'       => '5d2385b7-6140-4bfd-aa1c-3c2590601992',
-        // 新的
-        'username' => 'b58a5700-68dd-4ca3-8820-b0800d8fed87',
-        'password' => '0b724ca3-c523-4805-882b-366af67e0d7a',
+    /**
+     * 更新成 回调失败状态
+     * @param int $order_id
+     * @return bool
+     */
+    private function updateNotifyToSuccess($order_id)
+    {
+        return true;
 
-
-        'partnerId' => 1532,
-        'businessUnitId' => 1599,
-        'taxNumber' => '45.707.166/0001-80',
-        'pixKey' => '0dc290b3-44b5-4e2c-921c-92216f01e9b7',
-        'taxNumberRaw' => '45707166000180',
-        'bankInfo' => [
-            "Bank" => "450",
-            "BankBranch" => "0001",
-            "BankAccount" => "5005600098",
-            "BankAccountDigit" => "8",
-        ],
-        'address' => [
-            'AddressLine' => 'Av. Cidade Jardim, 400',
-            'ZipCode' => '01454901',
-            'Neighborhood' => 'Jardim Paulistano',
-            'CityCode' => '011',
-            'CityName' => 'São PAULO',
-            'AddressType' => 1,
-            'Country' => 'Brasil',
-            'Complement' => 'Apto 01',
-            'Reference' => 'Próximo ao mercado',
-        ],
-        'transferCode' => [
-            'CPF' => '0',
-            'PHONE' => '3',
-            'EMAIL' => '2',
-            'EVP' => '4',
-            'CNPJ' => '1',
-        ],
-    ];
+        RechargeOrder::where('order_id', '=', $order_id)->update([
+            'notify_status' => RechargeOrder::NOTIFY_STATUS_SUCCESS,
+            'update_time' => time(),
+            'completetime' => time(),
+            'notify_num' => \DB::raw('notify_num + 1'),
+        ]);
+        return true;
+    }
 
 }
+
