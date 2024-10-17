@@ -6,6 +6,7 @@ return [
     'group' => [
         'callback' => '-1002277599317',// 自动回调
         'fit_balance' => '-4553922256',// 查询 fit balance余额
+        'callback_count' => '-4574102230',// 回掉条数
     ],
 
     'bots' => [
