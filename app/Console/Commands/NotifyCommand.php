@@ -68,9 +68,9 @@ class NotifyCommand extends BaseCommand
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->count();
-        $this->end_at = time();
+//        $this->end_at = time();
 
-        dump((getTimeString()) . '  ' . $this->count_order . '  diff:' . ($this->end_at - $this->start_at));
+//        dump((getTimeString()) . '  ' . $this->count_order . '  diff:' . ($this->end_at - $this->start_at));
 //        if ($this->count_order < 50) { // 小于50就等待下一组
 //            sleep(1); // 没有数据，休息1S
 //            return true;
@@ -101,7 +101,7 @@ class NotifyCommand extends BaseCommand
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->orderBy('order_id', 'asc')
-            ->limit(2)
+            ->limit(500)
             ->get();
 
         // 商户ID列表
@@ -109,7 +109,7 @@ class NotifyCommand extends BaseCommand
         $urlsWithParams = [];
         $id_arr = [];
         foreach ($list as $k => $orderInfo) {
-            dump($orderInfo->orderid);
+//            dump($orderInfo->orderid);
             //  检查回调状态
             if ($orderInfo->status > 1) {
                 $this->updateNotifyStatusToFail($orderInfo->getId());
@@ -262,8 +262,8 @@ class NotifyCommand extends BaseCommand
 
         $current_time = getTimeString();
         $startTimeTmp = date('H:i:s', $this->start_at);
-        $endTimeTmp = date('H:i:s', $this->end_at);
-        $diff_time = ($this->end_at - $this->start_at);
+        $endTimeTmp = date('H:i:s', time());
+        $diff_time = (time() - $this->start_at);
         $tgMessage = <<<MG
 执行时间：{$current_time}\r\n
 总单数：{$this->count_order} \r\n
