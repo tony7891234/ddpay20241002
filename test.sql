@@ -98,8 +98,8 @@ select   order_id, create_time from   cd_order  where   notify_status=0  and sta
 select   order_id,orderid,notify_num,notify_status,inizt,merchantid,create_time   from   cd_order  where
  notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 30;
 
-select    count(*)   from   cd_order  where
- notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 10;
+select    count(*)   from   cd_order  where  create_time>1729151644 and    notify_status=0  and status<2  and  notify_num=0  ;
+select    *  from   cd_order  where   create_time>1729151644 and    status<2  and  notify_status=0   and  notify_num=0   order by order_id asc    limit 10;
 
 
 select  amount,order_id,update_time,completetime,notify_num,remarks,realname,merchantid,orderid,sysorderid,status,notify_status,notifyurl

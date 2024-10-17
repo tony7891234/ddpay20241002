@@ -51,13 +51,19 @@ class NotifyCommand extends BaseCommand
 
     public function notify()
     {
+        $start_at = time();
 
-        $count = RechargeOrder::where('notify_status', 0)
+        // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
+        $create_time = time() - 3600;
+        $count = RechargeOrder::where('create_time', '>', $create_time)
+            ->where('notify_status', 0)
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->count();
-        dump(getTimeString() . '  ' . $count);
-        if ($count == 0) {
+        $end_at = time();
+
+        dump(getTimeString() . '  ' . $count . '  diff:' . $end_at - $start_at);
+        if ($count < 50) { // 小于50就等待下一组
             sleep(1); // 没有数据，休息1S
             return true;
         }
@@ -87,12 +93,6 @@ class NotifyCommand extends BaseCommand
             ->orderBy('order_id', 'asc')
             ->limit(500)
             ->get();
-
-
-//        if ($list->isEmpty()) {
-//            sleep(1); // 没有数据，休息1S
-//            return true;
-//        }
 
         // 商户ID列表
         $merchant_list = MerchantModel::pluck('secret', 'merchant_id');
