@@ -41,7 +41,7 @@ class NotifyCommand extends BaseCommand
      */
     public function handle()
     {
-        dump('restart '.getTimeString().'  ');
+        dump('restart ' . (getTimeString()) . '  ');
         while (true) {
             $this->notify();
         }
@@ -62,7 +62,7 @@ class NotifyCommand extends BaseCommand
             ->count();
         $end_at = time();
 
-        dump(getTimeString() . '  ' . $count . '  diff:' . $end_at - $start_at);
+        dump((getTimeString()) . '  ' . $count . '  diff:' . $end_at - $start_at);
         if ($count < 50) { // 小于50就等待下一组
             sleep(1); // 没有数据，休息1S
             return true;
