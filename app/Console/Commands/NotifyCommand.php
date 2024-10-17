@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\MerchantModel;
 use App\Models\RechargeOrder;
+use App\Traits\RepositoryTrait;
 
 /**
  * Class Sync
@@ -11,6 +12,8 @@ use App\Models\RechargeOrder;
  */
 class NotifyCommand extends BaseCommand
 {
+
+    use RepositoryTrait;
 
     const MAX_TIME = 5;// 超时多少秒，需要记录 log
     const FILE_NAME_LONG_TIME = 'long_'; // 超时5S没信息的
@@ -27,6 +30,11 @@ class NotifyCommand extends BaseCommand
      */
     protected $description = '回调';
 
+    private $count_order = 0; // 总条数
+
+    private $start_at = 0;
+    private $end_at = 0;
+
     /**
      * KG_Init constructor.
      */
@@ -42,31 +50,32 @@ class NotifyCommand extends BaseCommand
     public function handle()
     {
         dump('restart ' . (getTimeString()) . '  ');
-        while (true) {
-            $this->notify();
-        }
+//        while (true) {
+        $this->notify();
+//        }
 
         return true;
     }
 
     public function notify()
     {
-        $start_at = time();
+        $this->start_at = time();
 
         // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
         $create_time = time() - 3600;
-        $count = RechargeOrder::where('create_time', '>', $create_time)
-            ->where('notify_status', 0)
+        $this->count_order = RechargeOrder::where('create_time', '>', $create_time)
+            ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->count();
-        $end_at = time();
+        $this->end_at = time();
 
-        dump((getTimeString()) . '  ' . $count . '  diff:' . ($end_at - $start_at));
-        if ($count < 50) { // 小于50就等待下一组
-            sleep(1); // 没有数据，休息1S
-            return true;
-        }
+        dump((getTimeString()) . '  ' . $this->count_order . '  diff:' . ($this->end_at - $this->start_at));
+//        if ($this->count_order < 50) { // 小于50就等待下一组
+//            sleep(1); // 没有数据，休息1S
+//            return true;
+//        }
+
         /**
          * @var $list RechargeOrder[]
          */
@@ -91,7 +100,7 @@ class NotifyCommand extends BaseCommand
             ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
-            ->orderBy('order_id', 'desc')
+            ->orderBy('order_id', 'asc')
             ->limit(2)
             ->get();
 
@@ -100,6 +109,7 @@ class NotifyCommand extends BaseCommand
         $urlsWithParams = [];
         $id_arr = [];
         foreach ($list as $k => $orderInfo) {
+            dump($orderInfo->orderid);
             //  检查回调状态
             if ($orderInfo->status > 1) {
                 $this->updateNotifyStatusToFail($orderInfo->getId());
@@ -143,22 +153,6 @@ class NotifyCommand extends BaseCommand
 
     }
 
-
-    private function newSign($params, $secret)
-    {
-        if (!empty($params)) {
-            $p = ksort($params);
-            if ($p) {
-                $str = '';
-                foreach ($params as $k => $v) {
-                    $str .= $k . '=' . $v . '&';
-                }
-            }
-            $strs = rtrim($str, '&') . $secret;
-            return md5($strs);
-        }
-        return false;
-    }
 
     /**
      * @param $allGames
@@ -205,6 +199,7 @@ class NotifyCommand extends BaseCommand
             curl_multi_select($chHandle); // 等待活动请求完成  可以不要
         } while ($running > 0);
 
+        $response_success = $response_error = $response_null = $response_http_no_200 = 0;
         foreach ($chArr as $order_id => $ch_data) {
             $ch = $ch_data['ch'];
             $request_param = $ch_data['request_param'];
@@ -212,6 +207,7 @@ class NotifyCommand extends BaseCommand
             $inizt = $ch_data['inizt'];
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // 获取 HTTP 状态码
             if ($httpCode != 200) {
+                $response_http_no_200++;
                 $this->updateNotifyNum($order_id);
                 $file = ('no_200_' . date('Ymd') . '.txt');
                 $log_data = '---' . $order_id . '--' . $httpCode;
@@ -223,11 +219,14 @@ class NotifyCommand extends BaseCommand
             $endTime = microtime(true); // 记录结束时间
             $result = strtolower($result);
             if (in_array($result, ['success', 'ok'])) {
+                $response_success++;
                 $this->updateNotifyToSuccess($order_id);
             } else {
                 if ($result) {
+                    $response_error++;
                     $this->updateNotifyToFail($order_id);
                 } else {
+                    $response_null++;
                     $file = (self::FILE_NAME_RESPONSE_NULL . date('Ymd') . '.txt');
                     //  什么都没返回
                     logToPublicLog($order_id . '--', $file); // 记录文件
@@ -259,6 +258,27 @@ class NotifyCommand extends BaseCommand
             curl_close($ch);
         }
         curl_multi_close($chHandle); //7 关闭全部句柄
+
+
+        $current_time = getTimeString();
+        $startTimeTmp = date('H:i:s', $this->start_at);
+        $endTimeTmp = date('H:i:s', $this->end_at);
+        $diff_time = ($this->end_at - $this->start_at);
+        $tgMessage = <<<MG
+执行时间：{$current_time}\r\n
+总单数：{$this->count_order} \r\n
+成功条数：{$response_success} \r\n
+失败条数：{$response_error} \r\n
+空值条数：{$response_null} \r\n
+HTTP非200条数：{$response_http_no_200} \r\n
+执行时间：{$diff_time} \r\n
+执行开始时间：{$startTimeTmp} \r\n
+执行结束时间: {$endTimeTmp}
+\r\n
+MG;
+        $this->getTelegramRepository()->replayMessage(config('telegram.group.callback_count'), $tgMessage);
+
+
     }
 
 
@@ -323,6 +343,27 @@ class NotifyCommand extends BaseCommand
             'notify_num' => \DB::raw('notify_num + 1'),
         ]);
         return true;
+    }
+
+    /**
+     * @param $params
+     * @param $secret
+     * @return bool|string
+     */
+    private function newSign($params, $secret)
+    {
+        if (!empty($params)) {
+            $p = ksort($params);
+            if ($p) {
+                $str = '';
+                foreach ($params as $k => $v) {
+                    $str .= $k . '=' . $v . '&';
+                }
+            }
+            $strs = rtrim($str, '&') . $secret;
+            return md5($strs);
+        }
+        return false;
     }
 
 }

@@ -131,3 +131,4 @@ select    notify_status,notify_num ,status   from   cd_order   where   orderid='
 select    notify_status,notify_num ,status   from   cd_order   where   orderid='2117470364646809'  ;
 select    notify_status,notify_num ,status   from   cd_order   where   orderid='2117470364646809'  ;
 select    notify_status,notify_num ,status   from   cd_order   where   order_id in (124853410,124880144,124797359)  ;
+select   orderid, notify_status,notify_num ,status   from   cd_order   where   orderid in ('2117510044109845','2117510121443165','tx_1062_20241017112538NnfjX','tx_1087_20241017112546BBLhV')  ;

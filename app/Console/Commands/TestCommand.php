@@ -77,7 +77,7 @@ class TestCommand extends BaseCommand
             'notify_status',
             'notifyurl',
             'inizt'
-        ])->whereIn('order_id', [124853410,124880144,124797359])
+        ])->whereIn('orderid', ['tx_1062_20241017112548uQCbX','013117510028734697'])
 
             ->orderBy('order_id', 'asc')
             ->limit(500)
@@ -279,7 +279,7 @@ class TestCommand extends BaseCommand
      */
     private function updateNotifyStatusToFail($order_id)
     {
-        return true;
+//        return true;
 //        dump($order_id . '--updateNotifyStatusToFail');
         RechargeOrder::where('order_id', '=', $order_id)->update([
             'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
@@ -310,7 +310,7 @@ class TestCommand extends BaseCommand
      */
     private function updateNotifyToSuccess($order_id)
     {
-        return true;
+//        return true;
 
         RechargeOrder::where('order_id', '=', $order_id)->update([
             'notify_status' => RechargeOrder::NOTIFY_STATUS_SUCCESS,
