@@ -180,7 +180,7 @@ class NotifyCommand extends BaseCommand
                 'Connection: keep-alive'
             ]);
 
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 6);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_multi_add_handle($chHandle, $ch); //2 增加句柄
