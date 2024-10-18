@@ -33,6 +33,7 @@ class NotifyCommand extends BaseCommand
     private $count_order = 0; // 总条数
 
     private $start_at = 0;
+    private $curl_start = 0;
     private $end_at = 0;
 
     /**
@@ -159,6 +160,7 @@ class NotifyCommand extends BaseCommand
      */
     private function curlPostMax($allGames)
     {
+        $this->curl_start = time();
         //1 创建批处理cURL句柄
         $chHandle = curl_multi_init();
         $chArr = [];
@@ -262,6 +264,7 @@ class NotifyCommand extends BaseCommand
 
         $current_time = getTimeString();
         $startTimeTmp = date('H:i:s', $this->start_at);
+        $curl_start = date('H:i:s', $this->curl_start);
         $endTimeTmp = date('H:i:s', time());
         $diff_time = (time() - $this->start_at);
         $tgMessage = <<<MG
@@ -273,6 +276,7 @@ class NotifyCommand extends BaseCommand
 HTTP非200条数：{$response_http_no_200} \r\n
 执行时间：{$diff_time} \r\n
 执行开始时间：{$startTimeTmp} \r\n
+curl开始时间：{$curl_start} \r\n
 执行结束时间: {$endTimeTmp}
 \r\n
 MG;
