@@ -63,7 +63,7 @@ class NotifyCommand extends BaseCommand
         $this->start_at = time();
 
         // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
-        $create_time = time() - 3600;
+        $create_time = time() - 1600;
         $this->count_order = RechargeOrder::where('create_time', '>', $create_time)
             ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
             ->where('status', '<', 2)
@@ -72,10 +72,10 @@ class NotifyCommand extends BaseCommand
 //        $this->end_at = time();
 
 //        dump((getTimeString()) . '  ' . $this->count_order . '  diff:' . ($this->end_at - $this->start_at));
-        if ($this->count_order < 30) { // 小于50就等待下一组
-            sleep(2); // 没有数据，休息1S
-            return true;
-        }
+//        if ($this->count_order < 30) { // 小于50就等待下一组
+//            sleep(2); // 没有数据，休息1S
+//            return true;
+//        }
 
         /**
          * @var $list RechargeOrder[]
