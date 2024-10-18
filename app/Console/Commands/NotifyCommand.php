@@ -53,6 +53,8 @@ class NotifyCommand extends BaseCommand
         dump('restart ' . (getTimeString()) . '  ');
         while (true) {
             $this->notify();
+            
+            sleep(1);
         }
 
         return true;
@@ -76,7 +78,7 @@ class NotifyCommand extends BaseCommand
 //            sleep(1); // 没有数据，休息1S
 //        }
 
-        
+
         /**
          * @var $list RechargeOrder[]
          */
