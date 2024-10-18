@@ -102,7 +102,7 @@ class NotifyCommand extends BaseCommand
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->orderBy('order_id', 'asc')
-            ->limit(500)
+            ->limit(800)
             ->get();
 
         // 商户ID列表
