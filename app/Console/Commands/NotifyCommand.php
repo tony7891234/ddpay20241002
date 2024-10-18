@@ -105,7 +105,7 @@ class NotifyCommand extends BaseCommand
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->orderBy('order_id', 'asc')
-            ->limit(1300)
+            ->limit(1000)
             ->get();
 
         $this->sql_finished = time(); // sql 结束时间
