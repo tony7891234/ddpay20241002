@@ -69,13 +69,14 @@ class NotifyCommand extends BaseCommand
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->count();
-//        $this->end_at = time();
+        $this->end_at = time();
 
         dump((getTimeString()) . '  ' . $this->count_order . '  diff:' . ($this->end_at - $this->start_at));
-        if ($this->count_order < 30) { // 小于50就等待下一组
-            sleep(1); // 没有数据，休息1S
-        }
+//        if ($this->count_order < 30) { // 小于50就等待下一组
+//            sleep(1); // 没有数据，休息1S
+//        }
 
+        
         /**
          * @var $list RechargeOrder[]
          */
