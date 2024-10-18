@@ -53,7 +53,7 @@ class NotifyCommand extends BaseCommand
         dump('restart ' . (getTimeString()) . '  ');
         while (true) {
             $this->notify();
-            
+
             sleep(1);
         }
 
@@ -66,11 +66,11 @@ class NotifyCommand extends BaseCommand
 
         // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
         $create_time = time() - 1600;
-        $this->count_order = RechargeOrder::where('create_time', '>', $create_time)
-            ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
-            ->where('status', '<', 2)
-            ->where('notify_num', '=', 0)
-            ->count();
+//        $this->count_order = RechargeOrder::where('create_time', '>', $create_time)
+//            ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
+//            ->where('status', '<', 2)
+//            ->where('notify_num', '=', 0)
+//            ->count();
         $this->end_at = time();
 
         dump((getTimeString()) . '  ' . $this->count_order . '  diff:' . ($this->end_at - $this->start_at));
@@ -111,7 +111,9 @@ class NotifyCommand extends BaseCommand
         $merchant_list = MerchantModel::pluck('secret', 'merchant_id');
         $urlsWithParams = [];
         $id_arr = [];
+        $this->count_order = 0;
         foreach ($list as $k => $orderInfo) {
+            $this->count_order++;
 //            dump($orderInfo->orderid);
             //  检查回调状态
             if ($orderInfo->status > 1) {
