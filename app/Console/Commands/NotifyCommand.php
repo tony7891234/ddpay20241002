@@ -282,8 +282,8 @@ class NotifyCommand extends BaseCommand
 空值条数：{$response_null} \r\n
 HTTP非200条数：{$response_http_no_200} \r\n
 执行时间：{$diff_time} \r\n
-sql结束时间：{$sql_finished} \r\n
 执行开始时间：{$startTimeTmp} \r\n
+sql结束时间：{$sql_finished} \r\n
 curl开始时间：{$curl_start} \r\n
 执行结束时间: {$endTimeTmp}
 \r\n
