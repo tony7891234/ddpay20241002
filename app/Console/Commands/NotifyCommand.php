@@ -221,13 +221,13 @@ class NotifyCommand extends BaseCommand
                 $log_data = '---' . $order_id . '--' . $httpCode;
                 logToPublicLog($log_data, $file); // 记录文件
 
-                if ($inizt == 0) {
-                    //  收
-                    $url = 'https://hulinb.com/api/order/notify?order_id_index=' . $order_id;
-                } else {
-                    $url = 'https://hulinb.com/api/df/notify?order_id_index=' . $order_id;
-                }
-                file_get_contents($url);
+//                if ($inizt == 0) {
+//                    //  收
+//                    $url = 'https://hulinb.com/api/order/notify?order_id_index=' . $order_id;
+//                } else {
+//                    $url = 'https://hulinb.com/api/df/notify?order_id_index=' . $order_id;
+//                }
+//                file_get_contents($url);
 
                 continue; // 这次请求没成功，不做处理
 
