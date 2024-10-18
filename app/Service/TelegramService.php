@@ -110,7 +110,8 @@ class TelegramService extends BaseService
         if (count($arr) < 2) {
             return '格式有误';
         }
-        return 'stop';
+//        return 'stop';
+        
         $start_at = $arr[0];
         $end_at = $arr[1];
         $merchantid = isset($arr[2]) ? $arr[2] : 0; // 商户ID
