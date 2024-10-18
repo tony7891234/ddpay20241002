@@ -34,6 +34,7 @@ class NotifyCommand extends BaseCommand
 
     private $start_at = 0;
     private $curl_start = 0;
+    private $sql_finished = 0;
     private $end_at = 0;
 
     /**
@@ -107,6 +108,7 @@ class NotifyCommand extends BaseCommand
             ->limit(800)
             ->get();
 
+        $this->sql_finished = time(); // sql 结束时间
         // 商户ID列表
         $merchant_list = MerchantModel::pluck('secret', 'merchant_id');
         $urlsWithParams = [];
@@ -269,6 +271,7 @@ class NotifyCommand extends BaseCommand
         $current_time = getTimeString();
         $startTimeTmp = date('H:i:s', $this->start_at);
         $curl_start = date('H:i:s', $this->curl_start);
+        $sql_finished = date('H:i:s', $this->sql_finished);
         $endTimeTmp = date('H:i:s', time());
         $diff_time = (time() - $this->start_at);
         $tgMessage = <<<MG
@@ -279,6 +282,7 @@ class NotifyCommand extends BaseCommand
 空值条数：{$response_null} \r\n
 HTTP非200条数：{$response_http_no_200} \r\n
 执行时间：{$diff_time} \r\n
+sql结束时间：{$sql_finished} \r\n
 执行开始时间：{$startTimeTmp} \r\n
 curl开始时间：{$curl_start} \r\n
 执行结束时间: {$endTimeTmp}
