@@ -148,6 +148,7 @@ class NotifyCommand extends BaseCommand
             $notify_url = $orderInfo->notifyurl;
             // 添加并发回调数据
             $urlsWithParams[$orderInfo->order_id] = [
+                'orderid' => $orderInfo->orderid,
                 'request_param' => $data,
                 'notify_url' => $notify_url,
                 'inizt' => $orderInfo->inizt,
@@ -176,6 +177,7 @@ class NotifyCommand extends BaseCommand
             $notify_url = $params['notify_url'];
             $request_param = $params['request_param'];
             $inizt = $params['inizt'];
+            $orderid = $params['orderid'];
             $startTime = microtime(true);
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $notify_url);
@@ -198,6 +200,7 @@ class NotifyCommand extends BaseCommand
                 'request_param' => $request_param,
                 'notify_url' => $notify_url,
                 'inizt' => $inizt,
+                'orderid' => $orderid,
                 'startTime' => $startTime,
             ]; // 保存句柄以便后续使用
         }
@@ -214,10 +217,11 @@ class NotifyCommand extends BaseCommand
             $request_param = $ch_data['request_param'];
             $notify_url = $ch_data['notify_url'];
             $inizt = $ch_data['inizt'];
+            $orderid = $ch_data['orderid'];
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // 获取 HTTP 状态码
             if ($httpCode != 200) {
                 $response_http_no_200++;
-                $this->updateNotifyNum($order_id, $request_param, $notify_url, $inizt);
+                $this->updateNotifyNum($order_id, $orderid, $request_param, $notify_url, $inizt);
                 $file = ('no_200_' . date('Ymd') . '.txt');
                 $log_data = '---' . $order_id . '--' . $httpCode;
                 logToPublicLog($log_data, $file); // 记录文件
@@ -242,7 +246,7 @@ class NotifyCommand extends BaseCommand
             } else {
                 if ($result) {
                     $response_error++;
-                    $this->updateNotifyToFail($order_id, $request_param, $notify_url, $inizt);
+                    $this->updateNotifyToFail($order_id, $orderid, $request_param, $notify_url, $inizt);
                 } else {
                     $response_null++;
                     $file = (self::FILE_NAME_RESPONSE_NULL . date('Ymd') . '.txt');
@@ -307,12 +311,13 @@ MG;
     /**
      * 更新成 回调失败状态  返回的不是 success/ok
      * @param $order_id
+     * @param $orderid
      * @param $request_param
      * @param $notify_url
      * @param $inizt
      * @return bool
      */
-    private function updateNotifyToFail($order_id, $request_param, $notify_url, $inizt)
+    private function updateNotifyToFail($order_id, $orderid, $request_param, $notify_url, $inizt)
     {
 
         RechargeOrder::where('order_id', '=', $order_id)->update([
@@ -325,6 +330,7 @@ MG;
 
         NotifyOrder::create([
             'order_id' => $order_id,
+            'orderid' => $orderid,
             'create_time' => time(),
             'notify_time' => time() + 2,
             'notify_num' => 0,
@@ -352,12 +358,13 @@ MG;
     /**
      *   更新次数  400的
      * @param int $order_id
+     * @param string $orderid
      * @param array $request_param
      * @param string $notify_url
      * @param int $inizt
      * @return bool
      */
-    private function updateNotifyNum($order_id, $request_param, $notify_url, $inizt)
+    private function updateNotifyNum($order_id, $orderid, $request_param, $notify_url, $inizt)
     {
         RechargeOrder::where('order_id', '=', $order_id)->update([
             'update_time' => time(),
@@ -367,6 +374,7 @@ MG;
 
         NotifyOrder::create([
             'order_id' => $order_id,
+            'orderid' => $orderid,
             'create_time' => time(),
             'notify_time' => time() + 2,
             'notify_num' => 0,

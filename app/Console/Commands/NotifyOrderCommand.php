@@ -84,7 +84,7 @@ class NotifyOrderCommand extends BaseCommand
         // 商户ID列表
         $urlsWithParams = [];
         foreach ($list as $k => $notifyInfo) {
-            $data = base64_decode($notifyInfo->request);
+            $data = json_decode(base64_decode($notifyInfo->request), true);
             $notify_url = $notifyInfo->notify_url;
             // 添加并发回调数据
             $urlsWithParams[$notifyInfo->order_id] = [
