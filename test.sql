@@ -88,6 +88,28 @@ and `create_time` >= 1728659040 and `create_time` <= 1728659400 and `status` in 
 
 2024-10-11 11:04:00 - 2024-10-11 09:59:59
 
+KEY `orderid` (`orderid`),
+  KEY `sf_id` (`sf_id`),
+  KEY `cd_order_merchantids_index` (`merchantid`),
+  KEY `cd_order_merchantnumber_index` (`merchantnumber`),
+  KEY `cd_order_merchantid_merchantnumber_create_time_index` (`merchantid`,`merchantnumber`,`create_time`,`status`) USING BTREE,
+  KEY `cd_order_merchantnumber_merchantid_create_time_status_index` (`merchantnumber`,`merchantid`,`create_time`,`status`),
+  KEY `cd_order_proxy_id_create_time_status_index` (`proxy_id`,`create_time`,`status`),
+  KEY `cd_order_proxy_id_create_time_index` (`proxy_id`,`create_time`),
+  KEY `cd_order_proxy_id_index` (`proxy_id`),
+  KEY `cd_order_status_index` (`status`),
+  KEY `cd_order_inizt_index` (`inizt`),
+  KEY `sf_id_2` (`sf_id`,`inizt`),
+  KEY `status` (`status`,`create_time`,`notify_status`,`notify_num`,`sdzt`),
+  KEY `notify_status` (`notify_status`,`notify_num`,`sdzt`),
+  KEY `completetime` (`completetime`),
+  KEY `bank_open` (`bank_open`),
+  KEY `bank_lx` (`bank_lx`),
+  KEY `createtime_completetime` (`create_time`,`completetime`),
+  KEY `amount_real_pay` (`amount_real_pay`) USING BTREE,
+  KEY `agent_commission` (`agent_commission`) USING BTREE,
+  KEY `yh_bq` (`yh_bq`) USING BTREE
+
 
 select  count(*)   from   cd_order  where   notify_status=0  and status<2;
 select   create_time  from   cd_order  where   notify_status=0  and status=1;
@@ -98,8 +120,11 @@ select   order_id, create_time from   cd_order  where   notify_status=0  and sta
 select   order_id,orderid,notify_num,notify_status,inizt,merchantid,create_time   from   cd_order  where
  notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 30;
 
-select    count(*)   from   cd_order  where  create_time>1729151644 and    notify_status=0  and status<2  and  notify_num=0  ;
-select    *  from   cd_order  where   create_time>1729151644 and    status<2  and  notify_status=0   and  notify_num=0   order by order_id asc    limit 10;
+select    count(*)   from   cd_order  where  create_time>1728519894 and    notify_status=0  and status<2  and  notify_num=0  ;
+select    *  from   cd_order  where   create_time>1728519894 and    status<2  and  notify_status=0   and  notify_num=0   order by create_time asc    limit 100;
+select    *  from   cd_order  where   create_time>1728519894 and    notify_status=0   and  status<2  and   notify_num=0   order by order_id asc    limit 100;
+select    *  from   cd_order  where    status<2  and  create_time>1728519894 and    notify_status=0   and   notify_num=0   order by create_time asc    limit 100;
+select    count(*) from   cd_order  where    status<2  and  create_time>1728519894 and    notify_status=0   and   notify_num=0   order by order_id asc    limit 100;
 
 
 select  amount,order_id,update_time,completetime,notify_num,remarks,realname,merchantid,orderid,sysorderid,status,notify_status,notifyurl
