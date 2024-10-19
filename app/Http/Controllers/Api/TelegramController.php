@@ -90,7 +90,15 @@ class TelegramController extends WebController
         return true;
     }
 
-
+    /**
+     * 锁定账号通知
+     * @param $response_text
+     */
+    public function vim($response_text)
+    {
+        $this->getTelegramRepository()->replayMessage('-1002163291807', $response_text);
+        return true;
+    }
 
 
 }
