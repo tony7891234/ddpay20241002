@@ -65,7 +65,7 @@ class NotifyOrderCommand extends BaseCommand
         $this->start_at = time();
         $current_time = time();
 
-        $this->count_order = NotifyOrder::where('notify_time', '>', $current_time)
+        $this->count_order = NotifyOrder::where('notify_time', '<', $current_time)
             ->where('notify_num', '<', self::MAX_NOTIFY_NUM)
             ->count();
         /**
@@ -77,7 +77,7 @@ class NotifyOrderCommand extends BaseCommand
             'request',
             'notify_time',
             'notify_num',
-        ])->where('notify_time', '>', $current_time)
+        ])->where('notify_time', '<', $current_time)
             ->where('notify_num', '<', self::MAX_NOTIFY_NUM) // 3次回掉失败
             ->orderBy('notify_time', 'asc')
             ->limit(500)
@@ -162,7 +162,7 @@ class NotifyOrderCommand extends BaseCommand
             $response = strtolower($response);
             if (in_array($response, ['success', 'ok'])) {
                 $response_success++;
-                $this->updateNotifyToSuccess($order_id);
+                $this->updateNotifyToSuccess($order_id, $response);
             } else {
                 if ($response) {
                     $response_error++;
@@ -253,9 +253,10 @@ MG;
     /**
      * 更新成 回调失败状态
      * @param int $order_id
+     * @param string $response
      * @return bool
      */
-    private function updateNotifyToSuccess($order_id)
+    private function updateNotifyToSuccess($order_id, $response)
     {
         RechargeOrder::where('order_id', '=', $order_id)->update([
             'notify_status' => RechargeOrder::NOTIFY_STATUS_SUCCESS,
@@ -267,6 +268,7 @@ MG;
         NotifyOrder::where('order_id', '=', $order_id)->update([
             'notify_status' => NotifyOrder::NOTIFY_STATUS_SUCCESS,
             'notify_num' => \DB::raw('notify_num + 1'),
+            'response' => $response,
         ]);
         return true;
     }
