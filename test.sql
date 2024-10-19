@@ -82,13 +82,27 @@ mysql> select  *  from cd_order   where  order_id >=114713800   and  order_id <1
 +-----------+------------------------------+------------+-------------------------------+----------+--------+--------------+-------------+-------------+--------------+----------+----------------+-------------------------------------+----------------+-------------------------------------------------------+--------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------+--------+----------+------------+---------------+------------+----------+----------------+---------+--------------+----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------+------+-------+------+----------------------------------+------+-------+---------+-------------+-----------+-----------------+----------+--------+------------------+
 45 rows in set (0.00 sec)
 
+
+mysql> select    *  from   cd_order  where    status<2  and  notify_status=0   and  notify_num=0   order by  order_id  asc    limit 10;
++----------+------------------------+------------+-------------------------------+----------+--------+---------+-------------+-------------+--------------+----------+----------------+----------+----------------+-------------+------------------------------------------------------------------------+----------------+------------------------------------------------------------+------+----------+------------+---------------+------------+----------+-------+---------+--------------+------------+---------+-------+------+-------+------+-------+------+-------+---------+-------------+-----------+-----------------+----------+--------+------------------+
+| order_id | orderid                | merchantid | sysorderid                    | amount   | status | remarks | create_time | update_time | completetime | proxy_id | merchantnumber | username | date           | callbackurl | notifyurl                                                              | account        | realname                                                   | bank | bankname | service_id | notify_status | notify_num | pay_name | kh_ip | kouling | other_status | other_json | qr_code | sf_id | num  | inizt | sdzt | yh_bq | time | sf_xr | bank_lx | amount_real | bank_open | amount_real_pay | pay_time | df_fee | agent_commission |
++----------+------------------------+------------+-------------------------------+----------+--------+---------+-------------+-------------+--------------+----------+----------------+----------+----------------+-------------+------------------------------------------------------------------------+----------------+------------------------------------------------------------+------+----------+------------+---------------+------------+----------+-------+---------+--------------+------------+---------+-------+------+-------+------+-------+------+-------+---------+-------------+-----------+-----------------+----------+--------+------------------+
+| 97991373 | TX1727906878519792919  |        446 | 1003061012api_pay44674791762  | 100.0000 |      0 | 0       |  1727907012 |           0 |            0 |        4 |           2002 | 0        | 20241002221100 | 0           | https://cbpay.1hd6.com/api/external/pay/wNotify/TX1727906878519792919  | 08850340664    | 商户余额不足:订单金额100.00-商户余额-179.816               | 0    | 0        |          0 |             0 |          0 | 0        | 0     | 0       |            0 | 0          | 0       | 0     |    0 |     1 |    0 | 0     |  0.0 |     0 |       0 |      0.0000 |         1 |          0.0000 |        0 | 0.0000 |           0.0000 |
+| 97991375 | TX17279067119698587870 |        446 | 1003061012api_pay446791114797 | 110.0000 |      0 | 0       |  1727907012 |           0 |            0 |        4 |           2002 | 0        | 20241002221100 | 0           | https://cbpay.1hd6.com/api/external/pay/wNotify/TX17279067119698587870 | +5563992429459 | 商户余额不足:订单金额110.00-商户余额-179.816               | 0    | 0        |          0 |             0 |          0 | 0        | 0     | 0       |            0 | 0          | 0       | 0     |    0 |     1 |    0 | 0     |  0.0 |     0 |       0 |      0.0000 |         1 |          0.0000 |        0 | 0.0000 |           0.0000 |
+| 97991377 | TX1727906605870189124  |        446 | 1003061012api_pay44680479477  | 100.0000 |      0 | 0       |  1727907012 |           0 |            0 |        4 |           2002 | 0        | 20241002221100 | 0           | https://cbpay.1hd6.com/api/external/pay/wNotify/TX1727906605870189124  | 06880261418    | 商户余额不足:订单金额100.00-商户余额-179.816               | 0    | 0        |          0 |             0 |          0 | 0        | 0     | 0       |            0 | 0          | 0       | 0     |    0 |     1 |    0 | 0     |  0.0 |     0 |       0 |      0.0000 |         1 |          0.0000 |        0 | 0.0000 |           0.0000 |
+| 97991385 | TX17279068250244285874 |        446 | 1003061012api_pay446909940121 |  40.0000 |      0 | 0       |  1727907012 |           0 |            0 |        4 |           2002 | 0        | 20241002221100 | 0           | https://cbpay.1hd6.com/api/external/pay/wNotify/TX17279068250244285874 | 06510407795    | 商户余额不足:订单金额40.00-商户余额-179.816                | 0    | 0        |          0 |             0 |          0 | 0        | 0     | 0       |            0 | 0          | 0       | 0     |    0 |     1 |    0 | 0     |  0.0 |     0 |       0 |      0.0000 |         1 |          0.0000 |        0 | 0.0000 |           0.0000 |
+| 97991387 | TX17279068096091194939 |        446 | 1003061012api_pay446920307859 | 130.0000 |      0 | 0       |  1727907012 |           0 |            0 |        4 |           2002 | 0        | 20241002221100 | 0           | https://cbpay.1hd6.com/api/external/pay/wNotify/TX17279068096091194939 | 05831956601    | 商户余额不足:订单金额130.00-商户余额-179.816               | 0    | 0        |          0 |             0 |          0 | 0        | 0     | 0       |            0 | 0          | 0       | 0     |    0 |     1 |    0 | 0     |  0.0 |     0 |       0 |      0.0000 |         1 |          0.0000 |        0 | 0.0000 |           0.0000 |
+| 97991388 | TX1727906808123692019  |        446 | 1003061012api_pay44693150975  |  72.0000 |      0 | 0       |  1727907012 |           0 |            0 |        4 |           2002 | 0        | 20241002221100 | 0           | https://cbpay.1hd6.com/api/external/pay/wNotify/TX1727906808123692019  | 70543030679    | 商户余额不足:订单金额72.00-商户余额-179.816                | 0    | 0        |          0 |             0 |          0 | 0        | 0     | 0       |            0 | 0          | 0       | 0     |    0 |     1 |    0 | 0     |  0.0 |     0 |       0 |      0.0000 |
+
 select `order_id,orderid` from `cd_order` where `order_id` >= 116817159
 and `create_time` >= 1728659040 and `create_time` <= 1728659400 and `status` in (1, 0) order by `order_id` asc limit 1000 offset 0)
 
 
 2024-10-11 11:04:00 - 2024-10-11 09:59:59
 
-KEY `orderid` (`orderid`),
+  PRIMARY KEY (`order_id`),
+  KEY `isx_create_time` (`create_time`),
+  KEY `orderid` (`orderid`),
   KEY `sf_id` (`sf_id`),
   KEY `cd_order_merchantids_index` (`merchantid`),
   KEY `cd_order_merchantnumber_index` (`merchantnumber`),
@@ -121,10 +135,11 @@ select   order_id,orderid,notify_num,notify_status,inizt,merchantid,create_time 
  notify_status=0  and status<2  and  notify_num=0  order by order_id  asc  limit 30;
 
 select    count(*)   from   cd_order  where  create_time>1728519894 and    notify_status=0  and status<2  and  notify_num=0  ;
-select    *  from   cd_order  where   create_time>1728519894 and    status<2  and  notify_status=0   and  notify_num=0   order by create_time asc    limit 100;
-select    *  from   cd_order  where   create_time>1728519894 and    notify_status=0   and  status<2  and   notify_num=0   order by order_id asc    limit 100;
-select    *  from   cd_order  where    status<2  and  create_time>1728519894 and    notify_status=0   and   notify_num=0   order by create_time asc    limit 100;
-select    count(*) from   cd_order  where    status<2  and  create_time>1728519894 and    notify_status=0   and   notify_num=0   order by order_id asc    limit 100;
+select    *  from   cd_order  where    status<2  and  notify_status=0   and  notify_num=0   order by create_time asc    limit 10;
+select    *  from   cd_order  where   create_time>1728519894 and    notify_status=0   and  status<2  and   notify_num=0   order by order_id asc    limit 10;
+select    *  from   cd_order  where   create_time>1728519894 and    notify_status=0   and  status<2  and   notify_num=0   order by order_id asc    limit 10;
+select    *  from   cd_order  where    status<2  and  create_time>1728519894 and    notify_status=0   and   notify_num=0   order by create_time asc    limit 10;
+select    count(*) from   cd_order  where    status<2  and  create_time>1728519894 and    notify_status=0   and   notify_num=0   order by order_id asc    limit 10;
 
 
 select  amount,order_id,update_time,completetime,notify_num,remarks,realname,merchantid,orderid,sysorderid,status,notify_status,notifyurl
@@ -157,3 +172,36 @@ select    notify_status,notify_num ,status   from   cd_order   where   orderid='
 select    notify_status,notify_num ,status   from   cd_order   where   orderid='2117470364646809'  ;
 select    notify_status,notify_num ,status   from   cd_order   where   order_id in (124853410,124880144,124797359)  ;
 select   orderid, notify_status,notify_num ,status   from   cd_order   where   orderid in ('2117510044109845','2117510121443165','tx_1062_20241017112538NnfjX','tx_1087_20241017112546BBLhV')  ;
+
+
+drop table  cd_notify_order;
+CREATE TABLE `cd_notify_order` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `order_id` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单id',
+    `orderid` VARCHAR(50) NOT NULL DEFAULT '' COMMENT '订单号' COLLATE 'utf8_general_ci',
+    `create_time` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '添加时间',
+    `notify_time` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '下次回掉时间',
+    `notify_num` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '回掉次数',
+    `type` TINYINT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'type  1=充值；2=提款',
+    `response` TEXT NULL DEFAULT NULL COMMENT '返回内容',
+    `request` TEXT NULL DEFAULT NULL COMMENT '回掉内容',
+    `notify_url` VARCHAR(200) NOT NULL DEFAULT '' COMMENT '回掉地址' COLLATE 'utf8_general_ci',
+    `notify_status` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '回掉状态:0=未回调;1=已经回调;2=失败',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `order_id` (`order_id`) USING BTREE,
+    INDEX `orderid` (`orderid`) USING BTREE,
+    INDEX `notify_time` (`notify_time`,`notify_num`) USING BTREE,
+    INDEX `notify_status` (`notify_status`) USING BTREE,
+    INDEX `notify_num` (`notify_num`) USING BTREE
+)
+COMMENT='异常回掉单'
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB;
+alter table   cd_notify_order  add    `response` TEXT NULL DEFAULT NULL COMMENT '返回内容';
+alter table   cd_notify_order  add    `notify_status` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '回掉状态:0=未回调;1=已经回调;2=失败';
+alter table   cd_notify_order  add  INDEX `notify_status` (`notify_status`) USING BTREE;
+
+show create table  cd_notify_order;
+
+
+

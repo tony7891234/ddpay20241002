@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\MerchantModel;
+use App\Models\NotifyOrder;
 use App\Models\RechargeOrder;
 use App\Traits\RepositoryTrait;
 
@@ -216,7 +217,7 @@ class NotifyCommand extends BaseCommand
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // 获取 HTTP 状态码
             if ($httpCode != 200) {
                 $response_http_no_200++;
-                $this->updateNotifyNum($order_id);
+                $this->updateNotifyNum($order_id, $request_param, $notify_url, $inizt);
                 $file = ('no_200_' . date('Ymd') . '.txt');
                 $log_data = '---' . $order_id . '--' . $httpCode;
                 logToPublicLog($log_data, $file); // 记录文件
@@ -241,7 +242,7 @@ class NotifyCommand extends BaseCommand
             } else {
                 if ($result) {
                     $response_error++;
-                    $this->updateNotifyToFail($order_id);
+                    $this->updateNotifyToFail($order_id, $request_param, $notify_url, $inizt);
                 } else {
                     $response_null++;
                     $file = (self::FILE_NAME_RESPONSE_NULL . date('Ymd') . '.txt');
@@ -304,19 +305,33 @@ MG;
 
 
     /**
-     * 更新成 回调失败状态
-     * @param int $order_id
+     * 更新成 回调失败状态  返回的不是 success/ok
+     * @param $order_id
+     * @param $request_param
+     * @param $notify_url
+     * @param $inizt
      * @return bool
      */
-    private function updateNotifyToFail($order_id)
+    private function updateNotifyToFail($order_id, $request_param, $notify_url, $inizt)
     {
-//        dump($order_id . '--updateNotifyToFail');
 
         RechargeOrder::where('order_id', '=', $order_id)->update([
             'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
             'update_time' => time(),
             'completetime' => time(),
             'notify_num' => \DB::raw('notify_num + 1'),
+        ]);
+
+
+        NotifyOrder::create([
+            'order_id' => $order_id,
+            'create_time' => time(),
+            'notify_time' => time() + 2,
+            'notify_num' => 0,
+            'notify_status' => NotifyOrder::NOTIFY_STATUS_ERROR,
+            'type' => $inizt == RechargeOrder::INIZT_RECHARGE ? NotifyOrder::TYPE_RECHARGE : NotifyOrder::TYPE_WITHDRAW,
+            'request' => base64_encode(json_encode($request_param)),
+            'notify_url' => $notify_url,
         ]);
         return true;
     }
@@ -328,7 +343,6 @@ MG;
      */
     private function updateNotifyStatusToFail($order_id)
     {
-//        dump($order_id . '--updateNotifyStatusToFail');
         RechargeOrder::where('order_id', '=', $order_id)->update([
             'notify_status' => RechargeOrder::NOTIFY_STATUS_FAIL,
         ]);
@@ -338,14 +352,28 @@ MG;
     /**
      *   更新次数  400的
      * @param int $order_id
+     * @param array $request_param
+     * @param string $notify_url
+     * @param int $inizt
      * @return bool
      */
-    private function updateNotifyNum($order_id)
+    private function updateNotifyNum($order_id, $request_param, $notify_url, $inizt)
     {
         RechargeOrder::where('order_id', '=', $order_id)->update([
             'update_time' => time(),
             'completetime' => time(),
             'notify_num' => \DB::raw('notify_num + 1'),
+        ]);
+
+        NotifyOrder::create([
+            'order_id' => $order_id,
+            'create_time' => time(),
+            'notify_time' => time() + 2,
+            'notify_num' => 0,
+            'notify_status' => NotifyOrder::NOTIFY_STATUS_400,
+            'type' => $inizt == RechargeOrder::INIZT_RECHARGE ? NotifyOrder::TYPE_RECHARGE : NotifyOrder::TYPE_WITHDRAW,
+            'request' => base64_encode(json_encode($request_param)),
+            'notify_url' => $notify_url,
         ]);
         return true;
     }
