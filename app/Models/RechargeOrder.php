@@ -24,7 +24,7 @@ namespace App\Models;
 class RechargeOrder extends BaseModel
 {
 
-    protected $connection = 'mysql';
+    protected $connection = 'home';
     protected $table = 'cd_order';
     protected $primaryKey = 'order_id';
     protected $fillable = [];

@@ -17,7 +17,7 @@ namespace App\Models;
 class MoneyLog extends BaseModel
 {
 
-    protected $connection = 'mysql';
+    protected $connection = 'home';
     protected $table = 'cd_moneylog';
     protected $primaryKey = 'moneylog_id';
     protected $fillable = [];

@@ -10,6 +10,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    protected $connection = 'dcat_admin';
+
     use HasApiTokens, HasFactory, Notifiable;
 
     /**

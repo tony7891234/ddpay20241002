@@ -12,7 +12,7 @@ namespace App\Models;
 class MerchantModel extends BaseModel
 {
 
-    protected $connection = 'mysql';
+    protected $connection = 'home';
     protected $table = 'cd_merchant';
     protected $primaryKey = 'merchant_id';
     protected $fillable = [];
