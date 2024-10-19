@@ -65,6 +65,9 @@ class NotifyOrderCommand extends BaseCommand
         $this->start_at = time();
         $current_time = time();
 
+        $this->count_order = NotifyOrder::where('notify_time', '>', $current_time)
+            ->where('notify_num', '<', self::MAX_NOTIFY_NUM)
+            ->count();
         /**
          * @var $list NotifyOrder[]
          */
@@ -144,10 +147,13 @@ class NotifyOrderCommand extends BaseCommand
             curl_multi_select($chHandle); // 等待活动请求完成  可以不要
         } while ($running > 0);
 
+        $response_success = $response_error = $response_null = $response_http_no_200 = 0;
+
         foreach ($chArr as $order_id => $ch_data) {
             $ch = $ch_data['ch'];
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // 获取 HTTP 状态码
             if ($httpCode != 200) {
+                $response_http_no_200++;
                 $this->updateNotifyNum($order_id);
                 continue; // 这次请求没成功，不做处理
 
@@ -155,8 +161,14 @@ class NotifyOrderCommand extends BaseCommand
             $response = curl_multi_getcontent($ch); //5 获取句柄的返回值
             $response = strtolower($response);
             if (in_array($response, ['success', 'ok'])) {
+                $response_success++;
                 $this->updateNotifyToSuccess($order_id);
             } else {
+                if ($response) {
+                    $response_error++;
+                } else {
+                    $response_null++;
+                }
                 $this->updateNotifyToFail($order_id, $response);
             }
 
@@ -165,6 +177,28 @@ class NotifyOrderCommand extends BaseCommand
         }
         curl_multi_close($chHandle); //7 关闭全部句柄
 
+        $current_time = getTimeString();
+        $startTimeTmp = date('H:i:s', $this->start_at);
+        $curl_start = date('H:i:s', $this->curl_start);
+        $sql_finished = date('H:i:s', $this->sql_finished);
+        $endTimeTmp = date('H:i:s', time());
+        $diff_time = (time() - $this->start_at);
+        $tgMessage = <<<MG
+再次回掉：\r\n
+执行时间：{$current_time}\r\n
+总单数：{$this->count_order} \r\n
+成功条数：{$response_success} \r\n
+失败条数：{$response_error} \r\n
+空值条数：{$response_null} \r\n
+HTTP非200条数：{$response_http_no_200} \r\n
+执行时间：{$diff_time} \r\n
+执行开始时间：{$startTimeTmp} \r\n
+sql结束时间：{$sql_finished} \r\n
+curl开始时间：{$curl_start} \r\n
+执行结束时间: {$endTimeTmp}
+\r\n
+MG;
+        $this->getTelegramRepository()->replayMessage(config('telegram.group.notify_order'), $tgMessage);
 
     }
 

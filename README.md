@@ -64,5 +64,9 @@ grep   TX17292757173569581417   /www/wwwroot/guoji/public/logs_abc/df_notify2024
 grep  '19-Oct-2024'   /www/server/php/74/var/log/php-fpm.log
 
 ````
-
+## 域名
+````   
+后台 https://test107.hulinb.com/admin333
+日志 https://test107.hulinb.com/admin555/log-viewer/logs
+````
 

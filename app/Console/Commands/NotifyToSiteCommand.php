@@ -15,6 +15,7 @@ class NotifyToSiteCommand extends BaseCommand
 
     use RepositoryTrait;
 
+    private $count_order = 0; // 总条数
 
     /**
      * @var string
@@ -53,6 +54,10 @@ class NotifyToSiteCommand extends BaseCommand
     public function notify()
     {
         $current_time = time() - 3600; // 获取一小时内的订单即可
+
+        $this->count_order = NotifyOrder::where('notify_time', '>', $current_time)
+            ->where('notify_num', '=', NotifyOrderCommand::MAX_NOTIFY_NUM + 1)
+            ->count();
         /**
          * @var $list NotifyOrder[]
          */
@@ -64,15 +69,18 @@ class NotifyToSiteCommand extends BaseCommand
             ->limit(500)
             ->get();
 
-        $this->sql_finished = time(); // sql 结束时间
         // 商户ID列表
         $urlsWithParams = [];
+        $recharge_num = $withdraw_num = 0;
+
         foreach ($list as $k => $notifyInfo) {
             $order_id = $notifyInfo->order_id;
             if ($notifyInfo->type == NotifyOrder::TYPE_RECHARGE) {
+                $recharge_num++;
                 //  收
                 $notify_url = 'https://hulinb.com/api/order/notify?order_id_index=' . $order_id;
             } else {
+                $withdraw_num++;
                 $notify_url = 'https://hulinb.com/api/df/notify?order_id_index=' . $order_id;
             }
             $urlsWithParams[] = $notify_url;
@@ -81,6 +89,17 @@ class NotifyToSiteCommand extends BaseCommand
         if ($urlsWithParams) {
             curlManyRequest($urlsWithParams);
         }
+
+        $current_time = getTimeString();
+        $tgMessage = <<<MG
+回掉平台：\r\n
+执行时间：{$current_time}\r\n
+总单数：{$this->count_order} \r\n
+入款笔数：{$recharge_num} \r\n
+出款笔数：{$withdraw_num} \r\n
+\r\n
+MG;
+        $this->getTelegramRepository()->replayMessage(config('telegram.group.notify_order'), $tgMessage);
 
     }
 
