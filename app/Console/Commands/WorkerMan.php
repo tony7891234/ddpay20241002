@@ -34,17 +34,13 @@ class WorkerMan extends BaseCommand
      */
     protected $description = '开启worker man监听要处理的uid';
 
-
-    // 定时器的时间间隔时间 不能小于5  如果太小，则执行速度太快，会导致某一批数据获取到了，还没来得及删除，但是下一个进程又过来了，导致重复投注
-    const INTERVAL_TIME = 15;
-    // 每个进程执行多个个定时器。这个参数跟实际的进程是没有关系的  但是最多，最好不要超过500，我没有实际测试过
-    const TIMER_START = 1;
-    const TIMER_END = 10;
-
     // worker man 开启的进程数
     const WORKER_MAN_COUNT = 2;
     // @var int 每次要处理的uid数量
-    const CHUNK_MAX = 100;
+
+    const VIM_TG = -1002163291807; //越南tg
+
+    const INDIA_TG = -1002172689012; // 印度tg
 
     /**
      * Create a new command instance.
@@ -173,7 +169,7 @@ class WorkerMan extends BaseCommand
              */
             $repository = app('App\Repository\TelegramRepository');
             $response_text = $notification['body'];
-            $repository->replayMessage('-1002172689012', $response_text);
+            $repository->replayMessage(self::INDIA_TG, $response_text);
         }
         return true;
     }
@@ -261,7 +257,7 @@ class WorkerMan extends BaseCommand
              */
             $repository = app('App\Repository\TelegramRepository');
             $response_text = $notification['body'];
-            $repository->replayMessage('-1002163291807', $response_text);
+            $repository->replayMessage(self::VIM_TG, $response_text);
 
             // 通知支付成功
 //            $this->successToVim($response_text);
