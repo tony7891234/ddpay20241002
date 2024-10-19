@@ -32,3 +32,6 @@ Route::get('/removeWebHook/', 'TelegramController@removeWebHook');
 //接收发送给我的信息
 Route::post('/telegram/webhook/', 'TelegramController@ListenWebHook');
 
+Route::get('/telegram/urtNotice/{order_no}', 'TelegramController@urtNotice');
+
+

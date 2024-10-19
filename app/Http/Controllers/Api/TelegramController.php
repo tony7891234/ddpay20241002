@@ -80,6 +80,16 @@ class TelegramController extends WebController
 
     }
 
+    /**
+     * 锁定账号通知
+     * @param $response_text
+     */
+    public function urtNotice($response_text)
+    {
+        $this->getTelegramRepository()->replayMessage(config('telegram.group.urtNotice'), $response_text);
+        return true;
+    }
+
 
 
 
