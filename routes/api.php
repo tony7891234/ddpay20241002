@@ -33,6 +33,6 @@ Route::get('/removeWebHook/', 'TelegramController@removeWebHook');
 Route::post('/telegram/webhook/', 'TelegramController@ListenWebHook');
 
 Route::get('/telegram/urtNotice/{order_no}', 'TelegramController@urtNotice');
-Route::get('/telegram/vim/{order_no}', 'TelegramController@vim');
+Route::get('/telegram/vim/{order_no}', 'TelegramController@vim'); // 越南短信
 
 

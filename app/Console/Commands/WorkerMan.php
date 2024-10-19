@@ -21,6 +21,7 @@ class WorkerMan extends BaseCommand
      * https://www.bookstack.cn/read/workerman-manual/faq-stop-fail.md
      * The name and signature of the console command.
      * php artisan  workman  start
+     * php artisan  workman  restart
      * php artisan  workman  status
      * php artisan  workman  stop
      * @var string
@@ -35,7 +36,7 @@ class WorkerMan extends BaseCommand
     protected $description = '开启worker man监听要处理的uid';
 
     // worker man 开启的进程数
-    const WORKER_MAN_COUNT = 2;
+    const WORKER_MAN_COUNT = 5;
     // @var int 每次要处理的uid数量
 
     const VIM_TG = -1002163291807; //越南tg
