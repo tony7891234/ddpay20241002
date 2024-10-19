@@ -56,7 +56,7 @@ class NotifyToSiteCommand extends BaseCommand
         $current_time = time() - 3600; // 获取一小时内的订单即可
 
         $this->count_order = NotifyOrder::where('notify_time', '>', $current_time)
-            ->where('notify_num', '=', NotifyOrderCommand::MAX_NOTIFY_NUM + 1)
+            ->where('notify_num', '=', NotifyOrderCommand::MAX_NOTIFY_NUM)
             ->count();
         /**
          * @var $list NotifyOrder[]
@@ -64,7 +64,7 @@ class NotifyToSiteCommand extends BaseCommand
         $list = NotifyOrder::select([
             'order_id',
         ])->where('notify_time', '>', $current_time)
-            ->where('notify_num', '=', NotifyOrderCommand::MAX_NOTIFY_NUM + 1)
+            ->where('notify_num', '=', NotifyOrderCommand::MAX_NOTIFY_NUM)
             ->orderBy('notify_time', 'asc')
             ->limit(500)
             ->get();
