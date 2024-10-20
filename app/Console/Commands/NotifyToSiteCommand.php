@@ -108,7 +108,6 @@ MG;
 
     }
 
-    
     /**
      * 更新成 回调失败状态
      * @param int $order_id
@@ -116,7 +115,6 @@ MG;
      */
     private function updateNotifyToFail($order_id)
     {
-
         NotifyOrder::where('order_id', '=', $order_id)->update([
             'notify_num' => \DB::raw('notify_num + 1'),
             'notify_status' => NotifyOrder::NOTIFY_STATUS_SITE,
