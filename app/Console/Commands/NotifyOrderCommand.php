@@ -54,7 +54,7 @@ class NotifyOrderCommand extends BaseCommand
         while (true) {
             $this->notify();
 
-            sleep(1);
+            sleep(5);
         }
 
         return true;
