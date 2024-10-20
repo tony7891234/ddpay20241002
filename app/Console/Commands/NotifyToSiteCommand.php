@@ -86,6 +86,8 @@ class NotifyToSiteCommand extends BaseCommand
                 $withdraw_num++;
                 $notify_url = 'https://hulinb.com/api/df/notify?order_id_index=' . $order_id;
             }
+            $this->updateNotifyToFail($order_id);
+
             $urlsWithParams[] = $notify_url;
         }
 
@@ -106,6 +108,21 @@ MG;
 
     }
 
+    
+    /**
+     * 更新成 回调失败状态
+     * @param int $order_id
+     * @return bool
+     */
+    private function updateNotifyToFail($order_id)
+    {
+
+        NotifyOrder::where('order_id', '=', $order_id)->update([
+            'notify_num' => \DB::raw('notify_num + 1'),
+            'notify_status' => NotifyOrder::NOTIFY_STATUS_SITE,
+        ]);
+        return true;
+    }
 
 }
 

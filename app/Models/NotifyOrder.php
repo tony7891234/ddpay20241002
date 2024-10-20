@@ -33,7 +33,8 @@ class NotifyOrder extends BaseModel
     const NOTIFY_STATUS_SUCCESS = 1; // 这个值，和系统的值是不一样的
     const NOTIFY_STATUS_400 = 2; // 400 是这个
     const NOTIFY_STATUS_ERROR = 3; // 返回的不是 success/ok
-    const NOTIFY_STATUS_FAIL = 4;
+    const NOTIFY_STATUS_FAIL = 4; //
+    const NOTIFY_STATUS_SITE = 5; // 回掉到了站点
 
     // type  1=充值；2=提款
     const TYPE_RECHARGE = 1;
