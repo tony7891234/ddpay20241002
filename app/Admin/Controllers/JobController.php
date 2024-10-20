@@ -2,9 +2,6 @@
 
 namespace App\Admin\Controllers;
 
-use App\Admin\Metrics\Examples\NewDevices;
-use App\Admin\Metrics\Examples\NewUsers;
-use App\Admin\Metrics\Examples\TotalUsers;
 use App\Http\Controllers\Controller;
 use App\Models\Job;
 use Dcat\Admin\Grid;
