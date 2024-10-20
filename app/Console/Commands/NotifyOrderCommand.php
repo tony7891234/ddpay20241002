@@ -68,6 +68,9 @@ class NotifyOrderCommand extends BaseCommand
         $this->count_order = NotifyOrder::where('notify_time', '<', $current_time)
             ->where('notify_num', '<', self::MAX_NOTIFY_NUM)
             ->count();
+        if ($this->count_order == 0) {
+            return true;
+        }
         /**
          * @var $list NotifyOrder[]
          */
