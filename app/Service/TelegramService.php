@@ -67,10 +67,19 @@ class TelegramService extends BaseService
 
         //  自动回调
         if ($this->chat_id == config('telegram.group.callback')) {
-            $response_text = $this->callbackForOrderId();
-            if ($response_text) {
-                return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
+            $arr = array_values(array_filter(explode(PHP_EOL, $this->message_text)));
+            if (isset($arr[0])) {
+                if ($arr[0] == 'time') {
+                    $response_text = $this->callback();
+                } else {
+                    $response_text = $this->callbackForOrderId();
+                }
+                if ($response_text) {
+                    return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
+                }
             }
+
+
             return true;
         }
         //  查询 fit balance
@@ -153,14 +162,17 @@ class TelegramService extends BaseService
     {
         //  使用空格做区分
         $arr = array_values(array_filter(explode(PHP_EOL, $this->message_text)));
-        if (count($arr) < 2) {
-            return '格式有误';
+        if (count($arr) < 3) {
+            return 'callback 格式有误';
+        }
+        if ($arr[0] != 'time') {
+            return 'callback 有误';
         }
 //        return 'stop';
 
-        $start_at = $arr[0];
-        $end_at = $arr[1];
-        $merchantid = isset($arr[2]) ? $arr[2] : 0; // 商户ID
+        $start_at = $arr[1];
+        $end_at = $arr[2];
+        $merchantid = isset($arr[3]) ? $arr[3] : 0; // 商户ID
         date_default_timezone_set('PRC');
         $start_at = strtotime(date($start_at));
         $end_at = strtotime(date($end_at));
