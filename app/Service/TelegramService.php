@@ -67,7 +67,7 @@ class TelegramService extends BaseService
 
         //  自动回调
         if ($this->chat_id == config('telegram.group.callback')) {
-            $response_text = $this->callback();
+            $response_text = $this->callbackForOrderId();
             if ($response_text) {
                 return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
             }
@@ -103,6 +103,52 @@ class TelegramService extends BaseService
     }
 
 
+    /**
+     * 订单号的自动回掉
+     * @return string
+     */
+    private function callbackForOrderId()
+    {
+        //  使用空格做区分
+        $arr = array_values(array_filter(explode(PHP_EOL, $this->message_text)));
+//        if (count($arr) < 2) {
+//            return '格式有误';
+//        }
+////        return 'stop';
+
+        date_default_timezone_set('PRC');
+        $count = RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
+            ->whereIn('orderid', $arr)
+            ->count();
+        if ($count < 1) {
+            return '订单太少';
+        }
+        $list = RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
+            ->whereIn('orderid', $arr)
+            ->limit(1000)
+            ->get();
+
+        $response = [];
+        foreach ($list as $item) {
+            $orderid = $item['orderid'];
+            if ($item['inizt'] == 0) {
+                //  收
+                $url = 'https://hulinb.com/api/order/notify?order_id=' . $orderid;
+            } else {
+                $url = 'https://hulinb.com/api/df/notify?order_id=' . $orderid;
+            }
+            $response[] = $url;
+        }
+
+        curlManyRequest($response);
+
+        return '执行完毕,总条数:' . $count;
+    }
+
+    /**
+     * 某个时间的自动回掉
+     * @return string
+     */
     private function callback()
     {
         //  使用空格做区分
