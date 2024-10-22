@@ -91,6 +91,13 @@ class TelegramService extends BaseService
             return true;
         }
 
+        // 自动拉单群
+        if ($this->chat_id == '-4572261859') {
+            $service = new DdPayService();
+            $service->withdraw(trim($this->message_text));
+            $response_text = $service->errorMessage;
+            return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
+        }
 
         return $this->getTelegramRepository()->replayMessage($this->chat_id, $this->chat_id);
 
