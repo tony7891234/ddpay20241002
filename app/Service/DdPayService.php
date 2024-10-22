@@ -48,6 +48,7 @@ class DdPayService extends BaseService
 
         try {
             $response = $this->curlPost315('https://viwyw.com/api/Df/SubmitOrder', $data);
+            $response = json_decode($response, true);
             if (isset($response['Code']) && $response['Code'] == 'Success') {
                 $this->errorMessage = '成功单号: ' . $response['OrderID']; // 单号
             } else {
