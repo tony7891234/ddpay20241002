@@ -47,7 +47,7 @@ class DdPayService extends BaseService
         $data['Sign'] = $this->newSign($arr, $sign_key);
 
         try {
-            $response = $this->post('https://viwyw.com/api/Df/SubmitOrder', $data);
+            $response = $this->curlPost315('https://viwyw.com/api/Df/SubmitOrder', $data);
             if (isset($response['Code']) && $response['Code'] == 'Success') {
                 $this->errorMessage = '成功单号: ' . $response['OrderID']; // 单号
             } else {
@@ -59,6 +59,27 @@ class DdPayService extends BaseService
 
 
         return true;
+    }
+
+
+    private function curlPost315($url, $data)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        //设置超时时间
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
     }
 
     // 创建一个新的 cURL 资源
