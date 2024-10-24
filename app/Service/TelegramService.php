@@ -71,6 +71,8 @@ class TelegramService extends BaseService
             if (isset($arr[0])) {
                 if ($arr[0] == 'time') {
                     $response_text = $this->callback();
+                } else if ($arr[0] == 'sdht') {
+                    $response_text = $this->sdht();
                 } else {
                     $response_text = $this->callbackForOrderId();
                 }
@@ -215,6 +217,60 @@ class TelegramService extends BaseService
         }
         $count = $query->count();
         return '执行完毕,总条数:' . $count . ' 开始时间' . formatTimeToString($start_at) . ' 结束时间:' . formatTimeToString($end_at) . ' 商户ID:' . $merchantid;
+    }
+
+    /**
+     * 某个时间的自动回掉
+     * @return string
+     */
+    private function sdht()
+    {
+        //  使用空格做区分
+        $arr = array_values(array_filter(explode(PHP_EOL, $this->message_text)));
+        if (count($arr) < 2) {
+            return 'sdht 格式有误,最少一条';
+        }
+        if ($arr[0] != 'sdht') {
+            return 'sdht 有误';
+        }
+//        return 'stop';
+
+        $list = RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
+            ->whereIn('orderid', $arr)
+            ->limit(200)
+            ->get();
+        $arr_recharge = $arr_withdraw = [];
+        foreach ($list as $item) {
+            if ($item['inizt'] == 0) {
+                $arr_recharge[] = $item['orderid'];
+                //  收
+            } else {
+                $arr_withdraw[] = $item['orderid'];
+            }
+        }
+        $return = 'return ';
+        // 入款
+        if ($arr_recharge) {
+            $url = 'http://hulinb.com/api/ApiSdhdddd/recharge_success';
+            $response = curlPost($url, ['orderid' => implode(',', $arr_recharge)]);
+            if ($response) {
+                $success = isset($response['success']) ? $response['success'] : 0;
+                $return = $return . ' 入款订单' . count($arr_recharge) . ' 成功' . $success;
+            }
+        }
+
+        // 出款
+        if ($arr_withdraw) {
+            $url = 'http://hulinb.com/api/ApiSdhdddd/withdraw_success';
+            $response = curlPost($url, ['orderid' => implode(',', $arr_withdraw)]);
+
+            if ($response) {
+                $success = isset($response['success']) ? $response['success'] : 0;
+                $return = $return . ' 出款订单' . count($arr_withdraw) . ' 成功' . $success;
+            }
+        }
+        return $return;
+
     }
 
 }
