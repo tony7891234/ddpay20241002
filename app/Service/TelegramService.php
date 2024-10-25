@@ -137,11 +137,11 @@ class TelegramService extends BaseService
      */
     private function checkOrderInfo()
     {
-        $arr = $this->message_text;
+        $orderid = $this->message_text;
         /**
          * @var $info RechargeOrder
          */
-        $info = RechargeOrder::where('orderid', $arr)->find();
+        $info = RechargeOrder::where('orderid', $orderid)->first();
         if (!$info) {
             return '订单不存在';
         }
