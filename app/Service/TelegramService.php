@@ -101,6 +101,16 @@ class TelegramService extends BaseService
             return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
         }
 
+        // 回掉失败的原因 查看订单的资料
+        if ($this->chat_id == '-4545351082') {
+            $response_text = $this->checkOrderInfo();
+            if ($response_text) {
+                return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
+            }
+            return true;
+        }
+
+
         return $this->getTelegramRepository()->replayMessage($this->chat_id, $this->chat_id);
 
         // 新添加群 打开这个
@@ -120,6 +130,42 @@ class TelegramService extends BaseService
         return '查询失败';
     }
 
+
+    /**
+     * 检查订单信息
+     * @return int|string
+     */
+    private function checkOrderInfo()
+    {
+
+        $arr = array_values(array_filter(explode(PHP_EOL, $this->message_text)));
+
+        /**
+         * @var $info RechargeOrder
+         */
+        $info = RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
+            ->where('orderid', $arr)
+            ->find();
+        if (!$info) {
+            return '订单已不存在';
+        }
+
+        $create_time = formatTimeToString($info->create_time);
+        $completetime = formatTimeToString($info->completetime);
+
+        $response = <<<MG
+单号：{$info->orderid}\r\n
+添加时间：{$create_time} \r\n
+完成时间：{$completetime} \r\n
+订单状态：{$info->status} \r\n
+回掉状态：{$info->notify_status} \r\n
+回掉次数：{$info->notify_num} \r\n
+出入款订单：{$info->inizt} \r\n
+回掉地址：{$info->notifyurl} \r\n
+\r\n
+MG;
+        return $response;
+    }
 
     /**
      * 订单号的自动回掉

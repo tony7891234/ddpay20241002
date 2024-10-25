@@ -19,6 +19,7 @@ namespace App\Models;
  * @property int notify_status 回调状态 0=未回调;1=已经回调
  * @property int notify_num 回调次数
  * @property int completetime 完成时间(下游接收时间)
+ * @property int create_time
  * @property int inizt  1=代付;0=代收
  */
 class RechargeOrder extends BaseModel
