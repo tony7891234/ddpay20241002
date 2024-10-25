@@ -141,9 +141,7 @@ class TelegramService extends BaseService
         /**
          * @var $info RechargeOrder
          */
-        $info = RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
-            ->where('orderid', $arr)
-            ->find();
+        $info = RechargeOrder::where('orderid', $arr)->find();
         if (!$info) {
             return '订单已不存在';
         }
@@ -151,18 +149,7 @@ class TelegramService extends BaseService
         $create_time = formatTimeToString($info->create_time);
         $completetime = formatTimeToString($info->completetime);
 
-        $response = "单号：{$info->orderid}\r\n
-添加时间：{$create_time} \r\n
-完成时间：{$completetime} \r\n
-订单状态：{$info->status} \r\n
-回掉状态：{$info->notify_status} \r\n
-回掉次数：{$info->notify_num} \r\n
-出入款订单：{$info->inizt} \r\n
-回掉地址：{$info->notifyurl} \r\n
-\r\n";
-
-        //        $response = <<<MG
-//单号：{$info->orderid}\r\n
+//        $response = "单号：{$info->orderid}\r\n
 //添加时间：{$create_time} \r\n
 //完成时间：{$completetime} \r\n
 //订单状态：{$info->status} \r\n
@@ -170,8 +157,19 @@ class TelegramService extends BaseService
 //回掉次数：{$info->notify_num} \r\n
 //出入款订单：{$info->inizt} \r\n
 //回掉地址：{$info->notifyurl} \r\n
-//\r\n
-//MG;
+//\r\n";
+
+        $response = <<<MG
+单号：{$info->orderid}\r\n
+添加时间：{$create_time} \r\n
+完成时间：{$completetime} \r\n
+订单状态：{$info->status} \r\n
+回掉状态：{$info->notify_status} \r\n
+回掉次数：{$info->notify_num} \r\n
+出入款订单：{$info->inizt} \r\n
+回掉地址：{$info->notifyurl} \r\n
+\r\n
+MG;
         return $response;
     }
 
