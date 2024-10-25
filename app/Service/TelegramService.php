@@ -137,8 +137,8 @@ class TelegramService extends BaseService
      */
     private function checkOrderInfo()
     {
-
-        $arr = array_values(array_filter(explode(PHP_EOL, $this->message_text)));
+        $arr = $this->message_text;
+        return  $arr;
 
         /**
          * @var $info RechargeOrder
