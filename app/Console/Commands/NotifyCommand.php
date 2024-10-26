@@ -105,7 +105,7 @@ class NotifyCommand extends BaseCommand
             ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
-//            ->orderBy('create_time', 'asc')
+            ->orderBy('create_time', 'asc')
             ->limit(1000)
             ->get();
 
