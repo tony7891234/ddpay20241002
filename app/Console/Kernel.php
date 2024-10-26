@@ -16,8 +16,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-//        $schedule->command('sync_order')->everyFiveMinutes();
-//        $schedule->command('sync_log')->everyFiveMinutes();
+
+        $schedule->command('notify  left')->everyTenMinutes(); // 十分钟执行一次遗漏的订单
 
     }
 
