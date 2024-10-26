@@ -14,13 +14,15 @@ namespace App\Models;
  * @property float amount 订单金额
  * @property int status
  * @property string remarks
- * @property string realname
  * @property string notifyurl 回调地址
  * @property int notify_status 回调状态 0=未回调;1=已经回调
  * @property int notify_num 回调次数
  * @property int completetime 完成时间(下游接收时间)
  * @property int create_time
  * @property int inizt  1=代付;0=代收
+ * @property string yh_bq  yh_bq-tag_id
+ * @property int amount_real_pay DocumentNumber
+ * @property string realname - transaction_id
  */
 class RechargeOrder extends BaseModel
 {

@@ -148,15 +148,20 @@ class TelegramService extends BaseService
 
         $create_time = formatTimeToString($info->create_time);
         $completetime = formatTimeToString($info->completetime);
+        $update_time = formatTimeToString($info->update_time);
 
         $response = "单号：{$info->orderid}\r\n
 添加时间：{$create_time} \r\n
+银行回掉时间：{$update_time} \r\n
 完成时间：{$completetime} \r\n
 订单状态：{$info->status} \r\n
 回掉状态：{$info->notify_status} \r\n
 回掉次数：{$info->notify_num} \r\n
 出入款订单：{$info->inizt} \r\n
 回掉地址：{$info->notifyurl} \r\n
+yh_bq-tag_id：{$info->yh_bq} \r\n
+realname-transaction_id：{$info->realname} \r\n
+amount_real_pay-DocumentNumber：{$info->amount_real_pay} \r\n
 \r\n";
 
 //        $response = <<<MG
