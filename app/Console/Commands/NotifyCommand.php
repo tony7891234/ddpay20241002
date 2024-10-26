@@ -117,8 +117,14 @@ class NotifyCommand extends BaseCommand
             ->orderBy('create_time', 'asc')
             ->limit(300)
             ->get();
-        //  处理数据
-        $this->forDataDetail($list);
+        if ($list) {
+            //  处理数据
+            $this->forDataDetail($list);
+        } else {
+            $tgMessage = '没有遗漏数据';
+            $this->getTelegramRepository()->replayMessage(config('telegram.group.callback_count'), $tgMessage);
+        }
+
     }
 
 
