@@ -15,7 +15,7 @@ class T2Command extends BaseCommand
     /**
      * @var string
      */
-    protected $signature = 't2';
+    protected $signature = 't2 {action?}';
 
 
     /**
@@ -37,10 +37,10 @@ class T2Command extends BaseCommand
      */
     public function handle()
     {
+        $action = $this->argument('action');
 
-        $this->t2();
+        var_dump($action);
 
-        return true;
     }
 
     private function t2()

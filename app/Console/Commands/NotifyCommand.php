@@ -23,7 +23,7 @@ class NotifyCommand extends BaseCommand
     /**
      * @var string
      */
-    protected $signature = 'notify';
+    protected $signature = 'notify {action?}';
 
 
     /**
@@ -37,6 +37,7 @@ class NotifyCommand extends BaseCommand
     private $curl_start = 0;
     private $sql_finished = 0;
     private $end_at = 0;
+    private $remark = '正常订单';
 
     /**
      * KG_Init constructor.
@@ -53,17 +54,81 @@ class NotifyCommand extends BaseCommand
     public function handle()
     {
         dump('restart ' . (getTimeString()) . '  ');
-        while (true) {
-            $this->notify();
+        $action = $this->argument('action');
 
-            sleep(1);
+        if ($action == 'notify') {
+            while (true) {
+                $this->notify();
+                sleep(1);
+            }
+        } elseif ($action == 'left') {
+            // 十分钟执行一次补发遗漏的
+            $this->forLeftOrder();
+        } else {
+            echo 'nothing';
         }
-
         return true;
     }
 
-    public function notify()
+    /**
+     *  补发遗漏订单
+     */
+    public function forLeftOrder()
     {
+        $this->remark = '遗漏订单';
+        $this->start_at = time();
+
+        // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
+        $create_time = time() - 3600 * 5;
+        $start = time() - 3600 * 24;
+        $this->count_order = RechargeOrder::where('create_time', '>', $start)
+            ->where('create_time', '<', $create_time)
+            ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
+            ->where('status', '<', 2)
+            ->where('notify_num', '=', 0)
+            ->count();
+        $this->end_at = time();
+
+        /**
+         * @var $list RechargeOrder[]
+         */
+        /*********************** 以下是正式，上面是测试 ********************************/
+        $list = RechargeOrder::select([
+            'amount',
+            'order_id',
+            'sysorderid',
+            'merchantid',
+            'update_time',
+            'completetime',
+            'notify_num',
+            'remarks',
+            'realname',
+            'orderid',
+            'status',
+            'notify_status',
+            'notifyurl',
+            'inizt'
+        ])
+            ->where('create_time', '>', $start) // 5小时之前的数据
+            ->where('create_time', '<', $create_time)
+            ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
+            ->where('status', '<', 2)
+            ->where('notify_num', '=', 0)
+            ->orderBy('create_time', 'asc')
+            ->limit(300)
+            ->get();
+        //  处理数据
+        $this->forDataDetail($list);
+    }
+
+
+    /**
+     * 正常回掉
+     */
+    private function notify()
+    {
+        $this->remark = '正常订单';
+
         $this->start_at = time();
 
         // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
@@ -108,12 +173,20 @@ class NotifyCommand extends BaseCommand
             ->orderBy('create_time', 'asc')
             ->limit(1000)
             ->get();
+        //  处理数据
+        $this->forDataDetail($list);
+    }
 
+    /**
+     * @var $list RechargeOrder[]
+     */
+    private function forDataDetail($list)
+    {
         $this->sql_finished = time(); // sql 结束时间
         // 商户ID列表
         $merchant_list = MerchantModel::pluck('secret', 'merchant_id');
         $urlsWithParams = [];
-        $id_arr = [];
+//        $id_arr = [];
 //        $this->count_order = 0;
         foreach ($list as $k => $orderInfo) {
 //            $this->count_order++;
@@ -153,13 +226,12 @@ class NotifyCommand extends BaseCommand
                 'notify_url' => $notify_url,
                 'inizt' => $orderInfo->inizt,
             ];
-            $id_arr[] = $orderInfo->getId();
+//            $id_arr[] = $orderInfo->getId();
         }
 
         if ($urlsWithParams) {
             $this->curlPostMax($urlsWithParams);
         }
-
     }
 
 
@@ -225,17 +297,7 @@ class NotifyCommand extends BaseCommand
                 $file = ('no_200_' . date('Ymd') . '.txt');
                 $log_data = '---' . $order_id . '--' . $httpCode;
                 logToPublicLog($log_data, $file); // 记录文件
-
-//                if ($inizt == 0) {
-//                    //  收
-//                    $url = 'https://hulinb.com/api/order/notify?order_id_index=' . $order_id;
-//                } else {
-//                    $url = 'https://hulinb.com/api/df/notify?order_id_index=' . $order_id;
-//                }
-//                file_get_contents($url);
-
                 continue; // 这次请求没成功，不做处理
-
             }
             $result = curl_multi_getcontent($ch); //5 获取句柄的返回值
             $endTime = microtime(true); // 记录结束时间
@@ -288,7 +350,9 @@ class NotifyCommand extends BaseCommand
         $sql_finished = date('H:i:s', $this->sql_finished);
         $endTimeTmp = date('H:i:s', time());
         $diff_time = (time() - $this->start_at);
+        $remark = $this->remark;
         $tgMessage = <<<MG
+类型：{$remark}\r\n
 执行时间：{$current_time}\r\n
 总单数：{$this->count_order} \r\n
 成功条数：{$response_success} \r\n
