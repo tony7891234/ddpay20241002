@@ -88,6 +88,11 @@ class NotifyCommand extends BaseCommand
             ->where('notify_num', '=', 0)
             ->count();
         $this->end_at = time();
+        if ($this->count_order == 0) {
+            $tgMessage = '没有遗漏数据';
+            $this->getTelegramRepository()->replayMessage(config('telegram.group.callback_count'), $tgMessage);
+            return true;
+        }
 
         /**
          * @var $list RechargeOrder[]
@@ -117,13 +122,9 @@ class NotifyCommand extends BaseCommand
             ->orderBy('create_time', 'asc')
             ->limit(300)
             ->get();
-        if ($list) {
-            //  处理数据
-            $this->forDataDetail($list);
-        } else {
-            $tgMessage = '没有遗漏数据';
-            $this->getTelegramRepository()->replayMessage(config('telegram.group.callback_count'), $tgMessage);
-        }
+
+        //  处理数据
+        $this->forDataDetail($list);
 
     }
 
