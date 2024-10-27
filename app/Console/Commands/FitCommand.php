@@ -45,6 +45,8 @@ class FitCommand extends BaseCommand
 
         if ($action == 'balance') {
             $this->checkFitBalance();
+        } else {
+            dump(11);
         }
 
 
