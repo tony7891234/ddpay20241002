@@ -1,4 +1,4 @@
--- drop table  cd_batch_withdraw;
+drop table  cd_batch_withdraw;
 CREATE TABLE `cd_batch_withdraw` (
   `bach_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
   `merchant_id` int(10) unsigned NOT NULL DEFAULT '0',

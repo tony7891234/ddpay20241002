@@ -123,6 +123,10 @@ class BatchWithdrawJob extends BaseJob
         foreach (json_decode($list, true) as $request) {
             $request = rtrim($request, "\r");
             $arr = array_values(array_filter(explode(",", $request)));
+            if (count($arr) <= 2) {
+                continue;
+            }
+
             if (count($arr) != 4) {
                 $response[] = $request . '格式有误';
 //                $arr[] = '参数不是4位';
