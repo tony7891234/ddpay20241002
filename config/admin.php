@@ -320,7 +320,7 @@ return [
     */
     'layout' => [
         // default, blue, blue-light, green
-        'color' => 'default',
+        'color' => 'green',
 
         // sidebar-separate
 
