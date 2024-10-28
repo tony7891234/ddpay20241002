@@ -136,7 +136,7 @@ return [
 
         'guards' => [
             'admin' => [
-                'driver'   => 'session',
+                'driver' => 'session',
                 'provider' => 'admin',
             ],
         ],
@@ -144,7 +144,7 @@ return [
         'providers' => [
             'admin' => [
                 'driver' => 'eloquent',
-                'model'  => Dcat\Admin\Models\Administrator::class,
+                'model' => Dcat\Admin\Models\Administrator::class,
             ],
         ],
 
@@ -235,7 +235,7 @@ return [
         'cache' => [
             // enable cache or not
             'enable' => false,
-            'store'  => 'file',
+            'store' => 'file',
         ],
 
         // Whether enable menu bind to a permission.
@@ -267,7 +267,7 @@ return [
         // Image and file upload path under the disk above.
         'directory' => [
             'image' => 'images',
-            'file'  => 'files',
+            'file' => 'files',
         ],
 
     ],
@@ -302,12 +302,12 @@ return [
         'menu_model' => Dcat\Admin\Models\Menu::class,
 
         // Pivot table for table above.
-        'role_users_table'       => 'admin_role_users',
+        'role_users_table' => 'admin_role_users',
         'role_permissions_table' => 'admin_role_permissions',
-        'role_menu_table'        => 'admin_role_menu',
-        'permission_menu_table'  => 'admin_permission_menu',
-        'settings_table'         => 'admin_settings',
-        'extensions_table'       => 'admin_extensions',
+        'role_menu_table' => 'admin_role_menu',
+        'permission_menu_table' => 'admin_permission_menu',
+        'settings_table' => 'admin_settings',
+        'extensions_table' => 'admin_extensions',
         'extension_histories_table' => 'admin_extension_histories',
     ],
 
@@ -323,7 +323,6 @@ return [
         'color' => 'default',
 
         // sidebar-separate
-        'body_class' => [],
 
         'horizontal_menu' => false,
 
@@ -332,10 +331,11 @@ return [
         // light, primary, dark
         'sidebar_style' => 'light',
 
-        'dark_mode_switch' => false,
-
         // bg-primary, bg-info, bg-warning, bg-success, bg-danger, bg-dark
         'navbar_color' => '',
+
+        'dark_mode_switch' => true, // 开启深蓝色主题切换
+        'body_class' => 'dark-mode', // 默认深蓝色主题
     ],
 
     /*
