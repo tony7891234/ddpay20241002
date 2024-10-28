@@ -160,7 +160,7 @@ class BatchWithdrawJob extends BaseJob
     private function addOrder($pix_type, $pix_account, $withdraw_amount, $user_message)
     {
         $arr = [
-            "merchant_id" => 1001, // 商户号
+            "merchant_id" => WithdrawOrder::MERCHANT_DEFAULT, // 商户号
             'batch_no' => $this->batch_withdraw_info->batch_no,
             'pix_type' => $pix_type,
             'pix_account' => $pix_account,

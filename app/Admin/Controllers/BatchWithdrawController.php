@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Jobs\BatchWithdrawJob;
 use App\Models\BatchWithdraw;
+use App\Models\WithdrawOrder;
 use App\Traits\PreviewCode;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Controllers\AdminController;
@@ -65,7 +66,7 @@ class BatchWithdrawController extends AdminController
             return formatTimeToString($input);
         });
 
-        $grid->column('updated_at', '添加时间')->display(function ($input) {
+        $grid->column('updated_at', '更新时间')->display(function ($input) {
             return formatTimeToString($input);
         });
 
@@ -147,7 +148,7 @@ class BatchWithdrawController extends AdminController
             $form->hidden('created_at');
             $form->submitted(function (Form $form) {
                 $form->batch_no = makeOrder(BaseModel::PREFIX_BATCH_WITHDRAW);
-                $form->merchant_id = 1001;
+                $form->merchant_id = WithdrawOrder::MERCHANT_DEFAULT;
 
                 // 换行 PHP_EOL
                 $arr = [];

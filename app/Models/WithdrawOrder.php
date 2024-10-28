@@ -9,7 +9,7 @@ namespace App\Models;
  * @property int order_id
  * @property int merchant_id 商户id
  * @property int batch_no 批量单号
- * @property int pix_type pix类型
+ * @property string pix_type pix类型
  * @property string pix_account pix账号
  *
  * @property double withdraw_amount 出款金额
@@ -30,6 +30,8 @@ class WithdrawOrder extends BaseModel
     protected $fillable = [];
     protected $guarded = ['order_id'];
     protected $hidden = [];
+
+    const MERCHANT_DEFAULT = 1001; // 默认的商户号码
 
     // status 代表的状态
     const STATUS_MERCHANT_REQUEST = 1;
