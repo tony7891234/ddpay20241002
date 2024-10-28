@@ -333,6 +333,19 @@ if (!function_exists('formatTimeToString')) {
     }
 }
 
+
+if (!function_exists('makeOrder')) {
+    /**
+     * $prefix integer 前缀
+     * @param int $prefix
+     * @return string int
+     */
+    function makeOrder($prefix = \App\Models\BaseModel::PREFIX_BATCH_WITHDRAW)
+    {
+        return $prefix . date('mdHis') . mt_rand(1000, 9999);
+    }
+}
+
 if (!function_exists('addFloatNum')) {
     /**
      * 浮点数加
