@@ -87,6 +87,8 @@ class NotifyOrderController extends AdminController
         $grid->filter(function (Grid\Filter $filter) {
             $filter->equal('order_id', 'ID')->width('350px');
             $filter->equal('orderid', '订单号')->width('350px');
+            $filter->equal('notify_num', '回掉次数')->width('350px');
+            $filter->equal('response', '商户返回内容')->width('350px');
             $filter->equal('notify_status', '回掉状态')->select(NotifyOrder::LIST_NOTIFY_STATUS);
         });
         return $grid;

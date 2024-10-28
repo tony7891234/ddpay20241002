@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\MerchantModel;
 use App\Models\RechargeOrder;
 use App\Service\DdPayService;
+use App\Traits\RepositoryTrait;
 
 /**
  * Class Sync
@@ -12,6 +13,8 @@ use App\Service\DdPayService;
  */
 class TestCommand extends BaseCommand
 {
+
+    use RepositoryTrait;
 
     const MAX_TIME = 5;// 超时多少秒，需要记录 log
     const FILE_NAME_LONG_TIME = 'long_'; // 超时5S没信息的
@@ -50,6 +53,11 @@ class TestCommand extends BaseCommand
 
     private function t2()
     {
+
+        $tgMessage = '222';
+        $this->getTelegramRepository()->replayMessage(config('telegram.group.notify_order'), $tgMessage);
+
+        return 1;
         $name = 'withdraw/1730138606.xlsx';
 //        $name = '1730138606.xlsx';
 //        $file = \Illuminate\Support\Facades\Storage::disk('withdraw');
