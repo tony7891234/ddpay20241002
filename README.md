@@ -6,6 +6,7 @@ https://jingyan.baidu.com/article/47a29f24610740c0142399ea.html
 php artisan admin:publish
 php artisan admin:install
 
+mkdir  storage/admin
 
 php artisan vendor:publish --tag=iframe-tab
 php artisan vendor:publish --tag=iframe-tab.config
@@ -74,5 +75,12 @@ grep  '19-Oct-2024'   /www/server/php/74/var/log/php-fpm.log
 ````  
 --  从旧的表拿数据到新的表
 INSERT INTO baxi_20241010.cd_order ( SELECT * FROM   baxi_20241003.cd_order  where  orderid='013117420204337004');
+
+````
+
+## 域名相关
+````   
+后台  https://test107.hulinb.com/admin999
+日志  https://test107.hulinb.com/admin/log-viewer/logs
 
 ````

@@ -2,6 +2,9 @@
 
 return [
 
+    // storage/app/public/admin/withdraw/    后台得文件根目录是  storage/app/public/admin/
+    'app_file_name' => 'withdraw', // 电话号码的路径  这个一旦上线是必须固定，不能更改
+
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -39,7 +42,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => (bool)env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------

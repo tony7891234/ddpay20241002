@@ -12,7 +12,6 @@ trait RepositoryTrait
 {
 
 
-
     /**
      * @return \App\Repository\TelegramRepository
      */
@@ -25,6 +24,18 @@ trait RepositoryTrait
         return $repository = app('App\Repository\TelegramRepository');
     }
 
+
+    /**
+     * @return \App\Repository\WithdrawOrderRepository
+     */
+    protected function getWithdrawOrderRepository()
+    {
+        static $repository;
+        if ($repository) {
+            return $repository;
+        }
+        return $repository = app('App\Repository\WithdrawOrderRepository');
+    }
 
 
 }

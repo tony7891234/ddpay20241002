@@ -321,6 +321,7 @@ if (!function_exists('getTimeString')) {
     }
 }
 
+
 if (!function_exists('formatTimeToString')) {
     /**
      * @param $timestamp

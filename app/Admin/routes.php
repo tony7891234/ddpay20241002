@@ -23,4 +23,9 @@ Route::group([
 
     $router->resource('job', 'JobController');
 
+    // 出款订单
+    $router->resource('withdraw_order', 'WithdrawOrderController');
+    // 批量出款
+    $router->resource('batch_withdraw', 'BatchWithdrawController');
+
 });

@@ -38,7 +38,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
 
@@ -52,6 +52,12 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
         ],
+        'admin' => [
+            'driver' => 'local',
+            'visibility' => 'public',
+            'root' => storage_path('app/public/admin'), // 上传的图片
+            'url' => config('app.url') . '/storage/admin', // url 读取的路径  storage/app/public/admin/files
+        ],     //  添加后台文件配置
 
     ],
 
