@@ -42,11 +42,22 @@ class TestCommand extends BaseCommand
      */
     public function handle()
     {
-        $this->t1();
+        $this->t2();
 
         return true;
     }
 
+
+    private function t2()
+    {
+        $name = 'withdraw/1730138606.xlsx';
+//        $name = '1730138606.xlsx';
+//        $file = \Illuminate\Support\Facades\Storage::disk('withdraw');
+
+//        dump($file);
+        $file = \Illuminate\Support\Facades\Storage::disk('withdraw')->get($name);
+        dump($file);
+    }
 
     private function t1()
     {
