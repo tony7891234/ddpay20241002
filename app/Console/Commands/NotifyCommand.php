@@ -20,6 +20,8 @@ class NotifyCommand extends BaseCommand
     const FILE_NAME_LONG_TIME = 'long_'; // 超时5S没信息的
     const FILE_NAME_RESPONSE_NULL = 'nothing_'; // 什么否没有返回的
 
+    const LIMIT_HOUR = 3;
+
     /**
      * @var string
      */
@@ -79,7 +81,7 @@ class NotifyCommand extends BaseCommand
         $this->start_at = time();
 
         // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
-        $create_time = time() - 3600 * 5;
+        $create_time = time() - 3600 * self::LIMIT_HOUR;
         $start = time() - 3600 * 24;
         $this->count_order = RechargeOrder::where('create_time', '>', $start)
             ->where('create_time', '<', $create_time)
@@ -139,7 +141,7 @@ class NotifyCommand extends BaseCommand
         $this->start_at = time();
 
         // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
-        $create_time = time() - 3600 * 5;
+        $create_time = time() - 3600 * self::LIMIT_HOUR;
         $this->count_order = RechargeOrder::where('create_time', '>', $create_time)
             ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
             ->where('status', '<', 2)
