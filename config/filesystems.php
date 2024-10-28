@@ -59,6 +59,14 @@ return [
             'url' => config('app.url') . '/storage/admin', // url 读取的路径  storage/app/public/admin/files
         ],     //  添加后台文件配置
 
+        'withdraw' => [
+            'driver' => 'local',
+            'visibility' => 'public',
+            'root' => storage_path('app/public/withdraw'), // 上传的图片
+            'url' => config('app.url') . '/storage/withdraw', // url 读取的路径  storage/app/public/admin/files
+        ],     //  添加后台文件配置
+
+
     ],
 
     /*

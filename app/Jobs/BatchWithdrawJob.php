@@ -78,7 +78,7 @@ class BatchWithdrawJob extends BaseJob
             $extension = pathinfo($this->batch_withdraw_info->file, PATHINFO_EXTENSION);
             if (in_array($extension, self::LIST_ALLOWED_EXTENSION)) {
                 // 获取上传的xls文件路径
-                $filePath = \Illuminate\Support\Facades\Storage::disk('admin')->path($this->batch_withdraw_info->file);
+                $filePath = \Illuminate\Support\Facades\Storage::disk('withdraw')->path($this->batch_withdraw_info->file);
                 // 使用Excel门面读取xls文件的数据
                 $file = Excel::toArray([], $filePath)[0];
                 $arr = [];
@@ -87,7 +87,7 @@ class BatchWithdrawJob extends BaseJob
                 }
                 $this->forWithdraw(json_encode($arr));
             } else {
-                $file = \Illuminate\Support\Facades\Storage::disk('admin')->get($this->batch_withdraw_info->file);
+                $file = \Illuminate\Support\Facades\Storage::disk('withdraw')->get($this->batch_withdraw_info->file);
                 $file = explode(PHP_EOL, $file);
                 $arr = [];
                 foreach ($file as $item) {
