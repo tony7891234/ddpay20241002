@@ -28,4 +28,7 @@ Route::group([
     // 批量出款
     $router->resource('batch_withdraw', 'BatchWithdrawController');
 
+    // 回掉商户遗漏订单
+    $router->resource('notify_order', 'NotifyOrderController');
+
 });

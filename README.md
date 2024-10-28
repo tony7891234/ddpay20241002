@@ -80,7 +80,8 @@ INSERT INTO baxi_20241010.cd_order ( SELECT * FROM   baxi_20241003.cd_order  whe
 
 ## 域名相关
 ````   
-后台  https://test107.hulinb.com/admin999
+批量出款后台
+后台  https://test107.hulinb.com/admin999  joyce  joycejoyce
 日志  https://test107.hulinb.com/admin/log-viewer/logs
 
 ````

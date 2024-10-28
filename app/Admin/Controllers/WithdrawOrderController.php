@@ -64,7 +64,9 @@ class WithdrawOrderController extends AdminController
         $grid->column('batch_no', '批量单号'); // 直接对此字段查询
         $grid->column('pix_type', 'pix类型');
         $grid->column('pix_type', 'pix类型');
-
+        $grid->column('status', '订单状态')->display(function ($input) {
+            return isset(WithdrawOrder::LIST_STATUS[$input]) ? WithdrawOrder::LIST_STATUS[$input] : $input;
+        });
         $grid->column('pix_account', 'pix账号');
         $grid->column('withdraw_amount', '出款金额');
         $grid->column('user_message', '附言(给客户的)');

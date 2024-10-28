@@ -7,6 +7,7 @@ namespace App\Models;
  * 回掉订单
  * @property  int id id
  * @property  int order_id 订单id
+ * @property  int orderid 订单号
  * @property  int create_time 添加时间
  * @property  int notify_time 下次回掉时间
  * @property  int notify_num  回掉次数
@@ -35,6 +36,13 @@ class NotifyOrder extends BaseModel
     const NOTIFY_STATUS_ERROR = 3; // 返回的不是 success/ok
     const NOTIFY_STATUS_FAIL = 4; //
     const NOTIFY_STATUS_SITE = 5; // 回掉到了站点
+    const LIST_NOTIFY_STATUS = [
+        self::NOTIFY_STATUS_SUCCESS => '回掉成功', // 这个值，和系统的值是不一样的
+        self::NOTIFY_STATUS_400 => '回掉http400', // 400 是这个
+        self::NOTIFY_STATUS_ERROR => '返回错误', // 返回的不是 success/ok
+        self::NOTIFY_STATUS_FAIL => '返回不是success', //
+        self::NOTIFY_STATUS_SITE => '站点回掉', // 回掉到了站点
+    ];
 
     // type  1=充值；2=提款
     const TYPE_RECHARGE = 1;
