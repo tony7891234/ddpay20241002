@@ -16,8 +16,8 @@ namespace App\Models;
  * @property string user_message 附言(给客户的)
  * @property string remark 备注(运营)
  * @property string error_message 错误信息
- * @property string request_bank 请求银行内容
- * @property string response_bank 银行返回
+ * @property string request_bank 请求银行内容 废弃
+ * @property string response_bank 银行返回  废弃
  * @property int created_at 添加时间
  * @property int updated_at 更新时间
  * @property int status 支付状态

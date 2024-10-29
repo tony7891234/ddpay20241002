@@ -85,21 +85,21 @@ class WithdrawOrderController extends AdminController
             return formatTimeToString($input);
         });
 
-        $grid->column('request_bank', '请求银行内容')->display(function ($input) {
-            $input = json_decode($input, true);
-            if (empty($input)) {
-                return '';
-            }
-            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
-        });
-
-        $grid->column('response_bank', '银行返回')->display(function ($input) {
-            $input = json_decode($input, true);
-            if (empty($input)) {
-                return '';
-            }
-            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
-        });
+//        $grid->column('request_bank', '请求银行内容')->display(function ($input) {
+//            $input = json_decode($input, true);
+//            if (empty($input)) {
+//                return '';
+//            }
+//            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+//        });
+//
+//        $grid->column('response_bank', '银行返回')->display(function ($input) {
+//            $input = json_decode($input, true);
+//            if (empty($input)) {
+//                return '';
+//            }
+//            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+//        });
 
         $grid->column('notify_info', '银行回掉数据')->display(function ($input) {
             $input = json_decode($input, true);
