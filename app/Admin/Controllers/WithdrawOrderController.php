@@ -46,15 +46,18 @@ class WithdrawOrderController extends AdminController
         $grid->disableBatchActions();
         $grid->disableRowSelector();
 
-        $grid->withBorder();
+//        $grid->withBorder();
         // 显示详情按钮
-        $grid->showViewButton();
+//        $grid->showViewButton();
         // 禁用删除按钮
         $grid->disableDeleteButton();
         // 禁用编辑按钮
         $grid->disableEditButton();
         // 隐藏 创建按钮
         $grid->disableCreateButton();
+
+
+        $grid->disableViewButton();
         //  搜索条件
         $grid->model()->orderBy('order_id', 'desc'); // 按照ID 倒序排序
         $grid->column('order_id', 'ID');

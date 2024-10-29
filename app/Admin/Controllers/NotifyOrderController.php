@@ -42,10 +42,12 @@ class NotifyOrderController extends AdminController
         ];
         $grid->export()->titles($titles)->filename('出款订单');
         // 禁用批量操作
-        $grid->disableBatchActions();
         $grid->disableRowSelector();
+        $grid->disableDeleteButton();
+        $grid->disableEditButton();
+        $grid->disableViewButton();
 
-        $grid->withBorder();
+//        $grid->withBorder();
         // 显示详情按钮
         $grid->showViewButton();
         // 禁用删除按钮
