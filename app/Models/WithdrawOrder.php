@@ -91,7 +91,7 @@ class WithdrawOrder extends BaseModel
     public function updateNotifyInfo($notify_info)
     {
         return $this->update([
-            'notify_info' => is_string($notify_info) ? $notify_info : json_encode($notify_info),
+            'notify_info' => is_string($notify_info) ? $notify_info : json_encode($notify_info, JSON_UNESCAPED_UNICODE),
             'updated_at' => time(),
         ]);
     }
@@ -122,8 +122,8 @@ class WithdrawOrder extends BaseModel
     public function updateToRequestSuccess($pix_info, $pix_out, $bank_order_id)
     {
         return $this->update([
-            'pix_info' => is_string($pix_info) ? $pix_info : json_encode($pix_info),
-            'pix_out' => is_string($pix_out) ? $pix_out : json_encode($pix_out),
+            'pix_info' => is_string($pix_info) ? $pix_info : json_encode($pix_info, JSON_UNESCAPED_UNICODE),
+            'pix_out' => is_string($pix_out) ? $pix_out : json_encode($pix_out, JSON_UNESCAPED_UNICODE),
             'status' => self::STATUS_REQUEST_SUCCESS,
             'bank_order_id' => $bank_order_id,
             'updated_at' => time(),
@@ -142,8 +142,8 @@ class WithdrawOrder extends BaseModel
     {
         return $this->update([
             'status' => self::STATUS_REQUEST_FAIL,
-            'pix_info' => is_string($pix_info) ? $pix_info : json_encode($pix_info),
-            'pix_out' => is_string($pix_out) ? $pix_out : json_encode($pix_out),
+            'pix_info' => is_string($pix_info) ? $pix_info : json_encode($pix_info, JSON_UNESCAPED_UNICODE),
+            'pix_out' => is_string($pix_out) ? $pix_out : json_encode($pix_out, JSON_UNESCAPED_UNICODE),
             'error_message' => $error_message,
             'updated_at' => time(),
         ]);
