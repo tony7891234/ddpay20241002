@@ -169,7 +169,7 @@ class FitbankPayment extends BasePayment
         // 更新回掉的数据
         $orderInfo->updateNotifyInfo($callbackData);
 
-        if ($orderInfo->status == WithdrawOrder::STATUS_REQUEST_SUCCESS) {
+        if ($orderInfo->status != WithdrawOrder::STATUS_REQUEST_SUCCESS) {
             $this->errorCode = -22;
             $this->errorMessage = '订单状态不对' . $orderInfo->status;
             return false;

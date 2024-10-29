@@ -28,7 +28,7 @@ CREATE TABLE `cd_withdraw_orders` (
   `withdraw_amount` DECIMAL(20,2) UNSIGNED NOT NULL DEFAULT '0.00' COMMENT '出款金额',
   `user_message` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '附言(给客户的)',
   `remark` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '备注(运营)',
-  `error_message` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '错误信息',
+  `error_message`  text COLLATE utf8mb4_unicode_ci COMMENT  '错误信息',
   `request_bank` text COLLATE utf8mb4_unicode_ci COMMENT '请求银行内容',
   `response_bank` text COLLATE utf8mb4_unicode_ci COMMENT '银行返回',
   `notify_info` text COLLATE utf8mb4_unicode_ci COMMENT '银行回掉信息',
