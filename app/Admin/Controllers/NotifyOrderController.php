@@ -63,11 +63,11 @@ class NotifyOrderController extends AdminController
 
         $grid->column('notify_status', '回掉状态')->display(function ($input) {
             return isset(NotifyOrder::LIST_NOTIFY_STATUS[$input]) ? NotifyOrder::LIST_NOTIFY_STATUS[$input] : $input;
-        });
+        })->dot(NotifyOrder::getStatusDot());
 
         $grid->column('type', '订单类型')->display(function ($input) {
             return isset(NotifyOrder::LIST_TYPE[$input]) ? NotifyOrder::LIST_TYPE[$input] : $input;
-        });
+        })->dot(NotifyOrder::getStatusDot());
 
         $grid->column('notify_num', '回掉次数');
 

@@ -72,20 +72,6 @@ class WithdrawOrder extends BaseModel
         self::PIX_CNPJ => 'CNPJ',
     ];
 
-    /**
-     * 状态对应的颜色
-     * @return array
-     */
-    public static function getStatusDot()
-    {
-        return [
-            self::STATUS_WAITING => 'yellow',
-            self::STATUS_REQUEST_BANK => 'danger',
-            self::STATUS_NOTIFY_SUCCESS => 'success',
-            self::STATUS_NOTIFY_FAIL => 'fail'
-        ];
-    }
-
 
     /**
      * 自增ID

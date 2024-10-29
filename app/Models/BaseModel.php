@@ -23,6 +23,23 @@ class BaseModel extends Model
     public $timestamps = false; // 添加的时候，不自动使用 created_at;更新不自动使用 updated_at
 
     /**
+     * 状态对应的颜色
+     * @return array
+     */
+    public static function getStatusDot()
+    {
+        return [
+            1 => 'yellow',
+            2 => 'danger',
+            3 => 'success',
+            4 => 'fail',
+            5 => 'red',
+            6 => 'dark',
+        ];
+    }
+
+
+    /**
      * 添加时间
      * @return string
      */
