@@ -29,12 +29,15 @@ class BaseModel extends Model
     public static function getStatusDot()
     {
         return [
+            0 => '#FFD700',
             1 => 'yellow',
             2 => 'danger',
             3 => 'success',
-            4 => 'fail',
-            5 => 'red',
-            6 => 'dark',
+            4 => '#FFA07A',
+            5 => '#FFB6C1',
+            6 => '#FF6347',
+            7 => '#EE82EE',
+            8 => '#006400',
         ];
     }
 
