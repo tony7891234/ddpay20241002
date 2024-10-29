@@ -53,7 +53,7 @@ class FitbankPayment extends BasePayment
         /**
          * @var $pix_info PixModel
          */
-        $this->pix_info = $pix_info = PixModel::where('account', '=', $orderInfo->pix_account)->find();
+        $this->pix_info = $pix_info = PixModel::where('account', '=', $orderInfo->pix_account)->first();
         if ($pix_info) {
             $pix_status = $pix_info->status;
             if ($pix_status && $pix_status != PixModel::STATUS_SUCCESS) {
