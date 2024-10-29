@@ -30,12 +30,12 @@ class BaseModel extends Model
     {
         return [
             0 => '#FFD700',
-            1 => 'yellow',
-            2 => 'danger',
-            3 => 'success',
+            1 => '#FFB6C1',
+            2 => 'green',
+            3 => 'yellow',
             4 => '#FFA07A',
-            5 => '#FFB6C1',
-            6 => '#FF6347',
+            5 => 'success',
+            6 => 'danger',
             7 => '#EE82EE',
             8 => '#006400',
         ];
