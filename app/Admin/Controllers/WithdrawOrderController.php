@@ -71,7 +71,7 @@ class WithdrawOrderController extends AdminController
         $grid->column('withdraw_amount', '出款金额');
         $grid->column('user_message', '附言(给客户的)');
         $grid->column('remark', '备注(运营)');
-        $grid->column('error_message', '错误信息');
+        $grid->column('error_message', '错误信息')->hide();
 
 
         $grid->column('created_at', '添加时间')->display(function ($input) {
@@ -97,6 +97,14 @@ class WithdrawOrderController extends AdminController
             }
             return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
         });
+
+        $grid->column('notify_info', '银行回掉数据')->display(function ($input) {
+            $input = json_decode($input, true);
+            if (empty($input)) {
+                return '';
+            }
+            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+        })->hide();
 
         $grid->column('pix_info', 'pix_info')->display(function ($input) {
             $input = json_decode($input, true);
