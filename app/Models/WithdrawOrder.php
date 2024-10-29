@@ -99,7 +99,7 @@ class WithdrawOrder extends BaseModel
 
     /**
      * 更新银行回掉数据
-     * @param string $notify_info
+     * @param string|array $notify_info
      * @return bool
      */
     public function updateNotifyInfo($notify_info)

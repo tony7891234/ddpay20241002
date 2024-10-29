@@ -138,13 +138,13 @@ class FitbankPayment extends BasePayment
 
     /**
      * 2.出款回掉
-     * @param $request array
+     * @param $callbackData array
      * @return array|bool
      */
-    public function withdrawCallback($request)
+    public function withdrawCallback($callbackData)
     {
 
-        $callbackData = json_decode($this->ParseNotifyData($request), true);
+//        $callbackData = json_decode($this->ParseNotifyData($request), true);
 
         if ($callbackData['Method'] != 'PixOut') {
             $this->errorCode = -101;
