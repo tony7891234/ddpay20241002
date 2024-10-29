@@ -142,11 +142,14 @@ class NotifyCommand extends BaseCommand
 
         // 10.17号，改成只处理一个小时之内的数据，不然可能需要的时间长
         $create_time = time() - 3600 * self::LIMIT_HOUR;
-        $this->count_order = RechargeOrder::where('create_time', '>', $create_time)
-            ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
-            ->where('status', '<', 2)
-            ->where('notify_num', '=', 0)
-            ->count();
+//        $this->count_order = RechargeOrder::where('create_time', '>', $create_time)
+//            ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
+//            ->where('status', '<', 2)
+//            ->where('notify_num', '=', 0)
+//            ->count();
+        $this->count_order = 1;
+
+
         $this->end_at = time();
 
         dump((getTimeString()) . '  ' . $this->count_order . '  diff:' . ($this->end_at - $this->start_at));
