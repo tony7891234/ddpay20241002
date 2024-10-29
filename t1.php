@@ -1,3 +1,6 @@
-2024-10-19 00:00:00
-2024-10-19 00:05:00
-2024-10-19 00:08:00
+<?php
+
+$prefix = 'dcat';
+$order_id = 'dcat1234';
+$result = substr($order_id, strlen($prefix));
+var_dump($result);

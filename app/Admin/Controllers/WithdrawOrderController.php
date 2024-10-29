@@ -62,7 +62,7 @@ class WithdrawOrderController extends AdminController
 
         $grid->column('order_id', 'ID');
         $grid->column('batch_no', '批量单号'); // 直接对此字段查询
-        $grid->column('pix_type', 'pix类型');
+        $grid->column('bank_order_id', '银行单号');
         $grid->column('pix_type', 'pix类型');
         $grid->column('status', '订单状态')->display(function ($input) {
             return isset(WithdrawOrder::LIST_STATUS[$input]) ? WithdrawOrder::LIST_STATUS[$input] : $input;
@@ -72,6 +72,15 @@ class WithdrawOrderController extends AdminController
         $grid->column('user_message', '附言(给客户的)');
         $grid->column('remark', '备注(运营)');
         $grid->column('error_message', '错误信息');
+
+
+        $grid->column('created_at', '添加时间')->display(function ($input) {
+            return formatTimeToString($input);
+        });
+
+        $grid->column('updated_at', '更新时间')->display(function ($input) {
+            return formatTimeToString($input);
+        });
 
         $grid->column('request_bank', '请求银行内容')->display(function ($input) {
             $input = json_decode($input, true);
@@ -89,14 +98,22 @@ class WithdrawOrderController extends AdminController
             return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
         });
 
+        $grid->column('pix_info', 'pix_info')->display(function ($input) {
+            $input = json_decode($input, true);
+            if (empty($input)) {
+                return '';
+            }
+            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+        })->hide();
 
-        $grid->column('created_at', '添加时间')->display(function ($input) {
-            return formatTimeToString($input);
-        });
+        $grid->column('pix_out', 'pix_out')->display(function ($input) {
+            $input = json_decode($input, true);
+            if (empty($input)) {
+                return '';
+            }
+            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+        })->hide();
 
-        $grid->column('updated_at', '更新时间')->display(function ($input) {
-            return formatTimeToString($input);
-        });
 
         // 过滤器  查询字段
         $grid->filter(function (Grid\Filter $filter) {

@@ -4,6 +4,7 @@ namespace App\Payment;
 
 use App\Models\PixModel;
 use App\Models\WithdrawOrder;
+use App\Traits\RepositoryTrait;
 
 /**
  * fit银行
@@ -12,6 +13,10 @@ use App\Models\WithdrawOrder;
  */
 class FitbankPayment extends BasePayment
 {
+    use RepositoryTrait;
+
+
+    const PREFIX_ORDER_ID = 'dcat'; // 订单号的前缀
 
     /**
      * @var string   pix  信息
@@ -99,7 +104,7 @@ class FitbankPayment extends BasePayment
             "ToBankAccountDigit" => $pixInfo['data']['ReceiverBankAccountDigit'],
             "Value" => $orderInfo->withdraw_amount,
             "AccountType" => $pixInfo['data']['ReceiverAccountType'],
-            "Identifier" => $orderInfo->getId(),
+            "Identifier" => $this->sqlToFitOrder($orderInfo->getId()),
             "PaymentDate" => $this->brlTime(),
             "SearchProtocol" => $pixInfo['data']['SearchProtocol'],
         ];
@@ -133,87 +138,74 @@ class FitbankPayment extends BasePayment
 
     /**
      * 2.出款回掉
+     * @param $request array
      * @return array|bool
      */
-    public function withdrawCallback()
+    public function withdrawCallback($request)
     {
-        $request = file_get_contents('php://input');
 
         $callbackData = json_decode($this->ParseNotifyData($request), true);
 
-
         if ($callbackData['Method'] != 'PixOut') {
             $this->errorCode = -101;
-            $this->errorMessage = '{ "Success":true, "Message": "Operação realizada com sucesso" }';
+            $this->errorMessage = 'Method 有误';
             return false;
         }
 
         if (!isset($callbackData['Identifier']) || !isset($callbackData['DocumentNumber'])) {
             $this->errorCode = -102;
-            $this->errorMessage = 'Identifier or DocumentNumber not found';
+            $this->errorMessage = 'Identifier or DocumentNumber 参数不存在';
+            return false;
+        }
+//        'orderid' => $callbackData['Identifier'],
+//            'bank_order_id' => $callbackData['DocumentNumber'],
+        $orderInfo = $this->getWithdrawOrderRepository()->getById($callbackData['Identifier']);
+        if (!$orderInfo) {
+            $this->errorCode = -21;
+            $this->errorMessage = '订单不存在' . $callbackData['Identifier'];
             return false;
         }
 
-        if (isset($callbackData['ReceiptUrl']) && $callbackData['ReceiptUrl'] != '') {
-            $this->redisCacheSet('receipt:' . $callbackData['Identifier'], $callbackData['ReceiptUrl'],
-                60 * 60 * 24 * 5);
-        }
-        $this->redisCacheCallback($callbackData['Identifier'], $callbackData);
-        // $this->redisCacheSet('callback_time:' . $callbackData['Identifier'], date('Y-m-d H:i:s', time()));
-        $orderModel = OrderModel::where([
-            'orderid' => $callbackData['Identifier'],
-            'sf_id' => $callbackData['DocumentNumber'],
-        ])->find();
+        // 更新回掉的数据
+        $orderInfo->updateNotifyInfo($callbackData);
 
-        if (!$orderModel) {
-            echo '{ "Success":true, "Message": "Operação realizada com sucesso" }';
-            exit;
-            return [
-                'code' => 500,
-                'msg' => 'order not exist',
-                'status' => -1,
-            ];
+        if ($orderInfo->status == WithdrawOrder::STATUS_REQUEST_SUCCESS) {
+            $this->errorCode = -22;
+            $this->errorMessage = '订单状态不对' . $orderInfo->status;
+            return false;
         }
-        if ($orderModel['status'] == 1) {
-            echo '{ "Success": true, "Message": "Operação realizada com sucesso" }';
-            exit;
-
-        }
-
-        if ($orderModel['status'] != 2) {
-            echo '{ "Success": true, "Message": "Operação realizada com sucesso" }';
-            exit;
-            return [
-                'code' => 500,
-                'msg' => 'success',
-                'status' => -1,
-            ];
-        }
-
 
         if ($callbackData['Status'] == 'Cancel') {
-            return [
-                'code' => 0,
-                'order' => $orderModel,
-                'status' => 0,
-                'msg' => '失败原因:' . $callbackData['ErrorDescription'] ?? '',
-                'channel_info' => self::LIST_CHANNEL,
-            ];
+            $this->errorCode = -23;
+            $this->errorMessage = '失败原因:' . $callbackData['ErrorDescription'] ?? '';
+            $orderInfo->updateNotifyFail($this->errorMessage);
+            return false;
         }
 
-        if ($callbackData['Status'] == 'Paid') {
-            return [
-                'code' => 0,
-                'order' => $orderModel,
-                'status' => 1,
-                'channel_info' => self::LIST_CHANNEL,
-            ];
+        if ($callbackData['Status'] != 'Paid') {
+            $this->errorCode = -24;
+            $this->errorMessage = '支付失败';
+            $orderInfo->updateNotifyFail($this->errorMessage);
+            return false;
         }
+
+        $orderInfo->updateToNotifySuccess();
+        return true;
 
 
     }
 
     /************************************************* 下面是私钥方法 ****************************************************/
+
+    /**
+     * 请求 fit 的订单号
+     * @param $order_id
+     * @return string
+     */
+    private function sqlToFitOrder($order_id)
+    {
+        return self::PREFIX_ORDER_ID . $order_id;
+    }
 
     private function getPixInfo($pixKey)
     {

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Models\WithdrawOrder;
+use App\Payment\FitbankPayment;
 use Carbon\Carbon;
 
 /**
@@ -12,39 +13,28 @@ use Carbon\Carbon;
 class WithdrawOrderRepository extends BaseRepository
 {
 
-    const CACHE_TIME = 3600; // 缓存一个小时
-    const CACHE_UPSTREAM = 'MERCHANT_ORDER_REPOSITORY_UPSTREAM'; // 支付通道前缀
 
     /**
-     * 客户充值金额
-     * @var array
+     * @param $bank_order_id
+     * @return WithdrawOrder
      */
-    private $request_info;
-
-    /**
-     * MerchantOrderRepository constructor.
-     * @param WithdrawOrder $model
-     */
-    public function __construct(WithdrawOrder $model)
+    public function getByBankOrderId($bank_order_id)
     {
-        $this->model = $model;
+
+        return WithdrawOrder::where('bank_order_id', '=', $bank_order_id)->first();
     }
 
 
     /**
-     * 获取本地订单号对应的数据
-     * @param $local_order_id
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null|MerchantOrder|bool
+     * @param $order_id
+     * @return WithdrawOrder
      */
-    public function getByLocalOrderId($local_order_id)
+    public function getById($order_id)
     {
-        $response = $this->model->where('local_order_id', '=', $local_order_id)->first();
-        if (!$response) {
-            $this->errorCode = -1;
-            $this->errorMessage = '订单不存在';
-            return false;
-        }
-        return $response;
+        // fit订单号转换成 sql 的订单id
+        $prefix = FitbankPayment::PREFIX_ORDER_ID;
+        $order_id = substr($order_id, strlen($prefix));
+        return WithdrawOrder::where('order_id', '=', $order_id)->first();
     }
 
 

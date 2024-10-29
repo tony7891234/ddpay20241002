@@ -25,6 +25,7 @@ namespace App\Models;
  * @property string bank_order_id 银行的id
  * @property string pix_info
  * @property string pix_out
+ * @property string notify_info 银行回掉信息
  *
  */
 class WithdrawOrder extends BaseModel
@@ -95,6 +96,21 @@ class WithdrawOrder extends BaseModel
         return $this->order_id;
     }
 
+
+    /**
+     * 更新银行回掉数据
+     * @param string $notify_info
+     * @return bool
+     */
+    public function updateNotifyInfo($notify_info)
+    {
+        return $this->update([
+            'notify_info' => is_string($notify_info) ? $notify_info : json_encode($notify_info),
+            'updated_at' => time(),
+        ]);
+    }
+
+
     /**
      * 2.请求银行
      * @param $error_message
@@ -151,7 +167,7 @@ class WithdrawOrder extends BaseModel
      * 5.银行回掉成功
      * @return bool
      */
-    public function updateToNotifyStatus()
+    public function updateToNotifySuccess()
     {
         return $this->update([
             'status' => self::STATUS_NOTIFY_SUCCESS,
@@ -164,7 +180,7 @@ class WithdrawOrder extends BaseModel
      * @param $error_message
      * @return int
      */
-    public function updateNotifyStatus($error_message = '')
+    public function updateNotifyFail($error_message = '')
     {
         return $this->update([
             'status' => self::STATUS_NOTIFY_FAIL,
