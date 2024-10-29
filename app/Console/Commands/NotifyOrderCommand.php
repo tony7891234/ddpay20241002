@@ -17,7 +17,7 @@ class NotifyOrderCommand extends BaseCommand
     use RepositoryTrait;
 
 
-    const MAX_NOTIFY_NUM = 3; // 最大回掉次数
+    const MAX_NOTIFY_NUM = 2; // 最大回掉次数
     /**
      * @var string
      */

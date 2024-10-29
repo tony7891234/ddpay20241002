@@ -77,6 +77,10 @@ class NotifyToSiteCommand extends BaseCommand
         $recharge_num = $withdraw_num = 0;
 
         foreach ($list as $k => $notifyInfo) {
+            if (in_array(strtolower($notifyInfo->response), ['success', 'ok'])) {
+                $this->updateNotifyToFail($notifyInfo->order_id);
+                continue;
+            }
             $order_id = $notifyInfo->order_id;
             if ($notifyInfo->type == NotifyOrder::TYPE_RECHARGE) {
                 $recharge_num++;
