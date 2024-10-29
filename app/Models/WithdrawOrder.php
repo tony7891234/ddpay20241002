@@ -22,6 +22,10 @@ namespace App\Models;
  * @property int updated_at 更新时间
  * @property int status 支付状态
  *
+ * @property string bank_order_id 银行的id
+ * @property string pix_info
+ * @property string pix_out
+ *
  */
 class WithdrawOrder extends BaseModel
 {
@@ -34,15 +38,22 @@ class WithdrawOrder extends BaseModel
     const MERCHANT_DEFAULT = 1001; // 默认的商户号码
 
     // status 代表的状态
-    const STATUS_MERCHANT_REQUEST = 1;
-    const STATUS_UPSTREAM_REQUEST = 2;
-    const STATUS_NOTIFY_SUCCESS = 3;
-    const STATUS_NOTIFY_FAIL = 4;
+    const STATUS_WAITING = 1;
+    const STATUS_REQUEST_BANK = 2;
+    const STATUS_REQUEST_SUCCESS = 3;
+    const STATUS_REQUEST_FAIL = 4;
+    const STATUS_NOTIFY_SUCCESS = 5;
+    const STATUS_NOTIFY_FAIL = 6;
     const LIST_STATUS = [
-        self::STATUS_MERCHANT_REQUEST => '待处理',
-        self::STATUS_UPSTREAM_REQUEST => '已提交银行',
-        self::STATUS_NOTIFY_SUCCESS => '请求银行成功', // 回调返回成功
-        self::STATUS_NOTIFY_FAIL => '请求银行失败', // 回调返回失败失败
+        self::STATUS_WAITING => '待处理',
+
+        self::STATUS_REQUEST_BANK => '已提交银行',
+
+        self::STATUS_REQUEST_SUCCESS => '请求银行成功',
+        self::STATUS_REQUEST_FAIL => '请求银行失败',
+
+        self::STATUS_NOTIFY_SUCCESS => '银行回掉成功',
+        self::STATUS_NOTIFY_FAIL => '银行回掉失败',
     ];
 
 
@@ -67,8 +78,8 @@ class WithdrawOrder extends BaseModel
     public static function getStatusDot()
     {
         return [
-            self::STATUS_MERCHANT_REQUEST => 'yellow',
-            self::STATUS_UPSTREAM_REQUEST => 'danger',
+            self::STATUS_WAITING => 'yellow',
+            self::STATUS_REQUEST_BANK => 'danger',
             self::STATUS_NOTIFY_SUCCESS => 'success',
             self::STATUS_NOTIFY_FAIL => 'fail'
         ];
@@ -85,35 +96,80 @@ class WithdrawOrder extends BaseModel
     }
 
     /**
-     * 是否处理成功
-     * @return bool
+     * 2.请求银行
+     * @param $error_message
+     * @return int
      */
-    public function isSuccess()
-    {
-        return $this->status == self::STATUS_NOTIFY_SUCCESS;
-    }
-
-    /**
-     * 更新状态成为已经向上游支付
-     * @return bool
-     */
-    public function updateStatusToUpstreamRequest()
+    public function updateToRequestBank($error_message = '')
     {
         return $this->update([
-            'status' => self::STATUS_UPSTREAM_REQUEST,
-            'updated_at' => getTimeString(),
+            'status' => self::STATUS_REQUEST_BANK,
+            'error_message' => $error_message,
+            'updated_at' => time(),
+        ]);
+    }
+
+
+    /**
+     * 3.请求银行成功
+     * @param string $pix_info
+     * @param string $pix_out
+     * @param string $bank_order_id
+     * @return bool
+     */
+    public function updateToRequestSuccess($pix_info, $pix_out, $bank_order_id)
+    {
+        return $this->update([
+            'pix_info' => is_string($pix_info) ? $pix_info : json_encode($pix_info),
+            'pix_out' => is_string($pix_out) ? $pix_out : json_encode($pix_out),
+            'status' => self::STATUS_REQUEST_SUCCESS,
+            'bank_order_id' => $bank_order_id,
+            'updated_at' => time(),
+        ]);
+    }
+
+
+    /**
+     * 4.请求银行失败
+     * @param string $pix_info
+     * @param string $pix_out
+     * @param string $error_message
+     * @return int
+     */
+    public function updateToRequestFail($pix_info, $pix_out, $error_message = '')
+    {
+        return $this->update([
+            'status' => self::STATUS_REQUEST_FAIL,
+            'pix_info' => is_string($pix_info) ? $pix_info : json_encode($pix_info),
+            'pix_out' => is_string($pix_out) ? $pix_out : json_encode($pix_out),
+            'error_message' => $error_message,
+            'updated_at' => time(),
         ]);
     }
 
     /**
-     * 支付成功
+     * 5.银行回掉成功
      * @return bool
      */
-    public function updateToSuccess()
+    public function updateToNotifyStatus()
     {
         return $this->update([
             'status' => self::STATUS_NOTIFY_SUCCESS,
-            'updated_at' => getTimeString(),
+            'updated_at' => time(),
+        ]);
+    }
+
+    /**
+     * 6.银行回掉失败
+     * @param $error_message
+     * @return int
+     */
+    public function updateNotifyStatus($error_message = '')
+    {
+        return $this->update([
+            'status' => self::STATUS_NOTIFY_FAIL,
+            'error_message' => $error_message,
+            'updated_at' => time(),
         ]);
     }
 

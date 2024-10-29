@@ -174,7 +174,7 @@ class BatchWithdrawJob extends BaseJob
             'error_message' => '',
             'request_bank' => '',
             'response_bank' => '',
-            'status' => WithdrawOrder::STATUS_MERCHANT_REQUEST,
+            'status' => WithdrawOrder::STATUS_WAITING,
             "created_at" => time(),
         ];
 
@@ -184,6 +184,8 @@ class BatchWithdrawJob extends BaseJob
             $this->errorMessage = '订单创建失败';
             return false;
         }
+
+        WithdrawToBankJob::dispatch($this->withdrawOrder); // 添加队列
         return true;
     }
 
