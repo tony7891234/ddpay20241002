@@ -66,6 +66,7 @@ class NotifyOrderCommand extends BaseCommand
         $current_time = time();
 
         $this->count_order = NotifyOrder::where('notify_time', '<', $current_time)
+            ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
             ->where('notify_num', '<', self::MAX_NOTIFY_NUM)
             ->count();
         if ($this->count_order == 0) {
@@ -81,6 +82,7 @@ class NotifyOrderCommand extends BaseCommand
             'notify_time',
             'notify_num',
         ])->where('notify_time', '<', $current_time)
+            ->where('notify_status', RechargeOrder::NOTIFY_STATUS_WAITING)
             ->where('notify_num', '<', self::MAX_NOTIFY_NUM) // 3次回掉失败
             ->orderBy('notify_time', 'asc')
             ->limit(500)
