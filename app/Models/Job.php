@@ -16,8 +16,7 @@ namespace App\Models;
  */
 class Job extends BaseModel
 {
-//    protected $table = 'jobs';
-    protected $table = 'failed_jobs';
+    protected $table = 'jobs';
     protected $primaryKey = 'id';
     protected $fillable = [];
     protected $guarded = ['id'];

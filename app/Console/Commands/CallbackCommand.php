@@ -46,14 +46,15 @@ class CallbackCommand extends BaseCommand
     private function t2()
     {
         date_default_timezone_set('PRC');
-        $start_at = 1729270200;//  20.00
-        $end_at = 1729270800;//  20.16
+        $start_at = 1730257200;//  20.00
+//        $end_at = 1729270800;//  20.16
 
 
         RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
             ->where('create_time', '>=', $start_at)  // 22：56
-            ->where('create_time', '<=', $end_at) //  22：53
-            ->orderBy('order_id')->chunk(350, function ($list) {
+            ->where('merchantid', '=', 787)  // 22：56
+//            ->where('create_time', '<=', $end_at) //  22：53
+            ->orderBy('order_id')->chunk(600, function ($list) {
                 $list = $list->toArray();
                 $response = [];
                 foreach ($list as $item) {
@@ -69,6 +70,7 @@ class CallbackCommand extends BaseCommand
                 }
                 dump($response);
                 $this->curlPostMax($response);
+//                sleep();
 
             });
     }

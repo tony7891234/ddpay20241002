@@ -205,3 +205,26 @@ show create table  cd_notify_order;
 
 
 
+ $table->bigIncrements('id');
+            $table->string('queue')->index();
+            $table->longText('payload');
+            $table->unsignedTinyInteger('attempts');
+            $table->unsignedInteger('reserved_at')->nullable();
+            $table->unsignedInteger('available_at');
+            $table->unsignedInteger('created_at');
+
+
+
+CREATE TABLE `jobs` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `queue` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL default '',
+   `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `attempts` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '回掉次数',
+  `reserved_at` INT(11) UNSIGNED default null COMMENT '',
+  `available_at` INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT '',
+  `created_at` INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT '',
+   PRIMARY KEY (`id`) USING BTREE,
+    INDEX `queue` (`queue`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
