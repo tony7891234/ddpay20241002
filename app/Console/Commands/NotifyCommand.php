@@ -22,6 +22,8 @@ class NotifyCommand extends BaseCommand
 
     const LIMIT_HOUR = 3;
 
+    const TG_NOTICE_WONG = '-4586404704'; // 回掉异常通知
+
     /**
      * @var string
      */
@@ -382,6 +384,26 @@ curl开始时间：{$curl_start} \r\n
 \r\n
 MG;
         $this->getTelegramRepository()->replayMessage(config('telegram.group.callback_count'), $tgMessage);
+
+        if (($response_error + $response_null + $response_http_no_200) > 3) {
+            $tgMessage = <<<MG
+类型：{$remark}\r\n
+执行时间：{$current_time}\r\n
+总单数：{$this->count_order} \r\n
+成功条数：{$response_success} \r\n
+失败条数：{$response_error} \r\n
+空值条数：{$response_null} \r\n
+HTTP非200条数：{$response_http_no_200} \r\n
+执行时间：{$diff_time} \r\n
+执行开始时间：{$startTimeTmp} \r\n
+sql结束时间：{$sql_finished} \r\n
+curl开始时间：{$curl_start} \r\n
+执行结束时间: {$endTimeTmp}
+\r\n
+MG;
+            $this->getTelegramRepository()->replayMessage(self::TG_NOTICE_WONG, $tgMessage);
+
+        }
 
 
     }
