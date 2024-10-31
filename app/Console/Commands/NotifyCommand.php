@@ -304,14 +304,14 @@ class NotifyCommand extends BaseCommand
             $orderid = $ch_data['orderid'];
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // 获取 HTTP 状态码
             // 11.1 号，去掉这个处理  直接是失败的
-            if ($httpCode != 200) {
-                $response_http_no_200++;
-                $this->updateNotifyNum($order_id, $orderid, $request_param, $notify_url, $inizt);
-                $file = ('no_200_' . date('Ymd') . '.txt');
-                $log_data = '---' . $order_id . '--' . $httpCode;
-                logToPublicLog($log_data, $file); // 记录文件
-                continue; // 这次请求没成功，不做处理
-            }
+//            if ($httpCode != 200) {
+//                $response_http_no_200++;
+//                $this->updateNotifyNum($order_id, $orderid, $request_param, $notify_url, $inizt);
+//                $file = ('no_200_' . date('Ymd') . '.txt');
+//                $log_data = '---' . $order_id . '--' . $httpCode;
+//                logToPublicLog($log_data, $file); // 记录文件
+//                continue; // 这次请求没成功，不做处理
+//            }
             $result = curl_multi_getcontent($ch); //5 获取句柄的返回值
             $endTime = microtime(true); // 记录结束时间
             $result = strtolower($result);
@@ -324,6 +324,8 @@ class NotifyCommand extends BaseCommand
                     $this->updateNotifyToFail($order_id, $orderid, $request_param, $notify_url, $inizt);
                 } else {
                     $response_null++;
+                    // http 400 或者没值的
+                    $this->updateNotifyNum($order_id, $orderid, $request_param, $notify_url, $inizt);
                     $file = (self::FILE_NAME_RESPONSE_NULL . date('Ymd') . '.txt');
                     //  什么都没返回
                     logToPublicLog($order_id . '--', $file); // 记录文件
