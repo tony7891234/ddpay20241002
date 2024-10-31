@@ -3,9 +3,10 @@
 if (!function_exists('curlManyRequest')) {
     /**
      * 并发请求
-     * @param $allGames
+     * @param $allGames array
+     * @param $times int
      */
-    function curlManyRequest($allGames)
+    function curlManyRequest($allGames, $times = 10)
     {
         //1 创建批处理cURL句柄
         $chHandle = curl_multi_init();
@@ -15,7 +16,7 @@ if (!function_exists('curlManyRequest')) {
             $chArr[$gameUrl] = curl_init();
             curl_setopt($chArr[$gameUrl], CURLOPT_URL, $gameUrl);
             curl_setopt($chArr[$gameUrl], CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($chArr[$gameUrl], CURLOPT_TIMEOUT, 10);
+            curl_setopt($chArr[$gameUrl], CURLOPT_TIMEOUT, $times);
             curl_setopt($chArr[$gameUrl], CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($chArr[$gameUrl], CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_multi_add_handle($chHandle, $chArr[$gameUrl]); //2 增加句柄

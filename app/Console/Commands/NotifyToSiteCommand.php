@@ -96,7 +96,7 @@ class NotifyToSiteCommand extends BaseCommand
         }
 
         if ($urlsWithParams) {
-            curlManyRequest($urlsWithParams);
+            curlManyRequest($urlsWithParams, 20); // 回掉时间延长下
         }
 
         $current_time = getTimeString();
