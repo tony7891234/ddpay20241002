@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use App\Models\MerchantModel;
+use App\Models\NotifyOrder;
 use App\Models\RechargeOrder;
-use App\Service\DdPayService;
 use App\Traits\RepositoryTrait;
 
 /**
- * Class Sync
+ * 回掉异常订单
+ * Class NotifyOrderCommand
  * @package App\Console\Commands
  */
 class TestCommand extends BaseCommand
@@ -16,10 +16,8 @@ class TestCommand extends BaseCommand
 
     use RepositoryTrait;
 
-    const MAX_TIME = 5;// 超时多少秒，需要记录 log
-    const FILE_NAME_LONG_TIME = 'long_'; // 超时5S没信息的
-    const FILE_NAME_RESPONSE_NULL = 'nothing_'; // 什么否没有返回的
 
+    const MAX_NOTIFY_NUM = 2; // 最大回掉次数
     /**
      * @var string
      */
@@ -29,7 +27,14 @@ class TestCommand extends BaseCommand
     /**
      * @var string
      */
-    protected $description = '回调';
+    protected $description = '2.回调异常订单';
+
+    private $count_order = 0; // 总条数
+
+    private $start_at = 0;
+    private $curl_start = 0;
+    private $sql_finished = 0;
+    private $end_at = 0;
 
     /**
      * KG_Init constructor.
@@ -45,39 +50,145 @@ class TestCommand extends BaseCommand
      */
     public function handle()
     {
-        $this->t2();
+        dump('restart ' . (getTimeString()) . '  ');
+        $this->notify();
 
         return true;
     }
 
-
-    private function t2()
+    public function notify()
     {
+        $this->start_at = time();
+        $current_time = time();
 
-        $tgMessage = '222';
-        $this->getTelegramRepository()->replayMessage(config('telegram.group.notify_order'), $tgMessage);
+        $this->count_order = 222;
+        /**
+         * @var $list NotifyOrder[]
+         */
+        $list = NotifyOrder::select([
+            'order_id',
+            'notify_url',
+            'request',
+            'notify_time',
+            'notify_num',
+        ])->where('orderid', '=', 'W609820241030120147967563816')
+            ->limit(500)
+            ->get();
 
-        return 1;
-        $name = 'withdraw/1730138606.xlsx';
-//        $name = '1730138606.xlsx';
-//        $file = \Illuminate\Support\Facades\Storage::disk('withdraw');
+        $this->sql_finished = time(); // sql 结束时间
+        // 商户ID列表
+        $urlsWithParams = [];
+        foreach ($list as $k => $notifyInfo) {
+            dump($k);
+            $data = json_decode(base64_decode($notifyInfo->request), true);
+            dump($data);
+            $notify_url = $notifyInfo->notify_url;
+            // 添加并发回调数据
+            $urlsWithParams[$notifyInfo->order_id] = [
+                'request_param' => $data,
+                'notify_url' => $notify_url,
+            ];
+            dump($urlsWithParams);
+        }
 
-//        dump($file);
-        $file = \Illuminate\Support\Facades\Storage::disk('withdraw')->get($name);
-        dump($file);
+        if ($urlsWithParams) {
+            $this->curlPostMax($urlsWithParams);
+        }
+
     }
 
-    private function t1()
+
+    /**
+     * @param $allGames
+     */
+    private function curlPostMax($allGames)
     {
-        $str = 'BIDV
-8883109665
-NGUYEN TUAN ANH
-20000';
-        $service = new DdPayService();
-        $service->withdraw(trim($str));
-        $response_text = $service->getErrorMessage();
-        dump($response_text);
+        dump('curlPostMax');
+        $this->curl_start = time();
+        //1 创建批处理cURL句柄
+        $chHandle = curl_multi_init();
+        $chArr = [];
+        //2.创建多个cURL资源
+        foreach ($allGames as $order_id => $params) {
+            $notify_url = $params['notify_url'];
+            $request_param = $params['request_param'];
+            $startTime = microtime(true);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $notify_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true); // 设置为 POST 请求
+            curl_setopt($ch, CURLOPT_POSTFIELDS, ($request_param)); // 设置 POST 数据
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36',
+                'Accept: application/json, text/plain, */*',
+                'Accept-Language: en-US,en;q=0.9',
+                'Connection: keep-alive'
+            ]);
+
+            curl_setopt($ch, CURLOPT_TIMEOUT, 6);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_multi_add_handle($chHandle, $ch); //2 增加句柄
+            $chArr[$order_id] = [
+                'ch' => $ch,
+                'request_param' => $request_param,
+                'notify_url' => $notify_url,
+                'startTime' => $startTime,
+            ]; // 保存句柄以便后续使用
+
+        }
+
+        $running = null;
+        do {
+            curl_multi_exec($chHandle, $running); //3 执行批处理句柄
+            curl_multi_select($chHandle); // 等待活动请求完成  可以不要
+        } while ($running > 0);
+
+        $response_success = $response_error = $response_null = $response_http_no_200 = 0;
+
+        foreach ($chArr as $order_id => $ch_data) {
+            dump('$order_id');
+
+            dump($order_id);
+            $ch = $ch_data['ch'];
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // 获取 HTTP 状态码
+            dump($ch);
+            $response = curl_multi_getcontent($ch); //5 获取句柄的返回值
+            $response = strtolower($response);
+            dump('$response');
+            dump($response);
+            dump($httpCode);
+
+
+            curl_multi_remove_handle($chHandle, $ch);//6 将$chHandle中的句柄移除
+            curl_close($ch);
+        }
+        curl_multi_close($chHandle); //7 关闭全部句柄
+
+        $current_time = getTimeString();
+        $startTimeTmp = date('H:i:s', $this->start_at);
+        $curl_start = date('H:i:s', $this->curl_start);
+        $sql_finished = date('H:i:s', $this->sql_finished);
+        $endTimeTmp = date('H:i:s', time());
+        $diff_time = (time() - $this->start_at);
+        $tgMessage = <<<MG
+再次回掉：\r\n
+执行时间：{$current_time}\r\n
+总单数：{$this->count_order} \r\n
+成功条数：{$response_success} \r\n
+失败条数：{$response_error} \r\n
+空值条数：{$response_null} \r\n
+HTTP非200条数：{$response_http_no_200} \r\n
+执行时间：{$diff_time} \r\n
+执行开始时间：{$startTimeTmp} \r\n
+sql结束时间：{$sql_finished} \r\n
+curl开始时间：{$curl_start} \r\n
+执行结束时间: {$endTimeTmp}
+\r\n
+MG;
+
     }
+
 
 }
 
