@@ -385,7 +385,7 @@ curl开始时间：{$curl_start} \r\n
 MG;
         $this->getTelegramRepository()->replayMessage(config('telegram.group.callback_count'), $tgMessage);
 
-        if (($response_error + $response_null + $response_http_no_200) > 3) {
+        if (($response_error + $response_null + $response_http_no_200) > 15) { // 15 是随便定义的
             $tgMessage = <<<MG
 类型：{$remark}\r\n
 执行时间：{$current_time}\r\n
