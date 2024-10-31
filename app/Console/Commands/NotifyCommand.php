@@ -147,7 +147,7 @@ class NotifyCommand extends BaseCommand
 //            ->where('status', '<', 2)
 //            ->where('notify_num', '=', 0)
 //            ->count();
-        $this->count_order = 1;
+        $this->count_order = 0;
 
 
         $this->end_at = time();
@@ -201,7 +201,7 @@ class NotifyCommand extends BaseCommand
 //        $id_arr = [];
 //        $this->count_order = 0;
         foreach ($list as $k => $orderInfo) {
-//            $this->count_order++;
+            $this->count_order++;
 //            dump($orderInfo->orderid);
             //  检查回调状态
             if ($orderInfo->status > 1) {
