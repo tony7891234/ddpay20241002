@@ -38,6 +38,8 @@ class NotifyOrderController extends AdminController
         // 只导出 id, name和email 三列数据
         $titles = [
             'id' => 'ID',
+            'order_id' => '订单ID',
+            'orderid' => '订单号',
             'created_at' => '添加时间',
         ];
         $grid->export()->titles($titles)->filename('出款订单');
