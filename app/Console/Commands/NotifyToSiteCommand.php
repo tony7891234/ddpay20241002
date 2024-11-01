@@ -45,7 +45,7 @@ class NotifyToSiteCommand extends BaseCommand
         dump('restart ' . (getTimeString()) . '  ');
         while (true) {
             $this->notify();
-            sleep(5);
+            sleep(2);
         }
 
         return true;
@@ -69,7 +69,7 @@ class NotifyToSiteCommand extends BaseCommand
         ])->where('notify_time', '>', $current_time)
             ->where('notify_num', '=', NotifyOrderCommand::MAX_NOTIFY_NUM)
             ->orderBy('notify_time', 'asc')
-            ->limit(500)
+            ->limit(200)
             ->get();
 
         // 商户ID列表

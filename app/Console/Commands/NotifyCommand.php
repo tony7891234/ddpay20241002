@@ -20,7 +20,7 @@ class NotifyCommand extends BaseCommand
     const FILE_NAME_LONG_TIME = 'long_'; // 超时5S没信息的
     const FILE_NAME_RESPONSE_NULL = 'nothing_'; // 什么否没有返回的
 
-    const LIMIT_HOUR = 3;
+    const LIMIT_HOUR = 1;
 
     const TG_NOTICE_WONG = '-4586404704'; // 回掉异常通知
 
@@ -185,7 +185,7 @@ class NotifyCommand extends BaseCommand
             ->where('status', '<', 2)
             ->where('notify_num', '=', 0)
             ->orderBy('create_time', 'asc')
-            ->limit(1000)
+            ->limit(1200)
             ->get();
         //  处理数据
         $this->forDataDetail($list);
