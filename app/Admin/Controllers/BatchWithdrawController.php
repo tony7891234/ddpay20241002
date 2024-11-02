@@ -98,7 +98,7 @@ class BatchWithdrawController extends AdminController
                 if ($end) {
                     $query->where('created_at', '<=', strtotime($end));
                 }
-            })->date();
+            })->datetime();
         });
         return $grid;
     }

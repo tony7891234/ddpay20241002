@@ -142,7 +142,7 @@ class RechargeOrder1Controller extends AdminController
                 if ($end !== null) {
                     $q->where('create_time', '<=', strtotime($end) + 3600 * 24);
                 }
-            })->date();
+            })->datetime();
         });
         return $grid;
     }

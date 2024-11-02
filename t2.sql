@@ -53,16 +53,17 @@ select  order_id, orderid,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H
 -- 3.查询大表的总数据
 select  count(*)  from  baxi_20241003.cd_order_1028 ;
 -- 4。执行插入
-INSERT INTO baxi_20241003.cd_order_1028 ( SELECT * FROM baxi_20241010.cd_order  where  order_id>=142112477  LIMIT 2000000);
+INSERT INTO baxi_20241003.cd_order_1028 ( SELECT * FROM baxi_20241010.cd_order  where  order_id>=144612521  LIMIT 500011);
 
 --  5 取出最大值 比如 1001
 select  order_id, orderid,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_order_1028  order by order_id  desc limit 5;
 -- 6。删除 小于5的数据
-delete  from   baxi_20241010.cd_order   where    order_id<=141112476  ;
+delete  from   baxi_20241010.cd_order   where    order_id<=145112531  ;
 
 
 -- 查询
-select  count(*) from   baxi_20241010.cd_order    where    order_id<=140112476  ;
+select  count(*) from   baxi_20241010.cd_order    where    order_id<=145112531  ;
+select  count(*) from   baxi_20241003.cd_order_1028     ;
 
 
 
