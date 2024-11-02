@@ -76,15 +76,15 @@
   `service_id` int DEFAULT NULL COMMENT '客服',
   `proxy_id` int DEFAULT NULL COMMENT '码商',
   `merchant_id` int DEFAULT NULL COMMENT '商户',
-  `type` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '变动类型',
-  `action` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '方法',
+  `type` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '变动类型',
+  `action` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '方法',
   `begin` decimal(20,3) DEFAULT '0.000' COMMENT '期初金额',
   `after` decimal(20,3) DEFAULT '0.000' COMMENT '期末金额',
   `money` decimal(20,3) DEFAULT '0.000' COMMENT '发生额',
   `content` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '详情',
   `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '备注',
   `ext` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '扩展内容',
-  `adduser` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '操作人',
+  `adduser` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '操作人',
   `create_time` int DEFAULT NULL COMMENT '创建时间',
   `test` int NOT NULL DEFAULT '0',
   `sxf` decimal(3,3) DEFAULT '0.000',
@@ -98,6 +98,8 @@
   KEY `action` (`action`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+alter table   cd_moneylog  add  INDEX `action` (`action`) USING BTREE;
+alter table   cd_moneylog  add  INDEX `adduser` (`adduser`) USING BTREE;
 
 
 drop table  cd_batch_withdraw;
