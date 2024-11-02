@@ -43,6 +43,8 @@ class NotifyCommand extends BaseCommand
     private $end_at = 0;
     private $remark = '正常订单';
 
+    private $notify_time = 6; // 回掉超时时间
+
     /**
      * KG_Init constructor.
      */
@@ -79,6 +81,7 @@ class NotifyCommand extends BaseCommand
      */
     public function forLeftOrder()
     {
+        $this->notify_time = 10;
         $this->remark = '遗漏订单';
         $this->start_at = time();
 
@@ -138,6 +141,7 @@ class NotifyCommand extends BaseCommand
      */
     private function notify()
     {
+        $this->notify_time = 6;
         $this->remark = '正常订单';
 
         $this->start_at = time();
@@ -277,7 +281,7 @@ class NotifyCommand extends BaseCommand
                 'Connection: keep-alive'
             ]);
 
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_TIMEOUT, $this->notify_time);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_multi_add_handle($chHandle, $ch); //2 增加句柄

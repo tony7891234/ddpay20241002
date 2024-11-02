@@ -62,6 +62,7 @@ class ToIndiaCommand extends BaseCommand
 
 //        $str = 'failed-提现-拦截三方商户(金流)ip回调请求,三方商户(金流)请求ip没在商户ip白名单内,请确认请求ip:3.238.12.19 是不是三方商户(金流)的服务器ip';
         $str = 'failed-提现-拦截三方商户(金流)ip回调请求,三方商户(金流)请求ip没在商户ip白名单内,请确认请求ip:107.22.130.169 是不是三方商户(金流)的服务器ip';
+//        $str = '{"result_code":"fail","result_msg":"ip不在白名单"}';
         $this->count_order = 1;
         if ($this->count_order == 0) {
             return true;
