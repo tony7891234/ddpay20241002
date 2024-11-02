@@ -17,6 +17,7 @@ cp vendor/workerman/workerman/Protocols/Ws.php
 vendor/workerman/workerman/Protocols/Wss.php
 
 * * * * *  php  /www/wwwroot/Laravel/T1/ddpay20241002/artisan schedule:run >> /dev/null 2>&1
+* * * * *  php   /www/wwwroot/ddpay20241002/artisan  t2 >> /dev/null 2>&1
 ````
 
 ##  资料

@@ -48,6 +48,10 @@ class RechargeOrder extends BaseModel
     // inizt  1=代付;0=代收
     const INIZT_RECHARGE = 0;
     const INIZT_WITHDRAW = 1;
+    const LIST_INIZT = [
+        self::INIZT_RECHARGE => '代收',
+        self::INIZT_WITHDRAW => '代付',
+    ];
 
 
     const STATUS_SUCCESS = 1;

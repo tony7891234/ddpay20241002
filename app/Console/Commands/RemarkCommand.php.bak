@@ -6,7 +6,6 @@ use App\Models\NotifyOrder;
 use App\Traits\RepositoryTrait;
 
 /**
- * 回掉异常订单
  * Class NotifyOrderCommand
  * @package App\Console\Commands
  */
@@ -26,7 +25,7 @@ class T2Command extends BaseCommand
     /**
      * @var string
      */
-    protected $description = '2.回调异常订单';
+    protected $description = '某个备注的回掉';
 
     private $count_order = 0; // 总条数
 

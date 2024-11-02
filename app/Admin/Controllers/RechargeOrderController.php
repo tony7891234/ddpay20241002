@@ -1,10 +1,117 @@
 <?php
 
+
 namespace App\Admin\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\RechargeOrder;
+use Dcat\Admin\Controllers\AdminController;
+use Dcat\Admin\Grid;
+use Dcat\Admin\Show;
 
-class RechargeOrderController extends Controller
+/**
+ * 平台订单
+ * Class WithdrawOrderController
+ * @package App\Admin\Controllers
+ */
+class RechargeOrderController extends AdminController
 {
+
+    /**
+     * header 标题
+     * @return string
+     */
+    public function title()
+    {
+        return '订单';
+    }
+
+
+    /**
+     * 列表
+     * @return Grid
+     */
+    protected function grid()
+    {
+        /**
+         * @var $grid Grid
+         */
+        $grid = new Grid(new RechargeOrder());
+        // 表格导出的字段
+        $titles = [
+            'id' => 'UID',
+            'merchantid' => '商户ID',
+            'orderid' => '系统订单号',
+            'amount' => '订单金额',
+            'status' => '订单状态',
+            'inizt' => '订单类型',
+            'create_time' => '下单时间',
+        ];
+
+        // 表格导出文件名
+        $fileName = $this->title();
+
+        // 表格导出
+        $grid->export()->titles($titles)->rows(function (array $rows) {
+            foreach ($rows as $index => &$row) {
+                $row['status'] = isset(RechargeOrder::LIST_STATUS['status']) ? RechargeOrder::LIST_STATUS['status'] : $row['status'];
+                $row['inizt'] = isset(RechargeOrder::LIST_INIZT['inizt']) ? RechargeOrder::LIST_INIZT['inizt'] : $row['inizt'];
+                $row['createTime'] = date('Y-m-d H:i:s', $row['createTime']);
+            }
+            return $rows;
+        })->filename($fileName)->csv();
+
+        // 禁用批量操作
+        $grid->disableBatchActions();
+        $grid->disableRowSelector();
+
+        // 禁用删除按钮
+        $grid->disableDeleteButton();
+        // 禁用编辑按钮
+        $grid->disableEditButton();
+        // 隐藏 创建按钮
+        $grid->disableCreateButton();
+
+
+        $grid->disableViewButton();
+        //  搜索条件
+        $grid->model()->orderBy('order_id', 'desc'); // 按照ID 倒序排序
+        $grid->column('order_id', 'ID');
+
+
+        $grid->column('order_id', 'ID');
+        $grid->column('merchantid', '商户ID');
+        $grid->column('orderid', '系统订单号'); // 直接对此字段查询
+        $grid->column('amount', '金额');
+        $grid->column('status', '订单状态')->display(function ($input) {
+            return isset(RechargeOrder::LIST_STATUS[$input]) ? RechargeOrder::LIST_STATUS[$input] : $input;
+        })->dot(RechargeOrder::getStatusDot());
+
+        $grid->column('inizt', '订单类型')->display(function ($input) {
+            return isset(RechargeOrder::LIST_INIZT[$input]) ? RechargeOrder::LIST_INIZT[$input] : $input;
+        })->dot(RechargeOrder::getStatusDot());
+
+
+        $grid->column('remarks', '备注');
+
+
+        $grid->column('create_time', '添加时间')->display(function ($input) {
+            return formatTimeToString($input);
+        });
+
+        $grid->column('updated_at', '更新时间')->display(function ($input) {
+            return formatTimeToString($input);
+        });
+
+
+        // 过滤器  查询字段
+        $grid->filter(function (Grid\Filter $filter) {
+            $filter->equal('order_id', 'ID')->width('350px');
+            $filter->equal('merchantid', '商户ID')->width('350px');
+            $filter->equal('status', '状态')->select(RechargeOrder::LIST_STATUS);
+            $filter->equal('inizt', '订单类型')->select(RechargeOrder::LIST_INIZT);
+        });
+        return $grid;
+    }
+
 
 }
