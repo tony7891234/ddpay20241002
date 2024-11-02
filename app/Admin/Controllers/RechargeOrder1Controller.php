@@ -31,15 +31,17 @@ class RechargeOrder1Controller extends AdminController
      */
     protected function grid()
     {
+
+        $model = new RechargeOrder();
+        $tableName = 'cd_order_1028';
+        $model->setConnection('rds')->setTable($tableName);
+
         /**
          * @var $grid Grid
          */
-        $grid = new Grid(new RechargeOrder());
+        $grid = new Grid($model);
 
-        $tableName = 'cd_order_1028';
-        $grid->model()
-            ->setConnection('rds')
-            ->setTable($tableName);
+
         // 表格导出的字段
         $titles = [
             'id' => 'UID',

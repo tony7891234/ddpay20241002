@@ -12,7 +12,7 @@ use Dcat\Admin\Show;
  * Class RechargeOrder1Controller
  * @package App\Admin\Controllers
  */
-class RechargeOrder2Controller extends AdminController
+class RechargeOrder3Controller extends AdminController
 {
 
     /**
@@ -31,15 +31,17 @@ class RechargeOrder2Controller extends AdminController
      */
     protected function grid()
     {
+
+        $model = new RechargeOrder();
+        $tableName = 'cd_order';
+        $model->setConnection('rds')->setTable($tableName);
+
         /**
          * @var $grid Grid
          */
-        $grid = new Grid(new RechargeOrder());
+        $grid = new Grid($model);
 
-        $tableName = 'cd_order';
-        $grid->model()
-            ->setConnection('rds')
-            ->setTable($tableName);
+
         // 表格导出的字段
         $titles = [
             'id' => 'UID',
