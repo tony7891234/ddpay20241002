@@ -97,7 +97,7 @@ class RechargeOrder3Controller extends AdminController
 //        }
 
         //  搜索条件
-        $grid->model()->orderBy('order_id', 'desc'); // 按照ID 倒序排序
+        $grid->model()->orderBy('create_time', 'desc'); // 按照ID 倒序排序
         $grid->column('order_id', 'ID');
 
 
