@@ -55,7 +55,7 @@ class RechargeOrderController extends AdminController
             foreach ($rows as $index => &$row) {
                 $row['status'] = isset(RechargeOrder::LIST_STATUS['status']) ? RechargeOrder::LIST_STATUS['status'] : $row['status'];
                 $row['inizt'] = isset(RechargeOrder::LIST_INIZT['inizt']) ? RechargeOrder::LIST_INIZT['inizt'] : $row['inizt'];
-                $row['createTime'] = date('Y-m-d H:i:s', $row['createTime']);
+                $row['create_time'] = date('Y-m-d H:i:s', $row['create_time']);
             }
             return $rows;
         })->filename($fileName)->csv();
