@@ -79,14 +79,14 @@ class MoneyLog3Controller extends AdminController
 
         $grid->disableViewButton();
 
-     if (isset($_GET['create_time']['start'])) {
+        if (isset($_GET['create_time']['start']) && ($_GET['create_time']['start'])) {
             $grid->model()
                 ->where([
                     ['create_time', '>=', strtotime($_GET['create_time']['start'])],
                 ]);
         }
 
-        if (isset($_GET['create_time']['end'])) {
+        if (isset($_GET['create_time']['end']) && ($_GET['create_time']['end'])) {
             $grid->model()
                 ->where([
                     ['create_time', '<=', strtotime($_GET['create_time']['end'])],

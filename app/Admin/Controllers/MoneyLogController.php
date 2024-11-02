@@ -76,19 +76,20 @@ class MoneyLogController extends AdminController
         $grid->disableViewButton();
 
         // 默认使用今天的时间
-        if (isset($_GET['create_time']['start'])) {
+           if (isset($_GET['create_time']['start']) && ($_GET['create_time']['start'])) {
             $grid->model()
                 ->where([
                     ['create_time', '>=', strtotime($_GET['create_time']['start'])],
                 ]);
         }
 
-        if (isset($_GET['create_time']['end'])) {
+        if (isset($_GET['create_time']['end']) && ($_GET['create_time']['end'])) {
             $grid->model()
                 ->where([
                     ['create_time', '<=', strtotime($_GET['create_time']['end'])],
                 ]);
         }
+
 
 
 //        else {

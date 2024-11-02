@@ -82,19 +82,20 @@ class RechargeOrder1Controller extends AdminController
 
         $grid->disableViewButton();
 
-     if (isset($_GET['create_time']['start'])) {
+        if (isset($_GET['create_time']['start']) && ($_GET['create_time']['start'])) {
             $grid->model()
                 ->where([
                     ['create_time', '>=', strtotime($_GET['create_time']['start'])],
                 ]);
         }
 
-        if (isset($_GET['create_time']['end'])) {
+        if (isset($_GET['create_time']['end']) && ($_GET['create_time']['end'])) {
             $grid->model()
                 ->where([
                     ['create_time', '<=', strtotime($_GET['create_time']['end'])],
                 ]);
         }
+
 
 
         //  搜索条件
@@ -131,6 +132,7 @@ class RechargeOrder1Controller extends AdminController
         $grid->filter(function (Grid\Filter $filter) {
             $filter->equal('order_id', 'ID')->width('350px');
             $filter->equal('merchantid', '商户ID')->width('350px');
+            $filter->equal('orderid', '系统订单号')->width('350px');
             $filter->equal('status', '状态')->select(RechargeOrder::LIST_STATUS);
             $filter->equal('inizt', '订单类型')->select(RechargeOrder::LIST_INIZT);
 
