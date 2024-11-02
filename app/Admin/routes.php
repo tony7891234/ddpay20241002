@@ -16,10 +16,7 @@ Route::group([
 
     //  5.测试使用
     $router->resource('test', 'TestController');
-    //  入款订单
-    $router->resource('recharge_order', 'RechargeOrderController');
-    // 出款订单
-    $router->resource('withdraw_order', 'WithdrawOrderController');
+
 
     $router->resource('job', 'JobController');
 
@@ -30,5 +27,17 @@ Route::group([
 
     // 回掉商户遗漏订单
     $router->resource('notify_order', 'NotifyOrderController');
+
+
+    //  出入款订单
+    $router->resource('recharge_order', 'RechargeOrderController');
+    //  往前第一个时间 1028
+    $router->resource('recharge_order1', 'RechargeOrder1Controller');
+
+    //  往前第一个时间 1010
+    $router->resource('recharge_order2', 'RechargeOrder2Controller');
+
+    //  往前第一个时间 cd_order
+    $router->resource('recharge_order3', 'RechargeOrder3Controller');
 
 });
