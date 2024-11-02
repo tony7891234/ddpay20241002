@@ -90,7 +90,7 @@ class MoneyLogController extends AdminController
 //        }
 
         //  搜索条件
-        $grid->model()->orderBy('create_time', 'desc'); // 按照ID 倒序排序
+        $grid->model()->orderBy('moneylog_id', 'desc'); // 按照ID 倒序排序
         $grid->column('moneylog_id', 'ID');
 
 
