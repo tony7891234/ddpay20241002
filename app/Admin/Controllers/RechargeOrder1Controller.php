@@ -82,19 +82,20 @@ class RechargeOrder1Controller extends AdminController
 
         $grid->disableViewButton();
 
-        // 默认使用今天的时间
-        if (isset($_GET['create_time']['start'])) {
+     if (isset($_GET['create_time']['start'])) {
             $grid->model()
                 ->where([
                     ['create_time', '>=', strtotime($_GET['create_time']['start'])],
                 ]);
         }
-//        else {
-//            $grid->model()
-//                ->where([
-//                    ['create_time', '>=', Carbon::today()->timestamp],
-//                ]);
-//        }
+
+        if (isset($_GET['create_time']['end'])) {
+            $grid->model()
+                ->where([
+                    ['create_time', '<=', strtotime($_GET['create_time']['end'])],
+                ]);
+        }
+
 
         //  搜索条件
         $grid->model()->orderBy('create_time', 'desc'); // 按照ID 倒序排序

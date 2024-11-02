@@ -82,6 +82,15 @@ class MoneyLogController extends AdminController
                     ['create_time', '>=', strtotime($_GET['create_time']['start'])],
                 ]);
         }
+
+        if (isset($_GET['create_time']['end'])) {
+            $grid->model()
+                ->where([
+                    ['create_time', '<=', strtotime($_GET['create_time']['end'])],
+                ]);
+        }
+
+
 //        else {
 //            $grid->model()
 //                ->where([
