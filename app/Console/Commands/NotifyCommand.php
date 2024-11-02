@@ -141,7 +141,7 @@ class NotifyCommand extends BaseCommand
      */
     private function notify()
     {
-        $this->notify_time = 6;
+        $this->notify_time = 5;
         $this->remark = '正常订单';
 
         $this->start_at = time();
