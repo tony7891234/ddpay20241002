@@ -45,6 +45,7 @@ class RechargeOrderController extends AdminController
             'status' => '订单状态',
             'inizt' => '订单类型',
             'create_time' => '下单时间',
+            'completetime' => '完成时间',
         ];
 
         // 表格导出文件名
@@ -53,9 +54,10 @@ class RechargeOrderController extends AdminController
         // 表格导出
         $grid->export()->titles($titles)->rows(function (array $rows) {
             foreach ($rows as $index => &$row) {
-                $row['status'] = isset(RechargeOrder::LIST_STATUS['status']) ? RechargeOrder::LIST_STATUS['status'] : $row['status'];
-                $row['inizt'] = isset(RechargeOrder::LIST_INIZT['inizt']) ? RechargeOrder::LIST_INIZT['inizt'] : $row['inizt'];
+                $row['status'] = isset(RechargeOrder::LIST_STATUS[$row['status']]) ? RechargeOrder::LIST_STATUS[$row['status']] : $row['status'];
+                $row['inizt'] = isset(RechargeOrder::LIST_INIZT[$row['inizt']]) ? RechargeOrder::LIST_INIZT[$row['inizt']] : $row['inizt'];
                 $row['create_time'] = date('Y-m-d H:i:s', $row['create_time']);
+                $row['completetime'] = date('Y-m-d H:i:s', $row['completetime']);
             }
             return $rows;
         })->filename($fileName)->csv();
@@ -73,6 +75,21 @@ class RechargeOrderController extends AdminController
 
 
         $grid->disableViewButton();
+
+        // 默认使用今天的时间
+        if (isset($_GET['create_time']['start'])) {
+            $grid->model()
+                ->where([
+                    ['create_time', '>=', strtotime($_GET['create_time']['start'])],
+                ]);
+        }
+//        else {
+//            $grid->model()
+//                ->where([
+//                    ['create_time', '>=', Carbon::today()->timestamp],
+//                ]);
+//        }
+
         //  搜索条件
         $grid->model()->orderBy('order_id', 'desc'); // 按照ID 倒序排序
         $grid->column('order_id', 'ID');
@@ -98,7 +115,7 @@ class RechargeOrderController extends AdminController
             return formatTimeToString($input);
         });
 
-        $grid->column('updated_at', '更新时间')->display(function ($input) {
+        $grid->column('completetime', '完成时间')->display(function ($input) {
             return formatTimeToString($input);
         });
 
@@ -109,6 +126,17 @@ class RechargeOrderController extends AdminController
             $filter->equal('merchantid', '商户ID')->width('350px');
             $filter->equal('status', '状态')->select(RechargeOrder::LIST_STATUS);
             $filter->equal('inizt', '订单类型')->select(RechargeOrder::LIST_INIZT);
+
+            $filter->whereBetween('create_time', function ($q) {
+                $start = $this->input['start'] ?? strtotime('today');
+                $end = $this->input['end'] ?? strtotime('today');
+                if ($start !== null) {
+                    $q->where('create_time', '>=', strtotime($start));
+                }
+                if ($end !== null) {
+                    $q->where('create_time', '<=', strtotime($end) + 3600 * 24);
+                }
+            })->date();
         });
         return $grid;
     }
