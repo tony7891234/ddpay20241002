@@ -41,4 +41,18 @@ class MoneyLog extends BaseModel
     }
 
 
+    const PAY_LIST_ACTION = [
+        1 => 'StarkBank',
+        2 => 'AnSpace',
+        3 => 'Epay',
+        4 => 'Toppay',
+        5 => 'TGG',
+        7 => 'MAY',
+        8 => 'E二类',
+        9 => 'ENV',
+        10 => 'FIT',
+        11 => 'Celcoin',
+        12 => 'Pagnovo',
+    ];
+
 }
