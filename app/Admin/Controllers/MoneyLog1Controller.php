@@ -12,7 +12,7 @@ use Dcat\Admin\Show;
  * Class MoneyLogController
  * @package App\Admin\Controllers
  */
-class MoneyLogController extends AdminController
+class MoneyLog1Controller extends AdminController
 {
 
     /**
@@ -21,7 +21,7 @@ class MoneyLogController extends AdminController
      */
     public function title()
     {
-        return '日志';
+        return '10.28以后';
     }
 
 
@@ -31,10 +31,14 @@ class MoneyLogController extends AdminController
      */
     protected function grid()
     {
+
+        $model = new MoneyLog();
+        $tableName = 'cd_moneylog_1028';
+        $model->setConnection('rds')->setTable($tableName);
         /**
          * @var $grid Grid
          */
-        $grid = new Grid(new MoneyLog());
+        $grid = new Grid($model);
         // 表格导出的字段
         $titles = [
             'moneylog_id' => '编号ID',

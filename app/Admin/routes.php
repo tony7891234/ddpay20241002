@@ -43,5 +43,12 @@ Route::group([
     //  最新日志
     $router->resource('money_log', 'MoneyLogController');
 
+    // 往前第一个时间 1010
+    $router->resource('money_log1', 'MoneyLog1Controller');
+    // 往前第一个时间 1010
+    $router->resource('money_log2', 'MoneyLog2Controller');
+    //  往前第一个时间 money_log
+    $router->resource('money_log3', 'MoneyLog3Controller');
+
 
 });
