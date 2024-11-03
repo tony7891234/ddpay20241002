@@ -36,8 +36,8 @@ class DeleteHourly extends BaseCommand
     public function handle()
     {
 
-        // 保留1天的数据
-        $time = time() - 3600 * 24 * 1;
+        // 保留2天的数据
+        $time = time() - 3600 * 24 * 3;
         NotifyOrder::where('create_time', '<', $time)->delete();
 
     }
