@@ -22,6 +22,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('fit balance')->dailyAt('10:59'); // 查询余额
         $schedule->command('fit balance')->dailyAt('11:00'); // 查询余额
 
+        // 每小时执行一次的升序
+        $schedule->command('clear:delete_hourly')->hourly();
+
     }
 
     /**
