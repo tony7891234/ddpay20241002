@@ -100,6 +100,7 @@ class RechargeOrderController extends AdminController
         $grid->column('merchantid', '商户ID');
         $grid->column('orderid', '系统订单号'); // 直接对此字段查询
         $grid->column('amount', '金额');
+        $grid->column('notify_num', '回调次数');
         $grid->column('status', '订单状态')->display(function ($input) {
             return isset(RechargeOrder::LIST_STATUS[$input]) ? RechargeOrder::LIST_STATUS[$input] : $input;
         })->dot(RechargeOrder::getStatusDot());

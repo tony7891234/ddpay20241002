@@ -82,7 +82,7 @@ class RechargeOrder3Controller extends AdminController
 
         $grid->disableViewButton();
 
-           if (isset($_GET['create_time']['start']) && ($_GET['create_time']['start'])) {
+        if (isset($_GET['create_time']['start']) && ($_GET['create_time']['start'])) {
             $grid->model()
                 ->where([
                     ['create_time', '>=', strtotime($_GET['create_time']['start'])],
@@ -97,7 +97,6 @@ class RechargeOrder3Controller extends AdminController
         }
 
 
-
         //  搜索条件
         $grid->model()->orderBy('create_time', 'desc'); // 按照ID 倒序排序
         $grid->column('order_id', 'ID');
@@ -107,6 +106,7 @@ class RechargeOrder3Controller extends AdminController
         $grid->column('merchantid', '商户ID');
         $grid->column('orderid', '系统订单号'); // 直接对此字段查询
         $grid->column('amount', '金额');
+        $grid->column('notify_num', '回调次数');
         $grid->column('status', '订单状态')->display(function ($input) {
             return isset(RechargeOrder::LIST_STATUS[$input]) ? RechargeOrder::LIST_STATUS[$input] : $input;
         })->dot(RechargeOrder::getStatusDot());
