@@ -1,5 +1,5 @@
 
- CREATE TABLE `cd_order_1028` (
+ CREATE TABLE `cd_order_1031` (
   `order_id` int NOT NULL AUTO_INCREMENT,
   `orderid` varchar(255) NOT NULL,
   `merchantid` int DEFAULT NULL COMMENT '商户ID',
@@ -71,7 +71,7 @@
 
 
 
- CREATE TABLE `cd_moneylog_1028` (
+ CREATE TABLE `cd_moneylog_1031` (
   `moneylog_id` int NOT NULL AUTO_INCREMENT,
   `service_id` int DEFAULT NULL COMMENT '客服',
   `proxy_id` int DEFAULT NULL COMMENT '码商',
