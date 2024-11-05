@@ -48,6 +48,8 @@ class RechargeOrder2Controller extends AdminController
             'amount' => '订单金额',
             'status' => '订单状态',
             'inizt' => '订单类型',
+            'account' => '收款账号',
+            'bankname' => '开户行',
             'create_time' => '下单时间',
             'completetime' => '完成时间',
         ];
@@ -105,6 +107,8 @@ class RechargeOrder2Controller extends AdminController
         $grid->column('orderid', '系统订单号'); // 直接对此字段查询
         $grid->column('amount', '金额');
         $grid->column('notify_num', '回调次数');
+        $grid->column('account', '收款账号');
+        $grid->column('bankname', '开户行');
         $grid->column('status', '订单状态')->display(function ($input) {
             return isset(RechargeOrder::LIST_STATUS[$input]) ? RechargeOrder::LIST_STATUS[$input] : $input;
         })->dot(RechargeOrder::getStatusDot());
@@ -131,6 +135,7 @@ class RechargeOrder2Controller extends AdminController
             $filter->equal('order_id', 'ID')->width('350px');
             $filter->equal('merchantid', '商户ID')->width('350px');
             $filter->equal('orderid', '系统订单号')->width('350px');
+            $filter->equal('account', '收款账号')->width('350px');
             $filter->equal('status', '状态')->select(RechargeOrder::LIST_STATUS);
             $filter->equal('inizt', '订单类型')->select(RechargeOrder::LIST_INIZT);
 

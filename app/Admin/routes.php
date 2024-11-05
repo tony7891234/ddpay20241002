@@ -40,6 +40,8 @@ Route::group([
     //  往前第一个时间 cd_order
     $router->resource('recharge_order3', 'RechargeOrder3Controller');
 
+    $router->resource('recharge_order4', 'RechargeOrder4Controller');
+
     //  最新日志
     $router->resource('money_log', 'MoneyLogController');
 

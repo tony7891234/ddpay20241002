@@ -53,12 +53,12 @@ select  order_id, orderid,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H
 -- 3.查询大表的总数据
 select  count(*)  from  baxi_20241003.cd_order_1031 ;
 -- 4。执行插入
-INSERT INTO baxi_20241003.cd_order_1031 ( SELECT * FROM baxi_20241010.cd_order  where  order_id>=148112532  LIMIT 1000000);
+INSERT INTO baxi_20241003.cd_order_1031 ( SELECT * FROM baxi_20241010.cd_order  where  order_id>=153112533  LIMIT 1000000);
 
 --  5 取出最大值 比如 1001
 select  order_id, orderid,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_order_1031  order by order_id  desc limit 5;
 -- 6。删除 小于5的数据
-delete  from   baxi_20241010.cd_order   where   order_id<=148112531  ;
+delete  from   baxi_20241010.cd_order   where   order_id<=154112532  ;
 
 
 -- 查询
@@ -72,15 +72,15 @@ select  count(*) from   baxi_20241003.cd_order_1031     ;
 select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_moneylog_1031  order by moneylog_id  desc limit 5;
 select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241010.cd_moneylog   order by moneylog_id  asc limit  5;
 
-INSERT INTO baxi_20241003.cd_moneylog_1031 ( SELECT * FROM baxi_20241010.cd_moneylog  where  moneylog_id>=164339581   LIMIT 2000000);
+INSERT INTO baxi_20241003.cd_moneylog_1031 ( SELECT * FROM baxi_20241010.cd_moneylog  where  moneylog_id>=173339581   LIMIT 1000000);
 select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_moneylog_1031  order by moneylog_id  desc limit 5;
 
 select  count(*) from   baxi_20241003.cd_moneylog_1031  ;
-select  count(*) from   baxi_20241010.cd_moneylog  where  moneylog_id<=  166339580;
+select  count(*) from   baxi_20241010.cd_moneylog  where  moneylog_id<=  170339580;
 select  count(*) from   baxi_20241010.cd_moneylog ;
 
 
-delete  from   baxi_20241010.cd_moneylog   where   moneylog_id<=166339580  ;
+delete  from   baxi_20241010.cd_moneylog   where   moneylog_id<=174339580  ;
 --   移动表   end
 
 

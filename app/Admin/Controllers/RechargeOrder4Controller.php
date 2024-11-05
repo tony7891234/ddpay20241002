@@ -9,10 +9,10 @@ use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
 
 /**
- * Class RechargeOrder1Controller
+ * Class RechargeOrder4Controller
  * @package App\Admin\Controllers
  */
-class RechargeOrder3Controller extends AdminController
+class RechargeOrder4Controller extends AdminController
 {
 
     /**
@@ -21,8 +21,8 @@ class RechargeOrder3Controller extends AdminController
      */
     public function title()
     {
-//        return '(10.10以前)';
-        return '(10.31以后)';
+        return '(10.10以前)';
+//        return '(10.31以后)';
     }
 
 
@@ -34,7 +34,7 @@ class RechargeOrder3Controller extends AdminController
     {
 
         $model = new RechargeOrder();
-        $tableName = 'cd_order_1031';
+        $tableName = 'cd_order_1010';
         $model->setConnection('rds')->setTable($tableName);
 
         /**
