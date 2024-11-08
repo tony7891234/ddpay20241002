@@ -2,36 +2,15 @@
 
 namespace App\Payment;
 
-use App\Models\PixModel;
 use App\Models\WithdrawOrder;
-use App\Traits\RepositoryTrait;
 
 /**
  * fit银行
  * Class FitbankPayment
  * @package App\Payment
  */
-class FitbankPayment extends BasePayment
+class FitbankPayment extends BasePayment implements InterFacePayment
 {
-    use RepositoryTrait;
-
-
-    const PREFIX_ORDER_ID = 'dcat'; // 订单号的前缀
-
-    /**
-     * @var string   pix  信息
-     */
-    public $pix_info = '';
-
-    /**
-     * @var string  出款信息
-     */
-    public $pix_out = '';
-
-    /**
-     * @var string 三方的订单id
-     */
-    public $bank_order_id;
 
 
     /**
@@ -48,19 +27,10 @@ class FitbankPayment extends BasePayment
             return false;
         }
 
-        // 1.先查询库
-        $has_sql = false; // 数据库是否存在   不要重复插入
-        /**
-         * @var $pix_info PixModel
-         */
-        $this->pix_info = $pix_info = PixModel::where('account', '=', $orderInfo->pix_account)->first();
-        if ($pix_info) {
-            $pix_status = $pix_info->status;
-            if ($pix_status && $pix_status != PixModel::STATUS_SUCCESS) {
-                $this->errorCode = -21;
-                $this->errorMessage = "pix 查询错误:::" . $pix_info['remark'];
-                return false;
-            }
+        // 检查数据是否可以出款
+        $validate = $this->validateWithdraw();
+        if (!$validate) {
+            return false;
         }
 
         // 2.上面没有失败的，处理新的查询
@@ -108,7 +78,7 @@ class FitbankPayment extends BasePayment
             "PaymentDate" => $this->brlTime(),
             "SearchProtocol" => $pixInfo['data']['SearchProtocol'],
         ];
-//        // 有留言，才写上
+        // 有留言，才写上
         if (isset($orderInfo->user_message)) {
             $requestParam['CustomerMessage'] = $orderInfo->user_message;
         }

@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\WithdrawOrder;
-use App\Payment\FitbankPayment;
+use App\Payment\HandelPayment;
 use Carbon\Carbon;
 
 /**
@@ -27,7 +27,9 @@ class WithdrawToBankJob extends BaseJob
 
     public function handle()
     {
-        $service = new FitbankPayment();
+        $service = new HandelPayment();
+        $service = $service->getUpstreamHandelClass();
+
         $response = $service->withdrawRequest($this->withdrawOrder);
         if (!$response) {
             $this->withdrawOrder->updateToRequestFail($service->pix_info, $service->pix_out, $service->getErrorMessage());

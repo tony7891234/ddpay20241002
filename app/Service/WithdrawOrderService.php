@@ -2,8 +2,7 @@
 
 namespace App\Service;
 
-
-use App\Payment\FitbankPayment;
+use App\Payment\HandelPayment;
 
 /**
  * 出款订单
@@ -21,16 +20,18 @@ class WithdrawOrderService extends BaseService
     {
 
         $request = \Request::all();
-        logToMe('notify', $request);
-        $payment = new FitbankPayment();
+//        logToMe('notify', $request);
+        $service = new HandelPayment();
+        $service = $service->getUpstreamHandelClass();
 
-        $response = $payment->withdrawCallback($request);
+        $response = $service->withdrawCallback($request);
         if (!$response) {
-            $this->errorCode = $payment->getErrorCode();
-            $this->errorMessage = $payment->getErrorMessage();
+            $this->errorCode = $service->getErrorCode();
+            $this->errorMessage = $service->getErrorMessage();
             return false;
         }
 
+        // 回掉成功
         return true;
     }
 
