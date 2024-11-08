@@ -59,6 +59,7 @@ class Sync extends BaseCommand
 //     */
     private function daySyncChunk()
     {
+        die;
         // 1.获取订单字段
         $orderInfo = RechargeOrder::first();
         $model = new RechargeOrder();

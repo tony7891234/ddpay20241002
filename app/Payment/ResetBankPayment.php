@@ -29,6 +29,14 @@ use App\Models\WithdrawOrder;
  * 存款，不需要 apikey，只需要 user_account_uuid
  * 提款，需要 apikey + secret 来请求
  *
+ *
+ * 目前有点有疑问，
+ * 1. API Secret 好像没地方用 入款用不 出款也用不上，
+ * 提款是不是这个接口： https://api.pixease.reset-bank.com/withdrawal/create/{user_account_uuid} 这个地方只用到    https://api.pixease.reset-bank.com/auth/login接口 的 access_token
+ * 也没签名 直接就能用
+ *
+ * 2. https://api.pixease.reset-bank.com/withdrawal/create/{user_account_uuid}  现在返回的值没办法知道是不是创建订单成功了， 是否能用银行返回的那个字段作为 订单创建成功的标识
+ *
  * PowerFull
  * Power@2024!
  * Class ResetBankPayment

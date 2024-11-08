@@ -1,5 +1,16 @@
 <?php
 
+if (!function_exists('isIndia')) {
+    /**
+     * 检查是不是印度平台
+     * @return bool
+     */
+    function isIndia()
+    {
+        return config('app.name') == 'India';
+    }
+}
+
 if (!function_exists('curlManyRequest')) {
     /**
      * 并发请求

@@ -6,27 +6,24 @@ use App\Models\NotifyOrder;
 use App\Traits\RepositoryTrait;
 
 /**
- * 回掉异常订单
- * Class NotifyOrderCommand
+ * Class ToWrongIpCommand
  * @package App\Console\Commands
  */
-class ToBaxiCommand extends BaseCommand
+class ToWrongIpCommand extends BaseCommand
 {
 
     use RepositoryTrait;
 
-
-    const MAX_NOTIFY_NUM = 2; // 最大回掉次数
     /**
      * @var string
      */
-    protected $signature = 'to_baxi';
+    protected $signature = 'wrong_ip';
 
 
     /**
      * @var string
      */
-    protected $description = '2.巴西拦截ip的订单';
+    protected $description = '2.拦截印度ip的订单';
 
     private $count_order = 0; // 总条数
 
@@ -61,8 +58,15 @@ class ToBaxiCommand extends BaseCommand
 
 //        $str = 'failed-提现-拦截三方商户(金流)ip回调请求,三方商户(金流)请求ip没在商户ip白名单内,请确认请求ip:3.238.12.19 是不是三方商户(金流)的服务器ip';
 
-        $str = 'failed-提现-拦截三方商户(金流)ip回调请求,三方商户(金流)请求ip没在商户ip白名单内,请确认请求ip:3.238.12.19 是不是三方商户(金流)的服务器ip';
-//        $str = 'failed-提现-拦截三方商户(金流)ip回调请求,三方商户(金流)请求ip没在商户ip白名单内,请确认请求ip:107.22.130.169 是不是三方商户(金流)的服务器ip';
+//        $str = 'failed-提现-拦截三方商户(金流)ip回调请求,三方商户(金流)请求ip没在商户ip白名单内,请确认请求ip:3.238.12.19 是不是三方商户(金流)的服务器ip';
+//        $str = '{"result_code":"fail","result_msg":"ip不在白名单"}';
+
+        if (isIndia()) {
+            // 印度的处理
+            $str = 'failed-提现-拦截三方商户(金流)ip回调请求,三方商户(金流)请求ip没在商户ip白名单内,请确认请求ip:3.238.12.19 是不是三方商户(金流)的服务器ip';
+        } else {
+            $str = 'failed-提现-拦截三方商户(金流)ip回调请求,三方商户(金流)请求ip没在商户ip白名单内,请确认请求ip:107.22.130.169 是不是三方商户(金流)的服务器ip';
+        }
         $this->count_order = 1;
         if ($this->count_order == 0) {
             return true;

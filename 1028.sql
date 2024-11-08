@@ -1,7 +1,7 @@
 
  CREATE TABLE `cd_order_1031` (
   `order_id` int NOT NULL AUTO_INCREMENT,
-  `orderid` varchar(255) NOT NULL,
+  `orderid` varchar(50) NOT NULL,
   `merchantid` int DEFAULT NULL COMMENT '商户ID',
   `sysorderid` varchar(250) DEFAULT NULL COMMENT '系统订单号',
   `amount` decimal(20,4) DEFAULT NULL COMMENT '金额',
@@ -148,5 +148,54 @@ CREATE TABLE `cd_withdraw_orders` (
   KEY `status` (`status`),
   KEY `created_at` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='提款订单';
+
+
+--  * @property  int order_id 订单id
+--  * @property  int orderid 订单号
+--  * @property  int create_time 添加时间
+--  * @property  int notify_time 下次回掉时间
+--  * @property  int notify_num  回掉次数
+--  * @property  int notify_status  回掉状态
+--  * @property  int type  1=充值；2=提款
+--  * @property  string response  返回内容
+--  * @property  string request  回掉内容
+--  * @property  string notify_url  回掉地址
+create database map_notify_order;
+use  map_notify_order;
+
+create database map_order;
+use  map_order;
+
+create database map_money_log;
+use  map_money_log;
+
+
+ CREATE TABLE `cd_notify_order_1109` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `order_id` int unsigned NOT NULL DEFAULT '0' COMMENT '订单id',
+  `orderid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '订单号',
+  `create_time` int unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `notify_time` int unsigned NOT NULL DEFAULT '0' COMMENT '下次回掉时间',
+  `notify_num` int unsigned NOT NULL DEFAULT '0' COMMENT '回掉次数',
+  `type` tinyint unsigned NOT NULL DEFAULT '0' COMMENT 'type  1=充值；2=提款',
+  `response` text COMMENT '返回内容',
+  `request` text COMMENT '回掉内容',
+  `notify_url` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '回掉地址',
+  `notify_status` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '回掉状态:0=未回调;1=已经回调;2=失败',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `order_id` (`order_id`) USING BTREE,
+  KEY `orderid` (`orderid`) USING BTREE,
+  KEY `notify_time` (`notify_time`,`notify_num`) USING BTREE,
+  KEY `notify_status` (`notify_status`) USING BTREE,
+  KEY `notify_num` (`notify_num`) USING BTREE
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 COMMENT='异常回掉单';
+
+
+CREATE TABLE `cd_map_notify_order` (
+  `orderid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '订单号',
+  `table_name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '表名字',
+   INDEX orderid (orderid) USING HASH
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3  COMMENT='notify_order对应的日表';
+
 
 
