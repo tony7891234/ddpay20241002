@@ -508,6 +508,18 @@ MG;
     }
 
     /**
+     * 插入日表
+     * @param int $order_id
+     * @param int $create_at
+     * @return bool
+     */
+    private function insertToMap($order_id, $create_at)
+    {
+        return true;
+    }
+
+
+    /**
      * @param $params
      * @param $secret
      * @return bool|string
