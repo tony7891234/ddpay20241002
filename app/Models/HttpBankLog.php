@@ -24,7 +24,7 @@ class HttpBankLog extends BaseModel
 {
 
     protected $connection = 'rds';
-    protected $table = 'request';
+    protected $table = 'cd_request';
     protected $primaryKey = 'id';
     protected $fillable = [];
     protected $guarded = ['id'];
