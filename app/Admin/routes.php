@@ -53,4 +53,8 @@ Route::group([
     $router->resource('money_log3', 'MoneyLog3Controller');
 
 
+    // 请求银行的 log
+    $router->resource('http_bank_log', 'HttpBankLogController');
+
+
 });

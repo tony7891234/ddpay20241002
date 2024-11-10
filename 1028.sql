@@ -211,3 +211,19 @@ CREATE TABLE `cd_map_order` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3  COMMENT='订单对应的表名字';
 
 
+ cd_request | CREATE TABLE `cd_request` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '' COMMENT '订单号',
+  `merchant` longtext COLLATE utf8mb3_unicode_ci COMMENT '商户请求数据',
+  `request` longtext COLLATE utf8mb3_unicode_ci COMMENT '系统请求数据',
+  `response` longtext COLLATE utf8mb3_unicode_ci COMMENT '银行返回数据',
+  `time_cost` varchar(200) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '' COMMENT '请求的时间',
+  `receipt` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '' COMMENT '凭证链接',
+  `callback` longtext COLLATE utf8mb3_unicode_ci COMMENT '银行回调数据',
+  `createtime` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `updatetime` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `order_id` (`order_id`) USING BTREE,
+  KEY `createtime` (`createtime`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=15356583 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci COMMENT='日志'
+
