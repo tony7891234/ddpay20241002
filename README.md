@@ -89,3 +89,7 @@ INSERT INTO baxi_20241010.cd_order ( SELECT * FROM   baxi_20241003.cd_order  whe
 后台  https://test107.viwyw.com/admin777  
 日志  https://test107.viwyw.com/admin/log-viewer/logs
 ````
+
+
+dig +short baxi.cbc0my2esp7q.us-east-1.rds.amazonaws.com
+

@@ -197,5 +197,5 @@ CREATE TABLE `cd_map_notify_order` (
    INDEX orderid (orderid) USING HASH
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3  COMMENT='notify_order对应的日表';
 
-
+--  删除的订单 2117680627344538  11.3 号的
 
