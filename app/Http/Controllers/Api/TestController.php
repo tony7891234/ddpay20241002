@@ -73,7 +73,7 @@ class TestController extends ApiController
             '$request' => $request,
             '$type' => $type,
         ];
-        logToMe('back1', $arr);
+        logToMe('back2', $arr);
     }
 
 }
