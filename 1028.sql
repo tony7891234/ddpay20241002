@@ -199,3 +199,15 @@ CREATE TABLE `cd_map_notify_order` (
 
 --  删除的订单 2117680627344538  11.3 号的
 
+--
+
+drop table cd_map_order;
+CREATE TABLE `cd_map_order` (
+  `orderid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '订单号',
+  `sf_id` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '银行的id',
+  `table_name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '表名字',
+     INDEX orderid (orderid) USING HASH,
+     INDEX sf_id (sf_id) USING HASH
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3  COMMENT='订单对应的表名字';
+
+

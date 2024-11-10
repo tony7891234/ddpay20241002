@@ -127,5 +127,9 @@ ANALYZE TABLE cd_order;
 
 OPTIMIZE TABLE cd_moneylog;
 
-pt-online-schema-change --alter "ENGINE=InnoDB" --execute D='baxi_20241003',t='cd_notify_order'
+
+INSERT INTO  map_order.cd_map_order  (orderid,sf_id,`table_name`)  (SELECT  orderid,sf_id,'cd_moneylog_1031'  FROM  baxi_20241003.cd_order_1031   );
+
+select *  from   map_order.cd_map_order;
+
 
