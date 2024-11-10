@@ -14,24 +14,66 @@ class TestController extends ApiController
 {
     use HasHttpRequest;
 
+//
+//    public function test()
+//    {
+//        date_default_timezone_set('PRC');
+//
+//        $start_at = '2024-10-16 00:48:50';
+//        $end_at = '2024-10-16 00:50:56';
+//        $merchant_id = 1;
+//        $start_at = strtotime(date($start_at));
+//        $end_at = strtotime(date($end_at));
+//        $count = RechargeOrder::where('create_time', '>=', $start_at)  // 22：56
+//        ->where('create_time', '<=', $end_at)
+//        ->count();
+//        $sql = \Debugbar::getData()['queries'];
+//        dump($sql);
+//        var_dump($start_at);
+//        var_dump($end_at);
+//        dd($count);
+//    }
 
-    public function test()
+    public function back1()
     {
-        date_default_timezone_set('PRC');
+        $info = file_get_contents('php://input');
 
-        $start_at = '2024-10-16 00:48:50';
-        $end_at = '2024-10-16 00:50:56';
-        $merchant_id = 1;
-        $start_at = strtotime(date($start_at));
-        $end_at = strtotime(date($end_at));
-        $count = RechargeOrder::where('create_time', '>=', $start_at)  // 22：56
-        ->where('create_time', '<=', $end_at)
-        ->count();
-        $sql = \Debugbar::getData()['queries'];
-        dump($sql);
-        var_dump($start_at);
-        var_dump($end_at);
-        dd($count);
+        $type = '---';
+        if (json_decode($info)) {
+            $type = 'file_get_content';
+            $request = json_decode($info, 1);
+        } else {
+            $request = $_POST;
+            $type = 'post';
+        }
+
+
+        $arr = [
+            '$request' => $request,
+            '$type' => $type,
+        ];
+        logToMe('back1', $arr);
+    }
+
+    public function back2()
+    {
+        $info = file_get_contents('php://input');
+
+        $type = '---';
+        if (json_decode($info)) {
+            $type = 'file_get_content';
+            $request = json_decode($info, 1);
+        } else {
+            $request = $_POST;
+            $type = 'post';
+        }
+
+
+        $arr = [
+            '$request' => $request,
+            '$type' => $type,
+        ];
+        logToMe('back1', $arr);
     }
 
 }

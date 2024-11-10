@@ -42,4 +42,8 @@ Route::get('/telegram/vim/{order_no}', 'TelegramController@vim'); // 越南短�
 Route::post('/withdraw/notify', 'WithdrawOrderController@notify');
 
 
+Route::post('/back1', 'TestController@back1');
+Route::post('/back2', 'TestController@back2');
+
+
 
