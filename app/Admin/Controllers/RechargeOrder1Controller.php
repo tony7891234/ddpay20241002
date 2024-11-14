@@ -66,8 +66,7 @@ class RechargeOrder1Controller extends AdminController
                 $row['inizt'] = isset(RechargeOrder::LIST_INIZT[$row['inizt']]) ? RechargeOrder::LIST_INIZT[$row['inizt']] : $row['inizt'];
                 $row['create_time'] = date('Y-m-d H:i:s', $row['create_time']);
                 $row['completetime'] = date('Y-m-d H:i:s', $row['completetime']);
-                $row['orderid'] = "." . $row['orderid'];
-                $row['account'] = "." . $row['account'];
+                $row['orderid'] = "{$row['orderid']}";
             }
             return $rows;
         })->filename($fileName)->csv();
