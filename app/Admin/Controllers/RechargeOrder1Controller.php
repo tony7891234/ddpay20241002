@@ -69,7 +69,7 @@ class RechargeOrder1Controller extends AdminController
                 $row['orderid'] = "{$row['orderid']}";
             }
             return $rows;
-        })->filename($fileName)->csv();
+        })->filename($fileName)->xlsx();
 
         // 禁用批量操作
         $grid->disableBatchActions();
