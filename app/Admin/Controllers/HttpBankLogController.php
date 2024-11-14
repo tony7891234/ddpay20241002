@@ -63,45 +63,45 @@ class HttpBankLogController extends AdminController
         $grid->column('order_id', '订单ID');
 
 
-        $grid->column('time_cost', '请求的时间');
-        $grid->column('createtime', '添加时间');
-        $grid->column('receipt', '凭证链接');
-
-
-        $grid->column('merchant', '商户请求数据')->display(function ($input) {
-            $input = json_decode($input, true);
-            if (empty($input)) {
-                return '';
-            }
-            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
-        })->hide();
-
-
-        $grid->column('request', '系统请求数据')->display(function ($input) {
-            $input = json_decode($input, true);
-            if (empty($input)) {
-                return '';
-            }
-            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
-        })->hide();
-
-
-        $grid->column('request', '银行返回数据')->display(function ($input) {
-            $input = json_decode($input, true);
-            if (empty($input)) {
-                return '';
-            }
-            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
-        })->hide();
-
-
-        $grid->column('callback', '银行回调数据')->display(function ($input) {
-            $input = json_decode($input, true);
-            if (empty($input)) {
-                return '';
-            }
-            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
-        })->hide();
+//        $grid->column('time_cost', '请求的时间');
+//        $grid->column('createtime', '添加时间');
+//        $grid->column('receipt', '凭证链接');
+//
+//
+//        $grid->column('merchant', '商户请求数据')->display(function ($input) {
+//            $input = json_decode($input, true);
+//            if (empty($input)) {
+//                return '';
+//            }
+//            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+//        })->hide();
+//
+//
+//        $grid->column('request', '系统请求数据')->display(function ($input) {
+//            $input = json_decode($input, true);
+//            if (empty($input)) {
+//                return '';
+//            }
+//            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+//        })->hide();
+//
+//
+//        $grid->column('request', '银行返回数据')->display(function ($input) {
+//            $input = json_decode($input, true);
+//            if (empty($input)) {
+//                return '';
+//            }
+//            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+//        })->hide();
+//
+//
+//        $grid->column('callback', '银行回调数据')->display(function ($input) {
+//            $input = json_decode($input, true);
+//            if (empty($input)) {
+//                return '';
+//            }
+//            return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+//        })->hide();
 
 
         // 过滤器  查询字段
