@@ -62,7 +62,7 @@ class RechargeOrderController extends AdminController
                 $row['completetime'] = date('Y-m-d H:i:s', $row['completetime']);
             }
             return $rows;
-        })->filename($fileName)->csv();
+        })->filename($fileName)->xlsx();
 
         // 禁用批量操作
         $grid->disableBatchActions();

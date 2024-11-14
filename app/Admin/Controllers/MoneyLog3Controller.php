@@ -64,7 +64,7 @@ class MoneyLog3Controller extends AdminController
                 $row['create_time'] = date('Y-m-d H:i:s', $row['create_time']);
             }
             return $rows;
-        })->filename($fileName)->csv();
+        })->filename($fileName)->xlsx();
 
         // 禁用批量操作
         $grid->disableBatchActions();
