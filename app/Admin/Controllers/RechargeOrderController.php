@@ -104,6 +104,9 @@ class RechargeOrderController extends AdminController
         $grid->column('amount', '金额');
         $grid->column('notify_num', '回调次数');
         $grid->column('account', '收款账号')->hide();
+        $grid->column('sf_id', '三方订单号')->hide();
+        $grid->column('yh_bq', '银行标签/E2E')->hide();
+        $grid->column('kouling', 'ConciliationId')->hide();
         $grid->column('bankname', '开户行');
         $grid->column('status', '订单状态')->display(function ($input) {
             return isset(RechargeOrder::LIST_STATUS[$input]) ? RechargeOrder::LIST_STATUS[$input] : $input;
