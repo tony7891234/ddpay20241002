@@ -69,6 +69,21 @@ class RechargeOrder extends BaseModel
         self::STATUS_AUTO_DEVICE => '设备待出款',
     ];
 
+
+    // 通道
+    const LIST_BANK_OPEN = [
+        3 => 'epay',
+        4 => 'toppay',
+        5 => 'tggpay',
+        7 => 'mybank',
+        8 => 'epay2',
+        10 => 'fitbank',
+        12 => 'Pagnovo',
+        13 => 'reset',
+        14 => 'tamborete',
+        15 => 'iugu',
+    ];
+
     /**
      * 自增ID
      * @return int
