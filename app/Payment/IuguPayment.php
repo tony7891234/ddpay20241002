@@ -60,6 +60,7 @@ class IuguPayment extends BasePayment implements InterFacePayment
 
         $this->pix_out = $responseData = $this->curlRequest($requestParam, '/v1/transfer_requests');
 //        logToMe('pix_out', $responseData);
+//        dump($requestParam);
 //        dump($responseData);
 //        array:9 [
 //        "transfer_request_id" => "FCD8E4D0C8824C6DB4B5EE2509E88D4C"
@@ -84,7 +85,7 @@ class IuguPayment extends BasePayment implements InterFacePayment
             return false;
         }
 
-        if (!isset($responseData['end_to_end_id']) && $responseData['end_to_end_id'] != '') {
+        if (isset($responseData['end_to_end_id']) && $responseData['end_to_end_id'] != '') {
             $this->bank_order_id = $responseData['end_to_end_id'];
             return true;
         }

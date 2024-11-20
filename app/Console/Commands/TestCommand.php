@@ -57,7 +57,7 @@ class TestCommand extends BaseCommand
 //        dd($pemContent);
 //        dump('restart ' . (getTimeString()) . '  ');
 
-        $withdrawOrder = WithdrawOrder::where('order_id', '=', 2021)->first();
+        $withdrawOrder = WithdrawOrder::where('order_id', '=', 3577)->first();
         dump($withdrawOrder);
         $service = new IuguPayment();
         $response = $service->withdrawRequest($withdrawOrder);
