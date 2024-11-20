@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\ApiController;
+use App\Payment\BasePayment;
 use App\Service\WithdrawOrderService;
 
 /**
@@ -15,12 +16,13 @@ class WithdrawOrderController extends ApiController
 
     /**
      * 出款回掉
+     * @param $upstream_id int
      * @param WithdrawOrderService $withdrawOrderService
      * @return array
      */
-    public function notify(WithdrawOrderService $withdrawOrderService)
+    public function notify($upstream_id, WithdrawOrderService $withdrawOrderService)
     {
-        $response = $withdrawOrderService->notify();
+        $response = $withdrawOrderService->notify($upstream_id);
         if ($response) {
             return $this->success('success');
         }
