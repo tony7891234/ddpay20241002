@@ -35,9 +35,9 @@ return [
         ],
 
         'database' => [
-            'driver' => 'dcat_admin',
+            'driver' => 'database',
             'table' => 'jobs',
-            'queue' => 'default',
+            'queue' => 'dcat_admin',
             'retry_after' => 90,
             'after_commit' => false,
         ],
