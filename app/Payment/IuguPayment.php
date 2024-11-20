@@ -47,7 +47,7 @@ class IuguPayment extends BasePayment implements InterFacePayment
             'external_reference' => $this->sqlToBankOrder($orderInfo->getId()),
             'receiver' => [
                 'pix' => [
-                    'key' => $orderInfo['Account'],
+                    'key' => $orderInfo->pix_account,
                     'type' => isset(self::LIST_PIX_TYPE[$low]) ? self::LIST_PIX_TYPE[$low] : $orderInfo->pix_type,
                 ],
             ],
@@ -59,7 +59,7 @@ class IuguPayment extends BasePayment implements InterFacePayment
 //        }
 
         $this->pix_out = $responseData = $this->curlRequest($requestParam, '/v1/transfer_requests');
-        logToMe('pix_out', $responseData);
+//        logToMe('pix_out', $responseData);
 
         if (!is_array($responseData) || !$responseData) {
             $this->errorCode = -21;
@@ -158,10 +158,27 @@ class IuguPayment extends BasePayment implements InterFacePayment
         return openssl_pkey_get_private($text_key);
     }
 
-    private function sign_body($method, $endpoint, $request_time, $body)
+
+    private function sign_body(
+        $method,
+        $endpoint,
+        $request_time,
+        $body,
+        $private_key
+    )
     {
         // Link de referência: https://dev.iugu.com/reference/autentica%C3%A7%C3%A3o#sexto-passo
-        $pattern = $method . '|' . $endpoint . "\n" . self::LIST_API_PARAM['token'] . '|' . $request_time . "\n" . $body;
+
+        $pattern =
+            $method .
+            '|' .
+            $endpoint .
+            "\n" .
+            self::LIST_API_PARAM['token'] .
+            '|' .
+            $request_time .
+            "\n" .
+            $body;
         $ret_sign = '';
         if (
         openssl_sign(
@@ -180,6 +197,8 @@ class IuguPayment extends BasePayment implements InterFacePayment
 
     private function curlRequest($data, $endpoint, $method = 'POST')
     {
+//        dump($data);
+//        dump($endpoint);
         //var_dump($endpoint);die;
         $startTime = microtime(true);
         $request_time = $this->get_request_time();

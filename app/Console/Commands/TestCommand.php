@@ -2,8 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Models\WithdrawOrder;
+use App\Payment\IuguPayment;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Storage;
+
 /**
  * 回掉异常订单
  * Class NotifyOrderCommand
@@ -48,11 +51,21 @@ class TestCommand extends BaseCommand
      */
     public function handle()
     {
-        $pemContent = Storage::get('pem/iugu.pem');
-        $pemContent= openssl_pkey_get_private($pemContent);
-
-        dd($pemContent);
+//        $pemContent = Storage::get('pem/iugu.pem');
+//        $pemContent= openssl_pkey_get_private($pemContent);
+//
+//        dd($pemContent);
 //        dump('restart ' . (getTimeString()) . '  ');
+
+        $withdrawOrder = WithdrawOrder::where('order_id', '=', 2020)->first();
+        dump($withdrawOrder);
+        $service = new IuguPayment();
+        $response = $service->withdrawRequest($withdrawOrder);
+        if (!$response) {
+            dd($service->getErrorMessage());
+        } else {
+            dd('success');
+        }
 
         return true;
     }
