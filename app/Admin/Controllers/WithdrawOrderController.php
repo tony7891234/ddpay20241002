@@ -51,7 +51,7 @@ class WithdrawOrderController extends AdminController
         // 显示详情按钮
 //        $grid->showViewButton();
         // 禁用删除按钮
-        $grid->disableDeleteButton();
+//        $grid->disableDeleteButton();
         // 禁用编辑按钮
         $grid->disableEditButton();
         // 隐藏 创建按钮
