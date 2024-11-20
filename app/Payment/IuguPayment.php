@@ -3,6 +3,7 @@
 namespace App\Payment;
 
 use App\Models\WithdrawOrder;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class IuguPayment
@@ -152,16 +153,8 @@ class IuguPayment extends BasePayment implements InterFacePayment
 
     private function get_private_key()
     {
-        $text_key = '-----BEGIN PRIVATE KEY-----
-MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAxT9i7B7XD/w7r1eB
-c0+fS8sgq8SFYapdR+SNqHwplv/J3+mp5YZU9g6/LaKZHUkoVtNhh/cUULkZYXig
-Z83RowIDAQABAkB6EvC2EaAoVILb0dxb8Ts1PVHK/KVP/JAenmTNkYpr2GrPlvTe
-o9IgsYHbuljZnxvmlmWfeQ+JajRZwBCQr6GBAiEA+vW/+7nO0diw7tmCu/8YHmRv
-WpVF+55XnDp3LbxDCu8CIQDJNXzDi2Wbhl6BLEJFaWBD+lqoyrWlqGw1H87J6tv0
-jQIgMKS3vLQsSXKGARX6CDSO2T1AdD9g3D+53ZdbiGroV9MCIBvFzEDZft7mvyip
-SUR3dRgs+FKQGF6TTsxOZaatSksJAiArpKZsAi6+NIZfFRzg3fAvbo5PvbtYM3H2
-WXzP/fQ1OA==
------END PRIVATE KEY-----';
+        // 位置在 storage/app/pem/   其实是取值 filesystem.php 中的 local 配置
+        $text_key = Storage::get('pem/iugu.pem');
         return openssl_pkey_get_private($text_key);
     }
 

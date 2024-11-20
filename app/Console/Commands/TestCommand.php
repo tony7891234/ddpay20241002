@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Traits\RepositoryTrait;
-
+use Illuminate\Support\Facades\Storage;
 /**
  * 回掉异常订单
  * Class NotifyOrderCommand
@@ -48,7 +48,11 @@ class TestCommand extends BaseCommand
      */
     public function handle()
     {
-        dump('restart ' . (getTimeString()) . '  ');
+        $pemContent = Storage::get('pem/iugu.pem');
+        $pemContent= openssl_pkey_get_private($pemContent);
+
+        dd($pemContent);
+//        dump('restart ' . (getTimeString()) . '  ');
 
         return true;
     }
