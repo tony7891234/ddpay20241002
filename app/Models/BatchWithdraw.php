@@ -10,6 +10,7 @@ namespace App\Models;
  * @property int bach_id
  * @property int merchant_id
  * @property int batch_no  批次   对应 sms_orders.batch_no
+ * @property int upstream_id  银行
  * @property string message  内容
  * @property string file  文件路径
  * @property int created_at  添加时间

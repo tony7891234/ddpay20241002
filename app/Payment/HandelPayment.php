@@ -13,14 +13,32 @@ class HandelPayment extends BasePayment
 {
     use RepositoryTrait;
 
+    /**
+     * @var int
+     */
+    private $upstream_id = 1;
+
+    /**
+     * @param $upstream_id
+     * @return $this
+     */
+    public function setUpstreamId($upstream_id)
+    {
+        $this->upstream_id = $upstream_id;
+        return $this;
+    }
 
     /**
      * 获取某个支付的类
-     * @return FitbankPayment
+     * @return FitbankPayment|IuguPayment
      */
     public function getUpstreamHandelClass()
     {
-        return new FitbankPayment();
+        if ($this->upstream_id == BasePayment::BANK_FIT) {
+            return new FitbankPayment();
+        } elseif ($this->upstream_id == BasePayment::BANK_IUGU) {
+            return new IuguPayment();
+        }
     }
 
 

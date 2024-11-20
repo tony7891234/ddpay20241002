@@ -132,4 +132,8 @@ INSERT INTO  map_order.cd_map_order  (orderid,sf_id,`table_name`)  (SELECT  orde
 
 select *  from   map_order.cd_map_order;
 
+ALTER TABLE cd_batch_withdraw MODIFY COLUMN response_fail LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '失败的';
+
+ALTER TABLE cd_withdraw_orders ADD COLUMN upstream_id INT(11) NULL default 1 COMMENT '上游ID';
+
 

@@ -4,6 +4,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\WithdrawOrder;
+use App\Payment\BasePayment;
 use Dcat\Admin\Controllers\AdminController;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
@@ -65,6 +66,9 @@ class WithdrawOrderController extends AdminController
 
         $grid->column('order_id', 'ID');
         $grid->column('batch_no', '批量单号'); // 直接对此字段查询
+        $grid->column('upstream_id', '银行')->display(function ($input) {
+            return isset(BasePayment::LIST_BANK[$input]) ? BasePayment::LIST_BANK[$input] : $input;
+        });
         $grid->column('bank_order_id', '银行单号');
         $grid->column('pix_type', 'pix类型');
         $grid->column('status', '订单状态')->display(function ($input) {

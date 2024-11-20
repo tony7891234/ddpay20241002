@@ -166,6 +166,7 @@ class BatchWithdrawJob extends BaseJob
         $arr = [
             "merchant_id" => WithdrawOrder::MERCHANT_DEFAULT, // 商户号
             'batch_no' => $this->batch_withdraw_info->batch_no,
+            'upstream_id' => $this->batch_withdraw_info->upstream_id,
             'pix_type' => $pix_type,
             'pix_account' => $pix_account,
             'withdraw_amount' => $withdraw_amount,

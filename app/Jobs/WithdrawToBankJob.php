@@ -28,7 +28,7 @@ class WithdrawToBankJob extends BaseJob
     public function handle()
     {
         $service = new HandelPayment();
-        $service = $service->getUpstreamHandelClass();
+        $service = $service->setUpstreamId($this->withdrawOrder->upstream_id)->getUpstreamHandelClass();
 
         $response = $service->withdrawRequest($this->withdrawOrder);
         if (!$response) {

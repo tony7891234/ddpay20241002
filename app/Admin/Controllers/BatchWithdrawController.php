@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Jobs\BatchWithdrawJob;
 use App\Models\BatchWithdraw;
 use App\Models\WithdrawOrder;
+use App\Payment\BasePayment;
 use App\Traits\PreviewCode;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Controllers\AdminController;
@@ -51,6 +52,9 @@ class BatchWithdrawController extends AdminController
         $grid->model()->orderBy('bach_id', 'desc'); // 按照ID 倒序排序
         $grid->column('bach_id', 'ID');
         $grid->column('batch_no', '批次');
+        $grid->column('upstream_id', '银行')->display(function ($input) {
+            return isset(BasePayment::LIST_BANK[$input]) ? BasePayment::LIST_BANK[$input] : $input;
+        });
 
         $grid->column('message', '内容')->display(function ($input) {
             $input = json_decode($input, true);
@@ -107,7 +111,7 @@ class BatchWithdrawController extends AdminController
     {
         return $content
             ->title($this->title())
-            ->description('内容和文件必须二选一;多个内容必须换行输入')
+            ->description('内容和文件必须二选一;多个内容必须换行输入(顺序:1.pix类别;2.pix账号;3.金额;4.附言)')
             ->body($this->newline())
             ->body($this->form());
     }
@@ -132,6 +136,11 @@ class BatchWithdrawController extends AdminController
                 $form->width(12)->textarea('message', '内容')->required();
             });
 
+            $form->row(function ($form) {
+                $form->radio('upstream_id', '银行')->options(function () {
+                    return BasePayment::LIST_BANK;
+                })->required();
+            });
 
             $form->row(function ($form) {
                 $form->file('file', '文件路径')

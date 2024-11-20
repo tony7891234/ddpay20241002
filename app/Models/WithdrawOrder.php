@@ -8,6 +8,7 @@ namespace App\Models;
  * @package App\Models
  * @property int order_id
  * @property int merchant_id 商户id
+ * @property int upstream_id  银行
  * @property int batch_no 批量单号
  * @property string pix_type pix类型
  * @property string pix_account pix账号

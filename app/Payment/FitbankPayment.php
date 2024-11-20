@@ -74,7 +74,7 @@ class FitbankPayment extends BasePayment implements InterFacePayment
             "ToBankAccountDigit" => $pixInfo['data']['ReceiverBankAccountDigit'],
             "Value" => $orderInfo->withdraw_amount,
             "AccountType" => $pixInfo['data']['ReceiverAccountType'],
-            "Identifier" => $this->sqlToFitOrder($orderInfo->getId()),
+            "Identifier" => $this->sqlToBankOrder($orderInfo->getId()),
             "PaymentDate" => $this->brlTime(),
             "SearchProtocol" => $pixInfo['data']['SearchProtocol'],
         ];
@@ -167,15 +167,6 @@ class FitbankPayment extends BasePayment implements InterFacePayment
 
     /************************************************* 下面是私钥方法 ****************************************************/
 
-    /**
-     * 请求 fit 的订单号
-     * @param $order_id
-     * @return string
-     */
-    private function sqlToFitOrder($order_id)
-    {
-        return self::PREFIX_ORDER_ID . $order_id;
-    }
 
     private function getPixInfo($pixKey)
     {

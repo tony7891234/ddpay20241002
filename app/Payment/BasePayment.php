@@ -18,6 +18,13 @@ class BasePayment
 
     const PREFIX_ORDER_ID = 'dcat'; // 订单号的前缀 回掉识别
 
+    const BANK_FIT = 1;
+    const BANK_IUGU = 2;
+    const LIST_BANK = [
+        self::BANK_FIT => 'FIT',
+        self::BANK_IUGU => 'IUGU',
+    ];
+
 
     /**
      * @var string   pix  信息
@@ -38,6 +45,17 @@ class BasePayment
      * @var string 出款的 pix account 账号
      */
     protected $pix_account;
+
+
+    /**
+     * 请求 银行 的订单号
+     * @param $order_id
+     * @return string
+     */
+    protected function sqlToBankOrder($order_id)
+    {
+        return self::PREFIX_ORDER_ID . $order_id;
+    }
 
     /**
      * 检查是否允许出款
