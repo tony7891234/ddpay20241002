@@ -38,9 +38,9 @@ class IuguPayment extends BasePayment implements InterFacePayment
             $orderInfo->pix_account = lcfirst($orderInfo->pix_account);
         }
 
-        $low = strtolower($orderInfo->pix_type);
         $requestParam = [
-            // 这是附言
+            // 这是附言:wq
+
             'api_token' => self::LIST_API_PARAM['token'],
             'transfer_type' => 'pix',
             'amount_cents' => bcmul($orderInfo->withdraw_amount, 100),
@@ -48,7 +48,7 @@ class IuguPayment extends BasePayment implements InterFacePayment
             'receiver' => [
                 'pix' => [
                     'key' => $orderInfo->pix_account,
-                    'type' => isset(self::LIST_PIX_TYPE[$low]) ? self::LIST_PIX_TYPE[$low] : $orderInfo->pix_type,
+                    'type' => strtolower($orderInfo->pix_type),
                 ],
             ],
             //description 转账附言，会显示到转账凭证上面
@@ -60,7 +60,18 @@ class IuguPayment extends BasePayment implements InterFacePayment
 
         $this->pix_out = $responseData = $this->curlRequest($requestParam, '/v1/transfer_requests');
 //        logToMe('pix_out', $responseData);
-
+//        dump($responseData);
+//        array:9 [
+//        "transfer_request_id" => "FCD8E4D0C8824C6DB4B5EE2509E88D4C"
+//  "created_at" => "2024-11-20T11:36:31-03:00"
+//  "amount_cents" => 132
+//  "transfer_type" => "pix"
+//  "end_to_end_id" => "E15111975202411201436130f9501659"
+//  "external_reference" => "dcat2021"
+//  "receipt_url" => "https://comprovantes.iugu.com/fcd8e4d0-c882-4c6d-b4b5-ee2509e88d4c-d3dc88"
+//  "status" => "pending"
+//  "pix_bucket_size" => 53
+//]
         if (!is_array($responseData) || !$responseData) {
             $this->errorCode = -21;
             $this->errorMessage = '响应内容有误：超时';
@@ -73,14 +84,14 @@ class IuguPayment extends BasePayment implements InterFacePayment
             return false;
         }
 
-        if (isset($responseData['end_to_end_id']) && $responseData['end_to_end_id'] != '') {
-            $this->errorCode = -24;
-            $this->errorMessage = 'DocumentNumber 不存在';
-            return false;
+        if (!isset($responseData['end_to_end_id']) && $responseData['end_to_end_id'] != '') {
+            $this->bank_order_id = $responseData['end_to_end_id'];
+            return true;
         }
-        $this->bank_order_id = $responseData['end_to_end_id'];
 
-        return true;
+        $this->errorCode = -24;
+        $this->errorMessage = 'DocumentNumber 不存在';
+        return false;
     }
 
     /**
