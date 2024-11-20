@@ -57,6 +57,7 @@ class IuguPayment extends BasePayment implements InterFacePayment
 //        }
 
         $this->pix_out = $responseData = $this->curlRequest($requestParam, '/v1/transfer_requests');
+        logToMe('pix_out', $responseData);
 
         if (!is_array($responseData) || !$responseData) {
             $this->errorCode = -21;
