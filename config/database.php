@@ -44,6 +44,26 @@ return [
         ],
 
         // 常规库
+        'mysql' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('RDS_HOST', '127.0.0.1'),
+            'port' => env('RDS_PORT', '3306'),
+            'database' => 'baxi_dcat_1020',
+            'username' => env('RDS_USERNAME', 'forge'),
+            'password' => env('RDS_PASSWORD', ''),
+            'unix_socket' => env('RDS_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+        // 常规库
         'dcat_admin' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
