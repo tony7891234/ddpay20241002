@@ -136,6 +136,7 @@ class WithdrawOrderController extends AdminController
             $filter->equal('batch_no', '批量单号')->width('350px');
 
             $filter->equal('status', '状态')->select(WithdrawOrder::LIST_STATUS);
+            $filter->equal('upstream_id', '银行')->select(BasePayment::LIST_BANK);
             $filter->equal('pix_type', 'pix类型')->select(WithdrawOrder::LIST_PIX);
         });
         return $grid;
