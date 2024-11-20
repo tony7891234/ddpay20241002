@@ -56,6 +56,9 @@ class HttpBankLogController extends AdminController
         $grid->disableEditButton();
         // 隐藏 创建按钮
         $grid->disableCreateButton();
+
+        // 设置固定总条数
+        $grid->model()->setTotal(10000); // 这里设置总条数为 100
         //  搜索条件
         $grid->model()->orderBy('id', 'desc'); // 按照ID 倒序排序
 
