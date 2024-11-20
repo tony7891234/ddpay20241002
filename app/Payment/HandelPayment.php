@@ -38,6 +38,10 @@ class HandelPayment extends BasePayment
             return new FitbankPayment();
         } elseif ($this->upstream_id == BasePayment::BANK_IUGU) {
             return new IuguPayment();
+        } else {
+            $arr = $this->upstream_id . '不存在';
+            logToMe('HandelPayment', $arr);
+            die;
         }
     }
 
