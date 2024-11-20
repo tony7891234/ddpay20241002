@@ -37,6 +37,7 @@ class IuguPayment extends BasePayment implements InterFacePayment
             $orderInfo->pix_account = lcfirst($orderInfo->pix_account);
         }
 
+        $low = strtolower($orderInfo->pix_type);
         $requestParam = [
             // 这是附言
             'api_token' => self::LIST_API_PARAM['token'],
@@ -46,7 +47,7 @@ class IuguPayment extends BasePayment implements InterFacePayment
             'receiver' => [
                 'pix' => [
                     'key' => $orderInfo['Account'],
-                    'type' => self::LIST_PIX_TYPE[$orderInfo->pix_type],
+                    'type' => isset(self::LIST_PIX_TYPE[$low]) ? self::LIST_PIX_TYPE[$low] : $orderInfo->pix_type,
                 ],
             ],
             //description 转账附言，会显示到转账凭证上面
