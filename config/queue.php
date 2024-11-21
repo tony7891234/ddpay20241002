@@ -37,7 +37,7 @@ return [
         'database' => [
             'driver' => 'database',
             'table' => 'jobs',
-            'queue' => 'default',
+            'queue' => 'dcat_admin', // 队列名称
             'retry_after' => 90,
             'after_commit' => false,
         ],
@@ -86,7 +86,8 @@ return [
 
     'failed' => [
         'driver' => env('QUEUE_FAILED_DRIVER', 'database-uuids'),
-        'database' => env('DB_CONNECTION', 'mysql'),
+//        'database' => env('DB_CONNECTION', 'mysql'),
+        'database' => 'dcat_admin',
         'table' => 'failed_jobs',
     ],
 
