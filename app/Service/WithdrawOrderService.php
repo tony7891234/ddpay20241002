@@ -22,7 +22,7 @@ class WithdrawOrderService extends BaseService
     {
 
         $request = \Request::all();
-        logToMe('notify', ['$request' => $request, '$upstream_id' => $upstream_id]);
+//        logToMe('notify', ['$request' => $request, '$upstream_id' => $upstream_id]);
         $service = new HandelPayment();
         $service = $service->setUpstreamId($upstream_id)->getUpstreamHandelClass();
 

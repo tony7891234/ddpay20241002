@@ -57,10 +57,29 @@ class HttpBankLogController extends AdminController
         // 隐藏 创建按钮
         $grid->disableCreateButton();
 
-        // 设置固定总条数
-        $grid->model()->setTotal(10000); // 这里设置总条数为 100
+
+        /*******start********/
+        // 自定义查询以获取当前页面的数据
+        $data = HttpBankLog::paginate(20); // 获取 20 条数据
+
+        // 设置固定的总条数
+        $totalCount = 100; // 这里设置为固定总条数
+        $grid->setTotal($totalCount); // 设置总条数为 100
+
+        // 将当前页面的数据设置到 Grid 中
+        $grid->setRows($data->items()); // 设置当前页的数据
+
+        // 自定义分页视图
+        $grid->setPagination([
+            'current' => $data->currentPage(),
+            'last' => ceil($totalCount / $data->perPage()),
+            'total' => $totalCount,
+        ]);
+
+        /*******end********/
+
         //  搜索条件
-        $grid->model()->orderBy('id', 'desc'); // 按照ID 倒序排序
+//        $grid->model()->orderBy('id', 'desc'); // 按照ID 倒序排序
 
         $grid->column('id', 'ID');
         $grid->column('order_id', '订单ID');

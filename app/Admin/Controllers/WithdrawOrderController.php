@@ -37,12 +37,38 @@ class WithdrawOrderController extends AdminController
          * @var $grid Grid
          */
         $grid = new Grid(new WithdrawOrder);
-        // 只导出 id, name和email 三列数据
+
+        // 表格导出的字段
         $titles = [
             'order_id' => 'ID',
+            'batch_no' => '批量单号',
+            'orderid' => '系统订单号',
+            'upstream_id' => '银行',
+            'bank_order_id' => '银行单号',
+            'pix_type' => 'pix类型',
+            'pix_account' => 'pix账号',
+            'withdraw_amount' => '出款金额',
+            'status' => '订单状态',
+            'user_message' => '附言(给客户的)',
+            'remark' => '备注(运营)',
+            'error_message' => '错误信息',
             'created_at' => '添加时间',
+            'updated_at' => '更新时间',
         ];
-        $grid->export()->titles($titles)->filename('出款订单');
+
+        // 表格导出文件名
+        $fileName = $this->title();
+        // 表格导出
+        $grid->export()->titles($titles)->rows(function (array $rows) {
+            foreach ($rows as $index => &$row) {
+                $row['status'] = isset(WithdrawOrder::LIST_STATUS[$row['status']]) ? WithdrawOrder::LIST_STATUS[$row['status']] : $row['status'];
+                $row['upstream_id'] = isset(BasePayment::LIST_BANK[$row['upstream_id']]) ? BasePayment::LIST_BANK[$row['upstream_id']] : $row['upstream_id'];
+                $row['created_at'] = date('Y-m-d H:i:s', $row['created_at']);
+                $row['updated_at'] = date('Y-m-d H:i:s', $row['updated_at']);
+            }
+            return $rows;
+        })->filename($fileName)->xlsx();
+
         // 禁用批量操作
         $grid->disableBatchActions();
         $grid->disableRowSelector();
