@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\WithdrawToBankJob;
 use App\Models\WithdrawOrder;
 use App\Payment\IuguPayment;
 use App\Traits\RepositoryTrait;
@@ -57,15 +58,22 @@ class TestCommand extends BaseCommand
 //        dd($pemContent);
 //        dump('restart ' . (getTimeString()) . '  ');
 
-        $withdrawOrder = WithdrawOrder::where('order_id', '=', 3577)->first();
-        dump($withdrawOrder);
-        $service = new IuguPayment();
-        $response = $service->withdrawRequest($withdrawOrder);
-        if (!$response) {
-            dd($service->getErrorMessage());
-        } else {
-            dd('success');
+
+//        $list = WithdrawOrder::whereIn('order_id', '=', 3577)->first();
+        $list = WithdrawOrder::whereIn('order_id', ['21483', '21372', '17083'])->get();
+        foreach ($list as $item) {
+            WithdrawToBankJob::dispatch($item); // 添加队列
         }
+
+
+//        dump($withdrawOrder);
+//        $service = new IuguPayment();
+//        $response = $service->withdrawRequest($withdrawOrder);
+//        if (!$response) {
+//            dd($service->getErrorMessage());
+//        } else {
+//            dd('success');
+//        }
 
         return true;
     }

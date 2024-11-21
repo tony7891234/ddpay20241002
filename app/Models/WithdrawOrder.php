@@ -177,4 +177,13 @@ class WithdrawOrder extends BaseModel
     }
 
 
+    /**
+     * 检查是不是待处理订单
+     * @return bool
+     */
+    public function isStatusWaiting()
+    {
+        return $this->status == self::STATUS_WAITING;
+    }
+
 }

@@ -27,6 +27,14 @@ class WithdrawToBankJob extends BaseJob
 
     public function handle()
     {
+        if (!$this->withdrawOrder->isStatusWaiting()) {
+            logToMe('WithdrawToBankJob', [
+                'msg' => '不是待处理订单',
+                'status' => $this->withdrawOrder->status,
+                'id' => $this->withdrawOrder->getId(),
+            ]);
+            return true;
+        }
         $service = new HandelPayment();
         $service = $service->setUpstreamId($this->withdrawOrder->upstream_id)->getUpstreamHandelClass();
 
