@@ -18,6 +18,9 @@ class BasePayment
 
     const PREFIX_ORDER_ID = 'dcat'; // 订单号的前缀 回掉识别
 
+
+    const ERROR_CODE_AGAIN_JOB = -9991; // 需要再次 job 的 error_code
+
     const BANK_FIT = 1;
     const BANK_IUGU = 2;
     const LIST_BANK = [

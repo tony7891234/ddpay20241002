@@ -46,6 +46,8 @@ class WithdrawOrder extends BaseModel
     const STATUS_REQUEST_FAIL = 4;
     const STATUS_NOTIFY_SUCCESS = 5;
     const STATUS_NOTIFY_FAIL = 6;
+    const STATUS_REQUEST_AGAIN_JOB = 7;
+
     const LIST_STATUS = [
         self::STATUS_WAITING => '待处理',
 
@@ -53,6 +55,7 @@ class WithdrawOrder extends BaseModel
 
         self::STATUS_REQUEST_SUCCESS => '请求银行成功',
         self::STATUS_REQUEST_FAIL => '请求银行失败',
+        self::STATUS_REQUEST_AGAIN_JOB => '请求银行失败(待再次请求)',
 
         self::STATUS_NOTIFY_SUCCESS => '银行回掉成功',
         self::STATUS_NOTIFY_FAIL => '银行回掉失败',
@@ -137,12 +140,13 @@ class WithdrawOrder extends BaseModel
      * @param string $pix_info
      * @param string $pix_out
      * @param string $error_message
+     * @param int $status
      * @return int
      */
-    public function updateToRequestFail($pix_info, $pix_out, $error_message = '')
+    public function updateToRequestFail($pix_info, $pix_out, $error_message = '', $status = self::STATUS_REQUEST_FAIL)
     {
         return $this->update([
-            'status' => self::STATUS_REQUEST_FAIL,
+            'status' => $status,
             'pix_info' => is_string($pix_info) ? $pix_info : json_encode($pix_info, JSON_UNESCAPED_UNICODE),
             'pix_out' => is_string($pix_out) ? $pix_out : json_encode($pix_out, JSON_UNESCAPED_UNICODE),
             'error_message' => $error_message,
@@ -178,12 +182,13 @@ class WithdrawOrder extends BaseModel
 
 
     /**
-     * 检查是不是待处理订单
+     * 检查是不是 可以请求银行的状态
      * @return bool
      */
-    public function isStatusWaiting()
+    public function isRequestStatus()
     {
-        return $this->status == self::STATUS_WAITING;
+        // 待处理和请求银行失败
+        return in_array($this->status, [self::STATUS_WAITING, self::STATUS_REQUEST_FAIL]);
     }
 
 }

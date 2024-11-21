@@ -39,6 +39,14 @@ class FitbankPayment extends BasePayment implements InterFacePayment
         if ($pixInfo['status'] != 'success') {
             $this->errorCode = -31;
             $this->errorMessage = "pix 查询错误:" . $pixInfo['msg'];
+
+            $err_again = [
+                'Failed PixKey information:EXC0027 - Não foi possível validar a chave Pix enviada',
+            ];
+            if (in_array($pixInfo['msg'], $err_again)) {
+                $this->errorCode = self::ERROR_CODE_AGAIN_JOB;
+                return false;
+            }
             return false;
         }
 
