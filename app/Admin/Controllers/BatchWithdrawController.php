@@ -80,7 +80,7 @@ class BatchWithdrawController extends AdminController
                 return '';
             }
             return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
-        });
+        })->hide();
 
         $grid->column('response_fail', '失败得')->display(function ($input) {
             $input = json_decode($input, true);
@@ -88,7 +88,7 @@ class BatchWithdrawController extends AdminController
                 return '';
             }
             return '<pre class="dump">' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
-        });
+        })->hide();
 
         // 过滤器  查询字段
         $grid->filter(function (Grid\Filter $filter) {
