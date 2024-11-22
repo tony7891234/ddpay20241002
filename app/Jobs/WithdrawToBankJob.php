@@ -68,10 +68,10 @@ class WithdrawToBankJob extends BaseJob
         if ($service->getErrorCode() == HandelPayment::ERROR_CODE_AGAIN_JOB) {
             $this->withdrawOrder->updateToRequestFail($service->pix_info, $service->pix_out, $service->getErrorMessage(), WithdrawOrder::STATUS_REQUEST_AGAIN_JOB);
             // 再次执行这个 job
-            $this->jobAgain();
             dump($service->pix_info);
             dump('error');
             \Cache::put(self::CACHE_KEY, 1, self::CACHE_TIME);
+            $this->jobAgain();
         } else {
             $this->withdrawOrder->updateToRequestFail($service->pix_info, $service->pix_out, $service->getErrorMessage());
         }
