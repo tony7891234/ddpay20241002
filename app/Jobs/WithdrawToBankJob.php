@@ -15,8 +15,8 @@ class WithdrawToBankJob extends BaseJob
 {
 
 
-    const CACHE_KEY = 'cache_WithdrawToBankJob_';
-    const CACHE_TIME = 120; //缓存120s
+    const CACHE_KEY = 'cache_WithdrawToBankJob_1_';
+    const CACHE_TIME = 2; // 单位是分钟
 
     /**
      * @var WithdrawOrder
