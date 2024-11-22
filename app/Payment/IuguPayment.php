@@ -15,6 +15,7 @@ class IuguPayment extends BasePayment implements InterFacePayment
 
     /**
      * 1.出款请求
+     * https://dev.iugu.com/reference/baas-pix-ted-out
      * @param $orderInfo WithdrawOrder
      * @return array|bool
      */
@@ -55,7 +56,7 @@ class IuguPayment extends BasePayment implements InterFacePayment
         ];
 //        // 有留言，才写上
         if (isset($orderInfo->user_message)) {
-            $requestParam['description'] = $orderInfo->user_message;
+            $requestParam['description'] = $orderInfo->user_message; // Description of the transfer that will appear on the receipt
         }
 
         $this->pix_out = $responseData = $this->curlRequest($requestParam, '/v1/transfer_requests');
