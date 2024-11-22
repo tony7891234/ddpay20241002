@@ -105,6 +105,7 @@ class BatchWithdrawJob extends BaseJob
         $this->batch_withdraw_info->update([
             'response_success' => json_encode($this->response_success, JSON_UNESCAPED_UNICODE),
             'response_fail' => json_encode($this->response_fail, JSON_UNESCAPED_UNICODE),
+            'updated_at' => time(),
         ]);
         return true;
     }
