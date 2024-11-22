@@ -64,6 +64,7 @@ class WithdrawToBankJob extends BaseJob
             $this->withdrawOrder->updateToRequestFail($service->pix_info, $service->pix_out, $service->getErrorMessage(), WithdrawOrder::STATUS_REQUEST_AGAIN_JOB);
             // 再次执行这个 job
             $this->jobAgain();
+            dump($service->pix_info);
             \Cache::put(self::CACHE_KEY, 1, self::CACHE_TIME);
         } else {
             $this->withdrawOrder->updateToRequestFail($service->pix_info, $service->pix_out, $service->getErrorMessage());
