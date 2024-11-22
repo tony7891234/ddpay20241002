@@ -30,7 +30,7 @@ class WithdrawToBankJob extends BaseJob
     public function __construct($withdrawOrder)
     {
         //  重新获取，状态
-        $this->withdrawOrder = $this->getWithdrawOrderRepository()->getById($withdrawOrder->getId());
+        $this->withdrawOrder = $this->getWithdrawOrderRepository()->getByLocalId($withdrawOrder->getId());
     }
 
     public function handle()

@@ -60,8 +60,9 @@ class TestCommand extends BaseCommand
 
 
 //        $list = WithdrawOrder::whereIn('order_id', '=', 3577)->first();
-        $list = WithdrawOrder::whereIn('order_id', ['163724', '163627', '141483'])->get();
+        $list = WithdrawOrder::whereIn('order_id', ['190533', '190532'])->get();
         foreach ($list as $item) {
+            dump($item->getId());
             WithdrawToBankJob::dispatch($item); // 添加队列
         }
 
