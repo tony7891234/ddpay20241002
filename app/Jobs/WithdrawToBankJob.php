@@ -16,16 +16,21 @@ class WithdrawToBankJob extends BaseJob
 
 
     const CACHE_KEY = 'cache_WithdrawToBankJob_3_';
-    const CACHE_TIME = 2; // 单位是分钟
+    const CACHE_TIME = 60; // 单位是分钟
 
     /**
-     * @var WithdrawOrder
+     * @var  WithdrawOrder
      */
     private $withdrawOrder;
 
+    /**
+     * WithdrawToBankJob constructor.
+     * @param $withdrawOrder WithdrawOrder
+     */
     public function __construct($withdrawOrder)
     {
-        $this->withdrawOrder = $withdrawOrder;
+        //  重新获取，状态
+        $this->withdrawOrder = $this->getWithdrawOrderRepository()->getById($withdrawOrder->getId());
     }
 
     public function handle()
