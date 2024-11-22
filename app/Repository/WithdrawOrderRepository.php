@@ -24,12 +24,11 @@ class WithdrawOrderRepository extends BaseRepository
         return WithdrawOrder::where('bank_order_id', '=', $bank_order_id)->first();
     }
 
-
     /**
      * @param $order_id
      * @return WithdrawOrder
      */
-    public function getById($order_id)
+    public function getByBankId($order_id)
     {
         // fit订单号转换成 sql 的订单id
         $prefix = FitbankPayment::PREFIX_ORDER_ID;
@@ -37,7 +36,7 @@ class WithdrawOrderRepository extends BaseRepository
         return WithdrawOrder::where('order_id', '=', $order_id)->first();
     }
 
-    
+
     /**
      * @param $order_id
      * @return WithdrawOrder

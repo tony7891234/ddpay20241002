@@ -137,7 +137,7 @@ class FitbankPayment extends BasePayment implements InterFacePayment
         }
 //        'orderid' => $callbackData['Identifier'],
 //            'bank_order_id' => $callbackData['DocumentNumber'],
-        $orderInfo = $this->getWithdrawOrderRepository()->getById($callbackData['Identifier']);
+        $orderInfo = $this->getWithdrawOrderRepository()->getByBankId($callbackData['Identifier']);
         if (!$orderInfo) {
             $this->errorCode = -21;
             $this->errorMessage = '订单不存在' . $callbackData['Identifier'];

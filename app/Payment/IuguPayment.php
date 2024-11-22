@@ -54,9 +54,9 @@ class IuguPayment extends BasePayment implements InterFacePayment
             //description 转账附言，会显示到转账凭证上面
         ];
 //        // 有留言，才写上
-//        if (isset($orderInfo->user_message)) {
-//            $requestParam['CustomerMessage'] = $orderInfo->user_message;
-//        }
+        if (isset($orderInfo->user_message)) {
+            $requestParam['description'] = $orderInfo->user_message;
+        }
 
         $this->pix_out = $responseData = $this->curlRequest($requestParam, '/v1/transfer_requests');
 //        logToMe('pix_out', $responseData);
@@ -111,7 +111,7 @@ class IuguPayment extends BasePayment implements InterFacePayment
         }
 //        'orderid' => $callbackData['Identifier'],
 //            'bank_order_id' => $callbackData['statement'],
-        $orderInfo = $this->getWithdrawOrderRepository()->getById($callbackData['external_reference']);
+        $orderInfo = $this->getWithdrawOrderRepository()->getByBankId($callbackData['external_reference']);
         if (!$orderInfo) {
             $this->errorCode = -21;
             $this->errorMessage = '订单不存在' . $callbackData['external_reference'];
