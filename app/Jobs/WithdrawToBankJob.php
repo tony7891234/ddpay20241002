@@ -45,6 +45,8 @@ class WithdrawToBankJob extends BaseJob
             $this->withdrawOrder->updateToRequestFail('', '', '2分钟后执行', WithdrawOrder::STATUS_REQUEST_AGAIN_JOB);
             // 再次执行这个 job
             $this->jobAgain();
+            dump('error--');
+
             return true;
         }
 
@@ -75,7 +77,8 @@ class WithdrawToBankJob extends BaseJob
     private function jobAgain()
     {
         WithdrawToBankJob::dispatch($this->withdrawOrder)->delay(Carbon::now()->addMinutes(2)); // 添加队列
-        sleep(60);
+        dump('error');
+        sleep(10);
     }
 
 
