@@ -10,9 +10,6 @@ use Dcat\Admin\Controllers\AdminController;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
 
-//use Dcat\Admin\Actions\BatchActions; // 引入 BatchActions
-//use App\Admin\Actions\BatchProcessAction; // 引入自定义操作类
-
 /**
  * 平台订单
  * Class WithdrawOrderController
@@ -162,6 +159,11 @@ class WithdrawOrderController extends AdminController
 //        $grid->batchActions(function (BatchActions $batch) {
 //            $batch->add('批量处理', new WithdrawAction());
 //        });
+
+        // 也可以这么写
+        $grid->batchActions(function ($batch) {
+            $batch->add(new WithdrawAction('测试'));
+        });
 
         // 过滤器  查询字段
         $grid->filter(function (Grid\Filter $filter) {

@@ -18,7 +18,18 @@ class WithdrawAction extends BatchAction
     /**
      * @return string
      */
-    protected $title = 'Title';
+    protected $title = 'Title11';
+
+
+    protected $action;
+
+    // 注意action的构造方法参数一定要给默认值
+    public function __construct($title = null, $action = 1)
+    {
+        $this->title = $title;
+        $this->action = $action;
+    }
+
 
     /**
      * Handle the action request.
