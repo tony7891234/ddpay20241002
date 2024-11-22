@@ -65,6 +65,7 @@ class WithdrawToBankJob extends BaseJob
             // 再次执行这个 job
             $this->jobAgain();
             dump($service->pix_info);
+            dump('error');
             \Cache::put(self::CACHE_KEY, 1, self::CACHE_TIME);
         } else {
             $this->withdrawOrder->updateToRequestFail($service->pix_info, $service->pix_out, $service->getErrorMessage());
@@ -78,7 +79,6 @@ class WithdrawToBankJob extends BaseJob
     private function jobAgain()
     {
         WithdrawToBankJob::dispatch($this->withdrawOrder)->delay(Carbon::now()->addMinutes(2)); // 添加队列
-        dump('error');
         sleep(10);
     }
 
