@@ -15,7 +15,7 @@ class WithdrawToBankJob extends BaseJob
 {
 
 
-    const CACHE_KEY = 'cache_WithdrawToBankJob_2_';
+    const CACHE_KEY = 'cache_WithdrawToBankJob_3_';
     const CACHE_TIME = 2; // 单位是分钟
 
     /**
@@ -40,13 +40,13 @@ class WithdrawToBankJob extends BaseJob
             return true;
         }
 
-//        // 2检查 token
-//        if (\Cache::get(self::CACHE_KEY)) {
-//            $this->withdrawOrder->updateToRequestFail('', '', '2分钟后执行', WithdrawOrder::STATUS_REQUEST_AGAIN_JOB);
-//            // 再次执行这个 job
-//            $this->jobAgain();
-//            return true;
-//        }
+        // 2检查 token
+        if (\Cache::get(self::CACHE_KEY)) {
+            $this->withdrawOrder->updateToRequestFail('', '', '2分钟后执行', WithdrawOrder::STATUS_REQUEST_AGAIN_JOB);
+            // 再次执行这个 job
+            $this->jobAgain();
+            return true;
+        }
 
         // 3。执行
         $service = new HandelPayment();
@@ -62,7 +62,7 @@ class WithdrawToBankJob extends BaseJob
             $this->withdrawOrder->updateToRequestFail($service->pix_info, $service->pix_out, $service->getErrorMessage(), WithdrawOrder::STATUS_REQUEST_AGAIN_JOB);
             // 再次执行这个 job
             $this->jobAgain();
-//            \Cache::put(self::CACHE_KEY, 1, self::CACHE_TIME);
+            \Cache::put(self::CACHE_KEY, 1, self::CACHE_TIME);
         } else {
             $this->withdrawOrder->updateToRequestFail($service->pix_info, $service->pix_out, $service->getErrorMessage());
         }
