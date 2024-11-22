@@ -161,9 +161,9 @@ class WithdrawOrderController extends AdminController
 //        });
 
         // 也可以这么写
-        $grid->batchActions(function ($batch) {
-            $batch->add(new WithdrawAction('测试'));
-        });
+//        $grid->batchActions(function ($batch) {
+//            $batch->add(new WithdrawAction('测试'));
+//        });
 
         // 过滤器  查询字段
         $grid->filter(function (Grid\Filter $filter) {
