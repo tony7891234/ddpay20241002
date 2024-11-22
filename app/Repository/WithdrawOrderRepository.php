@@ -37,5 +37,14 @@ class WithdrawOrderRepository extends BaseRepository
         return WithdrawOrder::where('order_id', '=', $order_id)->first();
     }
 
+    /**
+     * @param $order_id
+     * @return WithdrawOrder
+     */
+    public function getByLocalId($order_id)
+    {
+        return WithdrawOrder::where('order_id', '=', $order_id)->first();
+    }
+
 
 }
