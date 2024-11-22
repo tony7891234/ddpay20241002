@@ -188,7 +188,7 @@ class WithdrawOrder extends BaseModel
     public function isRequestStatus()
     {
         // 待处理和请求银行失败
-        return in_array($this->status, [self::STATUS_WAITING, self::STATUS_REQUEST_FAIL]);
+        return in_array($this->status, [self::STATUS_WAITING, self::STATUS_REQUEST_AGAIN_JOB]);
     }
 
 }
