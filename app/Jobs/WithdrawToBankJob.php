@@ -15,7 +15,7 @@ class WithdrawToBankJob extends BaseJob
 {
 
 
-    const CACHE_KEY = 'cache_WithdrawToBankJob_1_';
+    const CACHE_KEY = 'cache_WithdrawToBankJob_2_';
     const CACHE_TIME = 2; // 单位是分钟
 
     /**
@@ -62,7 +62,7 @@ class WithdrawToBankJob extends BaseJob
             $this->withdrawOrder->updateToRequestFail($service->pix_info, $service->pix_out, $service->getErrorMessage(), WithdrawOrder::STATUS_REQUEST_AGAIN_JOB);
             // 再次执行这个 job
             $this->jobAgain();
-            \Cache::put(self::CACHE_KEY, self::CACHE_TIME);
+            \Cache::put(self::CACHE_KEY, 1, self::CACHE_TIME);
         } else {
             $this->withdrawOrder->updateToRequestFail($service->pix_info, $service->pix_out, $service->getErrorMessage());
         }
