@@ -130,8 +130,9 @@ class IuguPayment extends BasePayment implements InterFacePayment
         }
 
         if ($callbackData['transfer_status'] == 'rejected') {
+            $msg = isset($callbackData['rejection_reason']) ? $callbackData['rejection_reason'] : '';
             $this->errorCode = -23;
-            $this->errorMessage = '失败原因:' . $callbackData['ErrorDescription'] ?? '';
+            $this->errorMessage = '失败原因:' . $msg;
             $orderInfo->updateNotifyFail($this->errorMessage);
             return false;
         }
