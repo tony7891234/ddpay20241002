@@ -129,8 +129,7 @@ class BatchWithdrawJob extends BaseJob
             }
 
             if (count($arr) != 4) {
-                $response[] = $request . '格式有误';
-//                $arr[] = '参数不是4位';
+                $arr[] = $request . '数据不是4行,是' . count($arr) . '行';
                 $this->response_fail[] = implode(',', $arr);
                 continue;
             }
