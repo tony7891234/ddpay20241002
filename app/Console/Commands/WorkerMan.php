@@ -89,11 +89,14 @@ class WorkerMan extends BaseCommand
         Worker::runAll();
     }
 
-
+    /**
+     * 印度短信
+     */
     private function smsReceive()
     {
         /********************* ws start *********************/
-        $connection = new AsyncTcpConnection('wss://stream.pushbullet.com/websocket/o.uMDYf8vJgLrGHzvEDwJSGE5xaTjCj1Y2');
+        $connection = new AsyncTcpConnection('wss://stream.pushbullet.com/websocket/o.5HZGjz4h5y82Z2BXq1z9w6ZBKUOttic6');
+//        $connection = new AsyncTcpConnection('wss://stream.pushbullet.com/websocket/o.uMDYf8vJgLrGHzvEDwJSGE5xaTjCj1Y2');
 
         $connection->transport = 'ssl'; // 设置连接为 SSL
 
