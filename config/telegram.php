@@ -13,8 +13,12 @@ return [
 
     'bots' => [
         'mybot' => [
-            'username' => 'baxi20241016_bot',
-            'token' => '7778143809:AAG2l8gctLWu0-vQiPw0VWX7jEHss9JDn2A',
+//            'username' => 'baxi20241016_bot',
+//            'token' => '7778143809:AAG2l8gctLWu0-vQiPw0VWX7jEHss9JDn2A',
+
+
+            'username' => 'india1216_bot',
+            'token' => '7569527568:AAEZkIiGoq-ekZBp1PBaww8LGMfAd9C3DGg',
             'certificate_path' => env('TELEGRAM_CERTIFICATE_PATH', 'YOUR-CERTIFICATE-PATH'),
             // https://test107.hulinb.com/
             'webhook_url' => env('TELEGRAM_WEBHOOK_URL', 'YOUR-BOT-WEBHOOK-URL'),

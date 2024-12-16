@@ -23,7 +23,8 @@ class TestController extends ApiController
          */
         $repository = app('App\Repository\TelegramRepository');
         $response_text = 111;
-        $repository->replayMessage(self::INDIA_TG, $response_text);
+        $res = $repository->replayMessage(self::INDIA_TG, $response_text);
+        dd($res);
     }
 //
 //    public function test()
