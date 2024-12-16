@@ -39,7 +39,7 @@ class WorkerMan extends BaseCommand
     const WORKER_MAN_COUNT = 5;
     // @var int 每次要处理的uid数量
 
-    const VIM_TG = -1002163291807; //越南tg
+    const VIM_TG = -1002163291807; //越南tg todo   1216
 
     const INDIA_TG = -1002172689012; // 印度tg
 

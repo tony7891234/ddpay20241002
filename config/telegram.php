@@ -9,8 +9,16 @@ return [
         'callback_count' => '-4574102230',// 回掉条数
         'urtNotice' => '-4186227418',// utr 印度UTR
         'notify_order' => '-4558254572',// 回掉失败，再次回掉的订单情况
-    ],
 
+//                'callback' => '-1002277599317',// 自动回调
+//        'fit_balance' => '-4553922256',// 查询 fit balance余额
+//        'callback_count' => '-4574102230',// 回掉条数
+//        'urtNotice' => '-4186227418',// utr 印度UTR
+//        'notify_order' => '-4558254572',// 回掉失败，再次回掉的订单情况
+//
+//
+    ],
+//    @india1216_bot
     'bots' => [
         'mybot' => [
 //            'username' => 'baxi20241016_bot',
