@@ -44,6 +44,7 @@ Route::post('/withdraw/notify/{upstream_id}', 'WithdrawOrderController@notify');
 
 Route::post('/back1', 'TestController@back1');
 Route::post('/back2', 'TestController@back2');
+Route::get('/t3', 'TestController@t3');
 
 
 

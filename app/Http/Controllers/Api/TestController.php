@@ -13,7 +13,18 @@ use Overtrue\EasySms\Traits\HasHttpRequest;
 class TestController extends ApiController
 {
     use HasHttpRequest;
+    const INDIA_TG = -1002172689012; // 印度tg
 
+
+    public function t3()
+    {
+        /**
+         * @var $repository \App\Repository\TelegramRepository
+         */
+        $repository = app('App\Repository\TelegramRepository');
+        $response_text = 111;
+        $repository->replayMessage(self::INDIA_TG, $response_text);
+    }
 //
 //    public function test()
 //    {

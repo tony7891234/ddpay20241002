@@ -23,9 +23,11 @@ class BasePayment
 
     const BANK_FIT = 1;
     const BANK_IUGU = 2;
+    const BANK_RESET = 3;
     const LIST_BANK = [
         self::BANK_FIT => 'FIT',
         self::BANK_IUGU => 'IUGU',
+        self::BANK_RESET => 'RESET',
     ];
 
 

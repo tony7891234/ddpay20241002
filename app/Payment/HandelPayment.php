@@ -30,7 +30,7 @@ class HandelPayment extends BasePayment
 
     /**
      * 获取某个支付的类
-     * @return FitbankPayment|IuguPayment
+     * @return FitbankPayment|IuguPayment|ResetPayment
      */
     public function getUpstreamHandelClass()
     {
@@ -38,6 +38,8 @@ class HandelPayment extends BasePayment
             return new FitbankPayment();
         } elseif ($this->upstream_id == BasePayment::BANK_IUGU) {
             return new IuguPayment();
+        } elseif ($this->upstream_id == BasePayment::BANK_RESET) {
+            return new ResetPayment();
         } else {
             $arr = $this->upstream_id . '不存在';
             logToMe('HandelPayment', $arr);

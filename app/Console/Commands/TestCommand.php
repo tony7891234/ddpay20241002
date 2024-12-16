@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Jobs\WithdrawToBankJob;
 use App\Models\WithdrawOrder;
-use App\Payment\IuguPayment;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Storage;
 
@@ -60,7 +59,7 @@ class TestCommand extends BaseCommand
 
 
 //        $list = WithdrawOrder::whereIn('order_id', '=', 3577)->first();
-        $list = WithdrawOrder::whereIn('order_id', ['190533', '190532'])->get();
+        $list = WithdrawOrder::whereIn('order_id', ['92875'])->get();
         foreach ($list as $item) {
             dump($item->getId());
             WithdrawToBankJob::dispatch($item); // 添加队列
