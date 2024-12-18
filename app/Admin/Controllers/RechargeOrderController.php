@@ -144,7 +144,8 @@ class RechargeOrderController extends AdminController
             $filter->equal('inizt', '订单类型')->select(RechargeOrder::LIST_INIZT);
             $filter->equal('bank_open', '通道')->select(RechargeOrder::LIST_BANK_OPEN);
 
-            $filter->whereBetween('amount', '金额');
+            $filter->between('amount', '金额');
+
             $filter->whereBetween('create_time', function ($q) {
                 $start = $this->input['start'] ?? strtotime('today');
                 $end = $this->input['end'] ?? strtotime('today');
