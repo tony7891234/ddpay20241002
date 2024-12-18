@@ -103,7 +103,6 @@ class RechargeOrderController extends AdminController
         $grid->column('orderid', '系统订单号'); // 直接对此字段查询
         $grid->column('amount', '金额');
         $grid->column('notify_num', '回调次数');
-//        $grid->column('bank_open', '通道')->hide();
         $grid->column('sf_id', '三方订单号')->hide();
         $grid->column('yh_bq', '银行标签/E2E')->hide();
         $grid->column('kouling', 'ConciliationId')->hide();
@@ -143,7 +142,9 @@ class RechargeOrderController extends AdminController
             $filter->equal('account', '收款账号')->width('350px');
             $filter->equal('status', '状态')->select(RechargeOrder::LIST_STATUS);
             $filter->equal('inizt', '订单类型')->select(RechargeOrder::LIST_INIZT);
+            $filter->equal('bank_open', '通道')->select(RechargeOrder::LIST_BANK_OPEN);
 
+            $filter->whereBetween('amount', '金额');
             $filter->whereBetween('create_time', function ($q) {
                 $start = $this->input['start'] ?? strtotime('today');
                 $end = $this->input['end'] ?? strtotime('today');
