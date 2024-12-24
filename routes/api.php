@@ -37,11 +37,13 @@ Route::get('/telegram/vim/{order_no}', 'TelegramController@vim'); // 越南短�
 
 
 // 业务相关
+Route::get('/Pagstar/{order_id}', 'PaymentController@Pagstar');
 
 // 出款订单回掉
 Route::post('/withdraw/notify/{upstream_id}', 'WithdrawOrderController@notify');
 
 
+Route::post('/back1', 'TestController@back1');
 Route::post('/back1', 'TestController@back1');
 Route::post('/back2', 'TestController@back2');
 Route::get('/t3', 'TestController@t3');
