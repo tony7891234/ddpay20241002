@@ -420,3 +420,44 @@ if (!function_exists('divFloatNum')) {
         return function_exists('bcdiv') ? bcdiv($float_1, $float_2, $format) : formatNumber($float_1 / $float_2, $format);
     }
 }
+
+if (!function_exists('isProduction')) {
+    function isProduction()
+    {
+        return config('app.env') === 'production';
+    }
+}
+
+if (!function_exists('formatDate')) {
+    function formatDate($date, $format = 'Y-m-d H:i:s')
+    {
+        return $date instanceof \DateTime
+            ? $date->format($format)
+            : date($format, is_numeric($date) ? $date : strtotime($date));
+    }
+}
+
+if (!function_exists('dispatchCallback')) {
+    /**
+     * 分发回调任务到 Swoole 服务
+     * @param array $data 回调数据
+     * @return bool
+     */
+    function dispatchCallback($data)
+    {
+        try {
+            $client = new \Swoole\Client(SWOOLE_SOCK_TCP);
+            if (!$client->connect('127.0.0.1', 9501, -1)) {
+                throw new \Exception("连接失败");
+            }
+
+            $result = $client->send(json_encode($data));
+            $client->close();
+
+            return $result;
+        } catch (\Exception $e) {
+            \Log::error('Dispatch callback error: ' . $e->getMessage());
+            return false;
+        }
+    }
+}
