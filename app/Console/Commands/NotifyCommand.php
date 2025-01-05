@@ -43,7 +43,7 @@ class NotifyCommand extends BaseCommand
     private $end_at = 0;
     private $remark = '正常订单';
 
-    private $notify_time = 6; // 回掉超时时间
+    private $notify_time = 10; // 回掉超时时间
 
     /**
      * KG_Init constructor.

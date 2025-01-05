@@ -31,6 +31,7 @@ class PagstarJob extends BaseJob
     public function handle()
     {
 
+        // eg       $url = 'https://hulinb.com/api/callback/Pagstar?order_id=171592588' ;
         $url = 'https://hulinb.com/api/callback/Pagstar?order_id=' . $this->order_id;
         file_get_contents($url);
         return true;
