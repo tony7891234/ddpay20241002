@@ -93,3 +93,5 @@ INSERT INTO baxi_20241010.cd_order ( SELECT * FROM   baxi_20241003.cd_order  whe
 
 dig +short baxi.cbc0my2esp7q.us-east-1.rds.amazonaws.com
 
+CPF 09804233410 1 test
+

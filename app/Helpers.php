@@ -1,5 +1,15 @@
 <?php
 
+function arrayToJson($arr)
+{
+    if (!is_array($arr)) {
+        return $arr;
+    }
+
+    return json_encode($arr, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+}
+
+
 if (!function_exists('isIndia')) {
     /**
      * 检查是不是印度平台
