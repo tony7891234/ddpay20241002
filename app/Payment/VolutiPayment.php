@@ -24,11 +24,11 @@ class VolutiPayment extends BasePayment implements InterFacePayment
     public function withdrawRequest($orderInfo)
     {
 
-        if (!isset(self::LIST_API_PARAM['transferCode'][$orderInfo->pix_type])) {
-            $this->errorCode = -1;
-            $this->errorMessage = '不支持的付款方式:' . $orderInfo->pix_type;
-            return false;
-        }
+//        if (!isset(self::LIST_API_PARAM['transferCode'][$orderInfo->pix_type])) {
+//            $this->errorCode = -1;
+//            $this->errorMessage = '不支持的付款方式:' . $orderInfo->pix_type;
+//            return false;
+//        }
 
         // 检查数据是否可以出款
         $validate = $this->validateWithdraw();
