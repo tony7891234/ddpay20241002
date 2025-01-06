@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class VolutiPayment extends BasePayment implements InterFacePayment
 {
 
-    const CACHE_KEY = 'VolutiPayment_';
+    const CACHE_KEY = 'VolutiPayment12_';
     const CACHE_TIME = 100; // 单位是秒  缓存token时间
 
     /**
@@ -211,6 +211,28 @@ class VolutiPayment extends BasePayment implements InterFacePayment
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 
         $result = curl_exec($ch);
+
+
+        $errorMessage = $httpCode = '';
+        // 检查是否发生错误
+        if (curl_errno($ch)) {
+            // 获取错误信息
+            $errorMessage = curl_error($ch);
+        } else {
+            // 获取 HTTP 状态码
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        }
+
+        $arr = [
+            '$this->getAccessToken()' => $this->getAccessToken(),
+            '$txt_crt' => $txt_crt,
+            '$txt_key' => $txt_key,
+            '$result' => $result,
+            '$errorMessage' => $errorMessage,
+            '$httpCode' => $httpCode,
+        ];
+        logToMe('request', $arr);
+
 
         curl_close($ch);
         $resultFinal = json_decode($result, true);
