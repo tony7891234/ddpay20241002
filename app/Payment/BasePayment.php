@@ -25,13 +25,11 @@ class BasePayment
     const BANK_IUGU = 2;
 //    const BANK_RESET = 3;
     const BANK_VOLUTI = 4;
-    const BANK_MICROCASHIF = 5;
     const LIST_BANK = [
         self::BANK_FIT => 'FIT',
         self::BANK_IUGU => 'IUGU',
 //        self::BANK_RESET => 'RESET',
         self::BANK_VOLUTI => 'VOLUTI',
-        self::BANK_MICROCASHIF => 'MICROCASHIF',
     ];
 
 
