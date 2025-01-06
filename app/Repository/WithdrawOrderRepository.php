@@ -44,7 +44,7 @@ class WithdrawOrderRepository extends BaseRepository
     public function getBySfId($order_id)
     {
         // fit订单号转换成 sql 的订单id
-        return WithdrawOrder::where('sf_id', '=', $order_id)->first();
+        return WithdrawOrder::where('bank_order_id', '=', $order_id)->first();
     }
 
 
