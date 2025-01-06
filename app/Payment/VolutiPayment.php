@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class VolutiPayment extends BasePayment implements InterFacePayment
 {
 
-    const CACHE_KEY = 'VolutiPayment12_';
+    const CACHE_KEY = 'VolutiPayment1233_';
     const CACHE_TIME = 100; // 单位是秒  缓存token时间
 
     /**
@@ -38,20 +38,21 @@ class VolutiPayment extends BasePayment implements InterFacePayment
 
 
         $requestParam = [
-            'pixKey' => $orderInfo['Account'],//账号
+            'pixKey' => $orderInfo->pix_account,//账号
             'expiration' => 10000,
             'payment' => [
                 'currency' => 'BRL',
-                'amount' => floatval($orderInfo['Amount']),
+                'amount' => $orderInfo->withdraw_amount,
             ],
         ];
 //        // 有留言，才写上
         if (isset($orderInfo->user_message)) {
             $requestParam['description'] = $orderInfo->user_message; // Description of the transfer that will appear on the receipt
         }
-
+//        dump(11);
         $this->pix_out = $responseData = $this->postRequestJsonForAuth('pix/payments/dict', $requestParam);
 
+//        dump($responseData);
         if (!is_array($responseData) || !$responseData) {
             $this->errorCode = -21;
             $this->errorMessage = '响应内容有误：超时';
@@ -60,7 +61,7 @@ class VolutiPayment extends BasePayment implements InterFacePayment
         //   exit;
         if (!isset($responseData['status']) || $responseData['status'] != 'PENDING') {
             $this->errorCode = 22;
-            $this->errorMessage = 'Success 响应内容有误：' . $responseData['message'];
+            $this->errorMessage = 'Success 响应内容有误：' . (isset($responseData['title']) ? $responseData['title'] : json_encode($responseData));
             return false;
         }
 
@@ -82,7 +83,7 @@ class VolutiPayment extends BasePayment implements InterFacePayment
     public function withdrawCallback($callbackData)
     {
 
-        logToMe('vol', $callbackData);
+//        logToMe('vol', $callbackData);
         // 订单id 和三方id
         if (!isset($callbackData['endToEndId'])) {
             $this->errorCode = -102;
@@ -141,7 +142,6 @@ class VolutiPayment extends BasePayment implements InterFacePayment
     {
 
         $token = \Cache::get(self::CACHE_KEY);
-
         if ($token) {
             return $token;
         }
@@ -152,16 +152,15 @@ class VolutiPayment extends BasePayment implements InterFacePayment
             'grantType' => 'client_credentials',
         ];
 
-        $responseData = $this->postRequestJsonForAuth('oauth/token', $params, false);
-        // var_dump($params);
-        // var_dump($responseData);die;
+        $responseData = $this->postRequestJsonForAuth('oauth/token', $params, true);
         $token = isset($responseData['access_token']) ? $responseData['access_token'] : '';
 
         if (!$token) {
             $token = isset($responseData['accessToken']) ? $responseData['accessToken'] : '';
         }
-
-        \Cache::put(self::CACHE_KEY, $token, self::CACHE_TIME);
+        if ($token) {
+            \Cache::put(self::CACHE_KEY, $token, self::CACHE_TIME);
+        }
 
         return $token;
 
@@ -194,8 +193,8 @@ class VolutiPayment extends BasePayment implements InterFacePayment
         ];
 
         // 位置在 storage/app/pem/   其实是取值 filesystem.php 中的 local 配置
-        $txt_crt = Storage::get('voluti/VOLUTI267_67.crt');
-        $txt_key = Storage::get('voluti/VOLUTI267_67.key');
+        $txt_crt = Storage::path('voluti/VOLUTI267_67.crt');
+        $txt_key = Storage::path('voluti/VOLUTI267_67.key');
 
         curl_setopt($ch, CURLOPT_SSLCERT, $txt_crt);
         curl_setopt($ch, CURLOPT_SSLKEY, $txt_key);
@@ -214,27 +213,29 @@ class VolutiPayment extends BasePayment implements InterFacePayment
 
 
         $errorMessage = $httpCode = '';
-        // 检查是否发生错误
-        if (curl_errno($ch)) {
-            // 获取错误信息
-            $errorMessage = curl_error($ch);
-        } else {
-            // 获取 HTTP 状态码
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        }
-
-        $arr = [
-            '$this->getAccessToken()' => $this->getAccessToken(),
-            '$txt_crt' => $txt_crt,
-            '$txt_key' => $txt_key,
-            '$result' => $result,
-            '$errorMessage' => $errorMessage,
-            '$httpCode' => $httpCode,
-        ];
-        logToMe('request', $arr);
+//        // 检查是否发生错误
+//        if (curl_errno($ch)) {
+//            // 获取错误信息
+//            $errorMessage = curl_error($ch);
+//        } else {
+//            // 获取 HTTP 状态码
+//            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+//        }
+//
+//        $arr = [
+//            '$txt_crt' => $txt_crt,
+//            '$txt_key' => $txt_key,
+//            '$result' => $result,
+//            '$errorMessage' => $errorMessage,
+//            '$httpCode' => $httpCode,
+//            '$url' => $url,
+//        ];
+//        dump($arr);
+//        logToMe('request', $arr);
 
 
         curl_close($ch);
+
         $resultFinal = json_decode($result, true);
 
         return $resultFinal;

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\WithdrawToBankJob;
 use App\Models\WithdrawOrder;
+use App\Payment\HandelPayment;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Storage;
 
@@ -51,31 +52,25 @@ class TestCommand extends BaseCommand
      */
     public function handle()
     {
-//        $pemContent = Storage::get('pem/iugu.pem');
-//        $pemContent= openssl_pkey_get_private($pemContent);
-//
-//        dd($pemContent);
-//        dump('restart ' . (getTimeString()) . '  ');
-
-
-//        $list = WithdrawOrder::whereIn('order_id', '=', 3577)->first();
-        $list = WithdrawOrder::whereIn('order_id', ['92875'])->get();
-        foreach ($list as $item) {
-            dump($item->getId());
-            WithdrawToBankJob::dispatch($item); // 添加队列
-        }
-
-
-//        dump($withdrawOrder);
-//        $service = new IuguPayment();
-//        $response = $service->withdrawRequest($withdrawOrder);
-//        if (!$response) {
-//            dd($service->getErrorMessage());
-//        } else {
-//            dd('success');
-//        }
-
+        $this->vol();
         return true;
+    }
+
+    private $withdrawOrder;
+
+    private function vol()
+    {
+        $this->withdrawOrder = $this->getWithdrawOrderRepository()->getByLocalId(115961);
+        // 3。执行
+        $service = new HandelPayment();
+        $service = $service->setUpstreamId($this->withdrawOrder->upstream_id)->getUpstreamHandelClass();
+
+        $response = $service->withdrawRequest($this->withdrawOrder);
+        if ($response) {
+            dump($response);
+        } else {
+            dump($service->getErrorMessage());
+        }
     }
 
 
