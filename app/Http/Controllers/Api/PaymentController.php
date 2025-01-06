@@ -21,7 +21,7 @@ class PaymentController extends ApiController
      */
     public function Pagstar($order_id)
     {
-        PagstarJob::dispatch($order_id)->delay(Carbon::now()->addMinutes(1)); // 添加队列
+//        PagstarJob::dispatch($order_id)->delay(Carbon::now()->addMinutes(1)); // 添加队列
 
         return $this->success();
     }
