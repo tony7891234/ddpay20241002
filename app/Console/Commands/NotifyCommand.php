@@ -20,7 +20,7 @@ class NotifyCommand extends BaseCommand
     const FILE_NAME_LONG_TIME = 'long_'; // 超时5S没信息的
     const FILE_NAME_RESPONSE_NULL = 'nothing_'; // 什么否没有返回的
 
-    const LIMIT_HOUR = 1;
+    const LIMIT_HOUR = 4;
 
     const TG_NOTICE_WONG = '-4586404704'; // 回掉异常通知
 
