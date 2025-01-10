@@ -97,13 +97,13 @@ CPF 09804233410 1 test
 
 ##  supervisor  执行的订单有
 ````   
-1: 回掉 create_time 5小时之前的待回掉订单
+1: 回掉 create_time 5小时之前的待回掉订单 NotifyCommand.php 
 php artisan  notify  notify
 
-2:再次回掉,上面1回掉没被接受，并且小于2次回掉的
+2:再次回掉,上面1回掉没被接受，并且小于2次回掉的 NotifyOrderCommand.php
 php artisan  notify_order
 
-3: 上面2也失败的，直接去站点回掉
+3: 上面2也失败的，直接去站点回掉  NotifyToSiteCommand.php
 php  artisan notify_site
 
 4: workman
@@ -111,5 +111,11 @@ php artisan  workman  restart
 
 5: job 执行
 php artisan queue:work --queue=dcat_admin,default
+
+
+另外   Kernel 中还有一个补发遗漏订单 10 分钟执行一次
+NotifyCommand 文件的 forLeftOrder 方法，在次之前24小时到再次之前4小时内的订单
+4小时,这个数字是必须大于 1 中的时间的。也就是1 可能执行不到了，所以需要这个执行
+这个目的是因为，有些单子回掉太晚。比如 12小时之前的单子，1就执行不到
 ````
 

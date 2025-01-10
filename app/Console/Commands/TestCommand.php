@@ -65,48 +65,64 @@ class TestCommand extends BaseCommand
 
         $end_at = strtotime(date('2025-01-09 19:30:00'));
         $start_at = $end_at - 3600 * 24 * 6;
+
+        $end_at = time();
         //  这些订单是  不应该成功  但是给成功了
         // 特点是   completetime 存在   status=''
-        $list = RechargeOrder::select(['order_id', 'orderid', 'bank_open', 'sf_id', 'amount', 'merchantid', 'create_time', 'inizt'])
-            ->where('sf_id', '=', '')  // 22：56
-            ->where('completetime', '>', $start_at)  // 22：56
-            ->where('completetime', '<', $end_at)  // 22：56
+//        $list = RechargeOrder::select(['order_id', 'orderid', 'bank_open', 'sf_id', 'amount', 'merchantid', 'create_time', 'inizt'])
+//            ->where('sf_id', '=', '')  // 22：56
+//            ->where('completetime', '>', $start_at)  // 22：56
+//            ->where('completetime', '<', $end_at)  // 22：56
 //            ->where('inizt', '=', RechargeOrder::INIZT_RECHARGE)  // 22：56
-            ->where('status', '=', RechargeOrder::STATUS_SUCCESS)  // 22：56
-            ->count();
-//            ->update(['status' => RechargeOrder::STATUS_WAITING]);
-        dump($list);
-
+//            ->where('status', '=', RechargeOrder::STATUS_SUCCESS)  // 22：56
+////            ->count();
+//            ->sum('amount');
+//        dump($list);
+//
 //        die;
 
         $list = RechargeOrder::select(['order_id', 'orderid', 'bank_open', 'sf_id', 'amount', 'merchantid', 'amount', 'completetime', 'create_time', 'inizt'])
             ->where('sf_id', '=', '')  // 22：56
             ->where('completetime', '>', $start_at)  // 22：56
             ->where('completetime', '<', $end_at)  // 22：56
-//            ->where('inizt', '=', RechargeOrder::INIZT_RECHARGE)  // 22：56
+            ->where('inizt', '=', RechargeOrder::INIZT_RECHARGE)  // 22：56
             ->where('status', '=', RechargeOrder::STATUS_SUCCESS)  // 22：56
             ->get();
 
 
+        $arr = [];
         foreach ($list as $item) {
             $orderid = $item['orderid'];
+            $amount = $item['amount'];
             $notify_num = $item['notify_num'];
             $notify_status = $item['notify_status'];
             $merchantid = $item['merchantid'];
             $amount = $item['amount'];
 
-            $create_at = formatTimeToString($item['create_time']);
-            $completetime = formatTimeToString($item['completetime']);
-            $str = $orderid . '  ' . $merchantid . '  ' . $amount . '  ' . $create_at . '  ' . $completetime;
-            if ($item['inizt'] == RechargeOrder::INIZT_RECHARGE) {
-                logToResponse($str, $merchantid . '_5_recharge.txt');
+            if (isset($arr[$merchantid])) {
+                $arr[$merchantid]['amount'] = $arr[$merchantid]['amount'] + $amount;
+                $arr[$merchantid]['num'] = $arr[$merchantid]['num'] + 1;
             } else {
-                logToResponse($str, $merchantid . '_4_withdraw.txt');
-
+                $arr[$merchantid]['amount'] = $amount;
+                $arr[$merchantid]['num'] = 1;
             }
+
+//            $create_at = formatTimeToString($item['create_time']);
+//            $completetime = formatTimeToString($item['completetime']);
+//            $str = $orderid . '  ' . $merchantid . '  ' . $amount . '  ' . $create_at . '  ' . $completetime;
+//            if ($item['inizt'] == RechargeOrder::INIZT_RECHARGE) {
+//                logToResponse($str, 'aaa_6_recharge.txt');
+//            } else {
+//                logToResponse($str, 'aaa_6_withdraw.txt');
+//            }
 
 
         }
+        foreach ($arr as $merchantid => $item) {
+            $str = $merchantid . '  ' . $item['amount'] . '  ' . $item['num'];
+            logToResponse($str, 'a22_0110.txt');
+        }
+        dump($arr);
 //            ->count();
 //        dd($list);
 //            ->orderBy('order_id')
@@ -128,17 +144,7 @@ class TestCommand extends BaseCommand
 //            dump($service->getErrorMessage());
 //        }
 //    }
-    /**
-     * 写入数据到某个文件  临时导出数据使用
-     * @param $message
-     * @param string $fileName
-     */
-    private function logToResponse($message, $fileName = 'response.txt')
-    {
-        $fileName = 'logs/me/' . $fileName;
-        file_put_contents($fileName, $message, FILE_APPEND);
-        file_put_contents($fileName, "\n", FILE_APPEND);
-    }
+
 
 }
 
