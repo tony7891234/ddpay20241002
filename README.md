@@ -95,3 +95,21 @@ dig +short baxi.cbc0my2esp7q.us-east-1.rds.amazonaws.com
 
 CPF 09804233410 1 test
 
+##  supervisor  执行的订单有
+````   
+1: 回掉 create_time 5小时之前的待回掉订单
+php artisan  notify  notify
+
+2:再次回掉,上面1回掉没被接受，并且小于2次回掉的
+php artisan  notify_order
+
+3: 上面2也失败的，直接去站点回掉
+php  artisan notify_site
+
+4: workman
+php artisan  workman  restart
+
+5: job 执行
+php artisan queue:work --queue=dcat_admin,default
+````
+
