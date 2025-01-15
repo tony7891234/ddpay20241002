@@ -20,7 +20,7 @@ class DdPayService extends BaseService
         //  使用空格做区分
         $request = array_values(array_filter(explode(PHP_EOL, $message_text)));
         if (count($request) != 4) {
-            $this->errorMessage = '格式有误';
+            $this->errorMessage = '格式有误' . count($request);
             return false;
         }
 
