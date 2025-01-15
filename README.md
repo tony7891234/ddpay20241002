@@ -18,6 +18,16 @@ vendor/workerman/workerman/Protocols/Wss.php
 
 * * * * *  php  /www/wwwroot/Laravel/T1/ddpay20241002/artisan schedule:run >> /dev/null 2>&1
 * * * * *  php   /www/wwwroot/ddpay20241002/artisan  t2 >> /dev/null 2>&1
+
+
+mkdir  logs
+mkdir publlic/logs_me  (自己添加 Y-m 文件)
+mkdir  storage/app/voluti
+mkdir  storage/app/pem
+
+php artisan storage:link
+php artisan  workman  restart
+php  artisan queue:work --queue=dcat_admin,default
 ````
 
 ##  资料

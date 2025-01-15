@@ -59,6 +59,30 @@ class BackCommand extends BaseCommand
 
     private $withdrawOrder;
 
+
+    // 1.11 号  查询某个条件中 有没有 moneylog 记录的订单，有是正常订单
+    private function t2()
+    {
+        $start_at = strtotime(date('2025-01-09 18:54:00'));
+        $end_at = strtotime(date('2025-01-09 18:59:00'));
+        $list = RechargeOrder::select(['order_id', 'orderid', 'bank_open', 'sf_id', 'amount', 'merchantid', 'amount', 'completetime', 'create_time', 'inizt'])
+            ->where('create_time', '>=', $start_at)  // 22：56
+            ->where('create_time', '<=', $end_at)  // 22：56
+            ->where('inizt', '=', RechargeOrder::INIZT_RECHARGE)  // 22：56
+            ->where('status', '=', RechargeOrder::STATUS_SUCCESS)  // 22：56
+            ->get();
+        foreach ($list as $item) {
+            $str = $item['orderid'] . '   ' . date('Y-m-d H:i:s', $item['create_time']) . '  ' . formatTimeToString($item['completetime']);
+            $check = MoneyLog::where('adduser', '=', $item['orderid'])->first();
+            if ($check) {
+                logToResponse($str, '0111_yes.txt');
+            } else {
+                logToResponse($str, '0111_no.txt');
+            }
+
+        }
+    }
+
     // 2.测试某一笔出款  拿到三方返回的数据
     private function vol()
     {

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\WithdrawToBankJob;
+use App\Models\MoneyLog;
 use App\Models\RechargeOrder;
 use App\Models\WithdrawOrder;
 use App\Payment\HandelPayment;
@@ -53,8 +54,38 @@ class TestCommand extends BaseCommand
      */
     public function handle()
     {
-        $this->t1();
+        $this->t2();
         return true;
+    }
+
+    //  查询某个条件中 有没有 moneylog 记录的订单，有是正常订单
+    private function t2()
+    {
+        die;
+        $start_at = strtotime(date('2025-01-09'));
+        $end_at = strtotime(date('2025-01-10'));
+
+        $list = RechargeOrder::select(['order_id', 'orderid', 'bank_open', 'sf_id', 'amount', 'merchantid', 'amount', 'completetime', 'create_time', 'inizt'])
+            ->where('create_time', '>=', $start_at)  // 22：56
+            ->where('create_time', '<=', $end_at)  // 22：56
+            ->where('inizt', '=', RechargeOrder::INIZT_RECHARGE)  // 22：56
+            ->where('status', '=', 21)
+            ->count();  // 22：56
+
+        dump($list);
+        $list = RechargeOrder::select(['order_id', 'orderid', 'bank_open', 'sf_id', 'amount', 'merchantid', 'amount', 'completetime', 'create_time', 'inizt'])
+            ->where('create_time', '>=', $start_at)  // 22：56
+            ->where('create_time', '<=', $end_at)  // 22：56
+            ->where('inizt', '=', RechargeOrder::INIZT_RECHARGE)  // 22：56
+            ->where('status', '=', 21)  // 22：56
+            ->orderBy('order_id')->chunk(10000, function ($data) {
+                dump(getTimeString());
+                foreach ($data as $item) {
+                    $str = $item['orderid'] . '   ' . $item['amount'] . '  ' . $item['merchantid'];
+                    logToResponse($str, '0111_5.txt');
+                }
+            });
+
     }
 
     private $withdrawOrder;
