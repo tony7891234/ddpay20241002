@@ -55,7 +55,7 @@ class DdPayService extends BaseService
                 $this->errorMessage = '失败原因: ' . $response['Msg'];
             }
         } catch (\Exception $exception) {
-            $this->errorMessage = $exception->getMessage();
+            $this->errorMessage = '报错' . $exception->getMessage();
         }
 
 
