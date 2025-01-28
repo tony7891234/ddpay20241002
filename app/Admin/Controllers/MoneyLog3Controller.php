@@ -22,7 +22,7 @@ class MoneyLog3Controller extends AdminController
     public function title()
     {
 //        return '(10.10以前)';
-        return '(11.04以后)';
+        return '(2025.1.1号以后)';
     }
 
 
@@ -34,7 +34,7 @@ class MoneyLog3Controller extends AdminController
     {
 
         $model = new MoneyLog();
-        $tableName = 'cd_moneylog_1104';
+        $tableName = 'cd_moneylog_250101';
         $model->setConnection('rds')->setTable($tableName);
         /**
          * @var $grid Grid
