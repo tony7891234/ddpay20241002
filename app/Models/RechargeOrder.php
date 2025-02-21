@@ -83,6 +83,14 @@ class RechargeOrder extends BaseModel
         13 => 'reset',
         14 => 'tamborete',
         15 => 'iugu',
+
+        18 => 'pagstar',
+        19 => 'onz',
+        20 => 'voluti',
+        21 => 'Microcashif',
+        22 => 'semear',
+        23 => 'santspay',
+        24 => 'treeal',
     ];
 
     /**
