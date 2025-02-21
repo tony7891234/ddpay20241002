@@ -21,7 +21,7 @@ vendor/workerman/workerman/Protocols/Wss.php
 
 
 mkdir  logs
-mkdir publlic/logs_me  (自己添加 Y-m 文件)
+mkdir public/logs_me  (自己添加 Y-m 文件)
 mkdir  storage/app/voluti
 mkdir  storage/app/pem
 

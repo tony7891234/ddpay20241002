@@ -1,5 +1,5 @@
 
- CREATE TABLE `cd_order_1031` (
+ CREATE TABLE `cd_order_250117` (
   `order_id` int NOT NULL AUTO_INCREMENT,
   `orderid` varchar(50) NOT NULL,
   `merchantid` int DEFAULT NULL COMMENT '商户ID',
@@ -44,7 +44,6 @@
   `df_fee` decimal(20,4) NOT NULL DEFAULT '0.0000' COMMENT '代付手续费',
   `agent_commission` decimal(20,4) NOT NULL DEFAULT '0.0000' COMMENT '代理佣金',
   PRIMARY KEY (`order_id`),
-  KEY `isx_create_time` (`create_time`),
   KEY `orderid` (`orderid`),
   KEY `sf_id` (`sf_id`),
   KEY `cd_order_merchantids_index` (`merchantid`),
@@ -53,8 +52,6 @@
   KEY `cd_order_merchantnumber_merchantid_create_time_status_index` (`merchantnumber`,`merchantid`,`create_time`,`status`),
   KEY `cd_order_proxy_id_create_time_status_index` (`proxy_id`,`create_time`,`status`),
   KEY `cd_order_proxy_id_create_time_index` (`proxy_id`,`create_time`),
-  KEY `cd_order_proxy_id_index` (`proxy_id`),
-  KEY `cd_order_status_index` (`status`),
   KEY `cd_order_inizt_index` (`inizt`),
   KEY `sf_id_2` (`sf_id`,`inizt`),
   KEY `status` (`status`,`create_time`,`notify_status`,`notify_num`,`sdzt`),
@@ -63,15 +60,60 @@
   KEY `bank_open` (`bank_open`),
   KEY `bank_lx` (`bank_lx`),
   KEY `createtime_completetime` (`create_time`,`completetime`),
-  KEY `amount_real_pay` (`amount_real_pay`) USING BTREE,
-  KEY `agent_commission` (`agent_commission`) USING BTREE,
   KEY `yh_bq` (`yh_bq`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ;
 
+--废弃字段
+-- sf_xr
 
 
+  PRIMARY KEY (`order_id`),
+  KEY `orderid` (`orderid`),
 
- CREATE TABLE `cd_moneylog_1031` (
+
+  KEY `cd_order_merchantid_merchantnumber_create_time_index` (`merchantid`,`merchantnumber`,`create_time`,`status`) USING BTREE,
+  KEY `cd_order_proxy_id_create_time_status_index` (`proxy_id`,`create_time`,`status`),
+  KEY `cd_order_proxy_id_index` (`proxy_id`),
+  KEY `cd_order_inizt_index` (`inizt`),
+  KEY `sf_id_2` (`sf_id`,`inizt`),
+  KEY `status` (`status`,`create_time`,`notify_status`,`notify_num`,`sdzt`),
+  KEY `notify_status` (`notify_status`,`notify_num`,`sdzt`),
+  KEY `completetime` (`completetime`),
+  KEY `bank_open` (`bank_open`),
+  KEY `bank_lx` (`bank_lx`),
+  KEY `createtime_completetime` (`create_time`,`completetime`),
+  KEY `yh_bq` (`yh_bq`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=182212634 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
+
+
+cd_order_250101
+ --   KEY `cd_order_status_index` (`status`),
+  --   KEY `isx_create_time` (`create_time`),
+--   KEY `cd_order_proxy_id_create_time_index` (`proxy_id`,`create_time`),
+  --   KEY `cd_order_merchantids_index` (`merchantid`),
+  --   KEY `cd_order_proxy_id_index` (`proxy_id`),
+--   KEY `cd_order_merchantnumber_index` (`merchantnumber`),
+--   KEY `amount_real_pay` (`amount_real_pay`) USING BTREE,
+--   KEY `agent_commission` (`agent_commission`) USING BTREE,
+--   KEY `sf_id` (`sf_id`),
+--   KEY `cd_order_merchantnumber_merchantid_create_time_status_index` (`merchantnumber`,`merchantid`,`create_time`,`status`),
+
+SHOW INDEX FROM cd_order_250101;
+DROP INDEX cd_order_250101 ON cd_order;
+
+-- 1.28 号删除的索引
+DROP INDEX cd_order_proxy_id_create_time_index ON cd_order;
+DROP INDEX cd_order_status_index ON cd_order;
+DROP INDEX isx_create_time ON cd_order;
+DROP INDEX cd_order_merchantids_index ON cd_order;
+DROP INDEX cd_order_merchantnumber_index ON cd_order;
+DROP INDEX amount_real_pay ON cd_order;
+DROP INDEX agent_commission ON cd_order;
+DROP INDEX cd_order_proxy_id_index ON cd_order;
+DROP INDEX sf_id ON cd_order;
+DROP INDEX cd_order_merchantnumber_merchantid_create_time_status_index ON cd_order;
+
+ CREATE TABLE `cd_moneylog_250117` (
   `moneylog_id` int NOT NULL AUTO_INCREMENT,
   `service_id` int DEFAULT NULL COMMENT '客服',
   `proxy_id` int DEFAULT NULL COMMENT '码商',

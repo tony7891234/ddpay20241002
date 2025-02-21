@@ -24,6 +24,7 @@ return [
 //            'username' => 'baxi20241016_bot',
 //            'token' => '7778143809:AAG2l8gctLWu0-vQiPw0VWX7jEHss9JDn2A',
 
+//            $url = 'https://api.telegram.org/bot7569527568:AAEZkIiGoq-ekZBp1PBaww8LGMfAd9C3DGg/sendMessage?chat_id=-1002277599317&parse_mode=Markdown&text=' . urlencode($message);
 
             'username' => 'india1216_bot',
             'token' => '7569527568:AAEZkIiGoq-ekZBp1PBaww8LGMfAd9C3DGg',

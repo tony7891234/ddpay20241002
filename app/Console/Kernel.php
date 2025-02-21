@@ -19,6 +19,8 @@ class Kernel extends ConsoleKernel
 
 //        $schedule->command('notify left')->everyTenMinutes(); // 十分钟执行一次遗漏的订单
 
+//        $schedule->command('notify_left')->everyFiveMinutes(); // 5分钟执行一次遗漏的订单 2.13 号添加
+
         $schedule->command('fit balance')->dailyAt('10:59'); // 查询余额
         $schedule->command('fit balance')->dailyAt('11:00'); // 查询余额
 

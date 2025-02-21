@@ -46,6 +46,7 @@ class RechargeOrderController extends AdminController
             'inizt' => '订单类型',
             'account' => '收款账号',
             'bankname' => '开户行',
+            'bank_open' => '银行类型',
             'create_time' => '下单时间',
             'completetime' => '完成时间',
         ];
@@ -103,6 +104,7 @@ class RechargeOrderController extends AdminController
         $grid->column('orderid', '系统订单号'); // 直接对此字段查询
         $grid->column('amount', '金额');
         $grid->column('notify_num', '回调次数');
+        $grid->column('bank_open', '银行类型');
         $grid->column('sf_id', '三方订单号')->hide();
         $grid->column('yh_bq', '银行标签/E2E')->hide();
         $grid->column('kouling', 'ConciliationId')->hide();
