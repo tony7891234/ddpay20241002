@@ -107,7 +107,6 @@ class RechargeOrderController extends AdminController
         $grid->column('sf_id', '三方订单号')->hide();
         $grid->column('yh_bq', '银行标签/E2E')->hide();
         $grid->column('kouling', 'ConciliationId')->hide();
-        $grid->column('account', '收款账号')->hide();
         $grid->column('bankname', '开户行');
         $grid->column('status', '订单状态')->display(function ($input) {
             return isset(RechargeOrder::LIST_STATUS[$input]) ? RechargeOrder::LIST_STATUS[$input] : $input;
@@ -115,8 +114,7 @@ class RechargeOrderController extends AdminController
 
         $grid->column('bank_open', '通道')->display(function ($input) {
             return isset(RechargeOrder::LIST_BANK_OPEN[$input]) ? RechargeOrder::LIST_BANK_OPEN[$input] : $input;
-        })->dot(RechargeOrder::getStatusDot())->hide();
-
+        })->dot(RechargeOrder::getStatusDot());
 
         $grid->column('inizt', '订单类型')->display(function ($input) {
             return isset(RechargeOrder::LIST_INIZT[$input]) ? RechargeOrder::LIST_INIZT[$input] : $input;
@@ -134,6 +132,7 @@ class RechargeOrderController extends AdminController
             return formatTimeToString($input);
         });
 
+        $grid->column('account', '收款账号')->hide();
 
         // 过滤器  查询字段
         $grid->filter(function (Grid\Filter $filter) {
