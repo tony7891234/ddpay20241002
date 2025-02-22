@@ -21,7 +21,7 @@ class MoneyLog2Controller extends AdminController
      */
     public function title()
     {
-        return '往前第2时间(10.10-10.28)';
+        return '(1.17以后)';
     }
 
 
@@ -33,7 +33,7 @@ class MoneyLog2Controller extends AdminController
     {
 
         $model = new MoneyLog();
-        $tableName = 'cd_moneylog_1010';
+        $tableName = 'cd_moneylog_250117';
         $model->setConnection('rds')->setTable($tableName);
         /**
          * @var $grid Grid

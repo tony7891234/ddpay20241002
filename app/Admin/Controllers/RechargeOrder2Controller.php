@@ -21,7 +21,7 @@ class RechargeOrder2Controller extends AdminController
      */
     public function title()
     {
-        return '往前第2时间(10.10-10.28)';
+        return '(1.17以后)';
     }
 
 
@@ -32,7 +32,7 @@ class RechargeOrder2Controller extends AdminController
     protected function grid()
     {
         $model = new RechargeOrder();
-        $tableName = 'cd_order_1010';
+        $tableName = 'cd_order_250117';
         $model->setConnection('rds')->setTable($tableName);
 
         /**
