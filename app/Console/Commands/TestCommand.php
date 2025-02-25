@@ -54,38 +54,57 @@ class TestCommand extends BaseCommand
      */
     public function handle()
     {
-        $this->t2();
+//        $this->t2();
         return true;
     }
-
+//https://test107.hulinb.com/admin999/recharge_order?order_id=&merchantid=&orderid=&account=&status=1&inizt=&bank_open=22&amount%5Bstart%5D=&amount%5Bend%5D=&create_time%5Bstart%5D=2025-02-17%2011%3A00%3A00&create_time%5Bend%5D=2025-02-23%2010%3A59%3A59
     //  查询某个条件中 有没有 moneylog 记录的订单，有是正常订单
     private function t2()
     {
         die;
-        $start_at = strtotime(date('2025-01-09'));
-        $end_at = strtotime(date('2025-01-10'));
+        $start_at = strtotime(date('2025-02-17 11:00:00'));
+        $end_at = strtotime(date('2025-02-23 10:59:59'));
+//
+//        $list = RechargeOrder::select(['order_id', 'orderid', 'bank_open', 'yh_bq', 'sf_id', 'amount', 'merchantid', 'amount', 'completetime', 'create_time', 'inizt'])
+//            ->where('create_time', '>=', $start_at)  // 22：56
+//            ->where('create_time', '<=', $end_at)  // 22：56
+//            ->where('inizt', '=', RechargeOrder::INIZT_RECHARGE)  // 22：56
+//            ->where('status', '=', RechargeOrder::STATUS_SUCCESS)
+//            ->where('bank_open', '=', 22)
+//            ->count();  // 22：56
+//        dd($list);
 
-        $list = RechargeOrder::select(['order_id', 'orderid', 'bank_open', 'sf_id', 'amount', 'merchantid', 'amount', 'completetime', 'create_time', 'inizt'])
+        // 设置浏览器文件下载的响应头
+        $filename = '225.csv';
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=' . $filename);
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        // 打开 PHP 输出流
+//        $output = fopen('php://output', 'w');
+        $output = fopen($filename, 'w'); // 本地导出到根目录
+        // 写入 CSV 表头
+        fputcsv($output, ['订单id', '标签', '金额', '完成时间']);  // 根据你的字段调整
+
+        $list = RechargeOrder::select(['order_id', 'orderid', 'bank_open', 'sf_id', 'yh_bq', 'amount', 'merchantid', 'amount', 'completetime', 'create_time', 'inizt'])
             ->where('create_time', '>=', $start_at)  // 22：56
             ->where('create_time', '<=', $end_at)  // 22：56
-            ->where('inizt', '=', RechargeOrder::INIZT_RECHARGE)  // 22：56
-            ->where('status', '=', 21)
-            ->count();  // 22：56
-
-        dump($list);
-        $list = RechargeOrder::select(['order_id', 'orderid', 'bank_open', 'sf_id', 'amount', 'merchantid', 'amount', 'completetime', 'create_time', 'inizt'])
-            ->where('create_time', '>=', $start_at)  // 22：56
-            ->where('create_time', '<=', $end_at)  // 22：56
-            ->where('inizt', '=', RechargeOrder::INIZT_RECHARGE)  // 22：56
-            ->where('status', '=', 21)  // 22：56
-            ->orderBy('order_id')->chunk(10000, function ($data) {
+            ->where('inizt', '=', RechargeOrder::INIZT_RECHARGE)
+            ->where('status', '=', RechargeOrder::STATUS_SUCCESS)
+            ->where('bank_open', '=', 22)
+            ->orderBy('order_id')->chunk(10000, function ($data) use ($output) {
                 dump(getTimeString());
+
                 foreach ($data as $item) {
-                    $str = $item['orderid'] . '   ' . $item['amount'] . '  ' . $item['merchantid'];
-                    logToResponse($str, '0111_5.txt');
+//                    $str = $item['orderid'] . '   ' . $item['amount'] . '  ' . $item['yh_bq'] . '  ' . formatTimeToString($item['completetime']);
+//                    logToResponse($str, '17_23.txt');
+                    fputcsv($output, [$item['orderid'], $item['yh_bq'], $item['amount'], formatTimeToString($item['completetime'])]);
                 }
             });
 
+        fclose($output);
+        return response()->download($filename);
     }
 
     private $withdrawOrder;
