@@ -32,6 +32,8 @@ class RechargeOrderController extends AdminController
      */
     protected function grid()
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '20000M');
         /**
          * @var $grid Grid
          */
@@ -47,6 +49,7 @@ class RechargeOrderController extends AdminController
             'account' => '收款账号',
             'bankname' => '开户行',
             'bank_open' => '银行类型',
+            'yh_bq' => '银行标签/E2E',
             'create_time' => '下单时间',
             'completetime' => '完成时间',
         ];
