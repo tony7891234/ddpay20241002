@@ -21,7 +21,7 @@ class CallbackCommand extends BaseCommand
     /**
      * @var string
      */
-    protected $description = '并发回调';
+    protected $description = '并发回调 用于补单 2025.3.1号确认可以使用';
 
     /**
      * KG_Init constructor.
@@ -46,14 +46,24 @@ class CallbackCommand extends BaseCommand
     private function t2()
     {
         date_default_timezone_set('PRC');
-        $start_at = 1730456627;//  20.00
-//        $end_at = 1729270800;//  20.16
+        $start_at = 1740806660;//  13：24.00
+        $end_at = 1740807840;//  13：44
+//        $res = RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
+//            ->where('create_time', '>=', $start_at)  // 22：56
+//        ->where('status', '=', RechargeOrder::STATUS_SUCCESS)
+////            ->where('merchantid', '=', 544)  // 22：56
+//            ->where('create_time', '<=', $end_at) //  22：53
+//            ->orderBy('order_id')
+//            ->count();
+//        var_dump($res);
+//        die;
 
-
+        // 补充回掉  某个时间段  status=成功的  订单  给他回掉
         RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
             ->where('create_time', '>=', $start_at)  // 22：56
-            ->where('merchantid', '=', 544)  // 22：56
-//            ->where('create_time', '<=', $end_at) //  22：53
+            ->where('status', '=', RechargeOrder::STATUS_SUCCESS)
+            //            ->where('merchantid', '=', 544)  // 22：56
+            ->where('create_time', '<=', $end_at) //  22：53
             ->orderBy('order_id')->chunk(300, function ($list) {
                 $list = $list->toArray();
                 $response = [];

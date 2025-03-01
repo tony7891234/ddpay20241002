@@ -129,3 +129,23 @@ NotifyCommand 文件的 forLeftOrder 方法，在次之前24小时到再次之�
 这个目的是因为，有些单子回掉太晚。比如 12小时之前的单子，1就执行不到
 ````
 
+##  日志检测
+````    
+
+
+所有post
+grep "POST" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+
+所有 get
+grep "GET" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+
+1.入款请求
+grep "POST /api/bxds/submitOrder" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+1.2  出款请求
+grep "POST /api/bx/submitOrder" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+2. 入款查询
+grep "POST /api/bx/QueryOrder" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+3.银行回掉
+grep "POST /api/callback/deposit" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+
+````

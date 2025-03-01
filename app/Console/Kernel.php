@@ -27,6 +27,9 @@ class Kernel extends ConsoleKernel
         // 每小时执行一次的升序
 //        $schedule->command('clear:delete_hourly')->hourly();
 
+
+        // 补充回掉  某个时间段  status=成功的  订单  给他回掉
+        // php  artisan  callback
     }
 
     /**
