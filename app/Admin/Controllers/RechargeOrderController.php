@@ -114,6 +114,9 @@ class RechargeOrderController extends AdminController
         $grid->column('status', '订单状态')->display(function ($input) {
             return isset(RechargeOrder::LIST_STATUS[$input]) ? RechargeOrder::LIST_STATUS[$input] : $input;
         })->dot(RechargeOrder::getStatusDot());
+        $grid->column('notify_status', '订回掉状态')->display(function ($input) {
+            return isset(RechargeOrder::LIST_NOTIFY_STATUS[$input]) ? RechargeOrder::LIST_NOTIFY_STATUS[$input] : $input;
+        })->dot(RechargeOrder::getStatusDot());
 
         $grid->column('bank_open', '通道')->display(function ($input) {
             return isset(RechargeOrder::LIST_BANK_OPEN[$input]) ? RechargeOrder::LIST_BANK_OPEN[$input] : $input;
@@ -143,7 +146,9 @@ class RechargeOrderController extends AdminController
             $filter->equal('merchantid', '商户ID')->width('350px');
             $filter->equal('orderid', '系统订单号')->width('350px');
             $filter->equal('account', '收款账号')->width('350px');
+            $filter->equal('notify_num', '回掉次数')->width('350px');
             $filter->equal('status', '状态')->select(RechargeOrder::LIST_STATUS);
+            $filter->equal('notify_status', '订回掉状态')->select(RechargeOrder::LIST_NOTIFY_STATUS);
             $filter->equal('inizt', '订单类型')->select(RechargeOrder::LIST_INIZT);
             $filter->equal('bank_open', '通道')->select(RechargeOrder::LIST_BANK_OPEN);
 

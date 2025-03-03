@@ -45,6 +45,11 @@ class RechargeOrder extends BaseModel
     const NOTIFY_STATUS_WAITING = 0;
     const NOTIFY_STATUS_SUCCESS = 1;
     const NOTIFY_STATUS_FAIL = 2;
+    const LIST_NOTIFY_STATUS = [
+        self::NOTIFY_STATUS_WAITING => '待回掉',
+        self::NOTIFY_STATUS_SUCCESS => '回调成功',
+        self::NOTIFY_STATUS_FAIL => '回调失败',
+    ];
 
     // inizt  1=代付;0=代收
     const INIZT_RECHARGE = 0;

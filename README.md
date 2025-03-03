@@ -132,20 +132,33 @@ NotifyCommand 文件的 forLeftOrder 方法，在次之前24小时到再次之�
 ##  日志检测
 ````    
 
-
 所有post
-grep "POST" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
-
+tail -n 100000 /www/wwwlogs/www.hulinb.com.log | grep "POST"  | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
 所有 get
-grep "GET" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+tail -n 100000 /www/wwwlogs/www.hulinb.com.log | grep "GET"  | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
 
 1.入款请求
-grep "POST /api/bxds/submitOrder" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+tail -n 100000 /www/wwwlogs/www.hulinb.com.log | grep "POST /api/bxds/submitOrder" | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
 1.2  出款请求
-grep "POST /api/bx/submitOrder" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+tail -n 100000 /www/wwwlogs/www.hulinb.com.log |  grep "POST /api/bx/submitOrder"  | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
 2. 入款查询
-grep "POST /api/bx/QueryOrder" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+tail -n 100000 /www/wwwlogs/www.hulinb.com.log |  grep "POST /api/bx/QueryOrder"  | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
 3.银行回掉
-grep "POST /api/callback/deposit" /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+tail -n 100000 /www/wwwlogs/www.hulinb.com.log |  grep "POST /api/callback/deposit"  | awk '{print $4}' | cut -d: -f2,3 | sort | uniq -c
+
+
+最近100w 笔中  每小时的访问量
+tail -n 1000000 /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f1,2 | tr -d "[" | sort | uniq -c
+100w 中每分钟的访问量
+tail -n 1000000 /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f2,3 | tr -d "[" | sort | uniq -c
+
+
+
+
+awk '{print $4}' /www/wwwlogs/www.hulinb.com.log  | cut -d: -f1,2 | tr -d "[" | sort | uniq -c
+每分钟的访问量
+awk '{print $4}' /www/wwwlogs/www.hulinb.com.log  | cut -d: -f2,3 | tr -d "[" | sort | uniq -c
+
+tail -n 100000  /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f1,2 | tr -d "[" | sort | uniq -c
 
 ````

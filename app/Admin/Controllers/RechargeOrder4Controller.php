@@ -116,7 +116,9 @@ class RechargeOrder4Controller extends AdminController
         $grid->column('status', '订单状态')->display(function ($input) {
             return isset(RechargeOrder::LIST_STATUS[$input]) ? RechargeOrder::LIST_STATUS[$input] : $input;
         })->dot(RechargeOrder::getStatusDot());
-
+        $grid->column('notify_status', '订回掉状态')->display(function ($input) {
+            return isset(RechargeOrder::LIST_NOTIFY_STATUS[$input]) ? RechargeOrder::LIST_NOTIFY_STATUS[$input] : $input;
+        })->dot(RechargeOrder::getStatusDot());
         $grid->column('inizt', '订单类型')->display(function ($input) {
             return isset(RechargeOrder::LIST_INIZT[$input]) ? RechargeOrder::LIST_INIZT[$input] : $input;
         })->dot(RechargeOrder::getStatusDot());
