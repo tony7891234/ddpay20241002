@@ -108,6 +108,7 @@ class RechargeOrderController extends AdminController
         $grid->column('amount', '金额');
         $grid->column('notify_num', '回调次数');
         $grid->column('realname', '失败原因')->hide();
+        $grid->column('kh_ip', '商户ip')->hide();
         $grid->column('sf_id', '三方订单号')->hide();
         $grid->column('yh_bq', '银行标签/E2E')->hide();
         $grid->column('kouling', 'ConciliationId')->hide();
@@ -147,6 +148,7 @@ class RechargeOrderController extends AdminController
             $filter->equal('merchantid', '商户ID')->width('350px');
             $filter->equal('orderid', '系统订单号')->width('350px');
             $filter->equal('account', '收款账号')->width('350px');
+            $filter->equal('kh_ip', '商户ip')->width('350px');
             $filter->equal('notify_num', '回掉次数')->width('350px');
             $filter->equal('status', '状态')->select(RechargeOrder::LIST_STATUS);
             $filter->equal('notify_status', '订回掉状态')->select(RechargeOrder::LIST_NOTIFY_STATUS);
