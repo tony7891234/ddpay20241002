@@ -108,7 +108,7 @@ class RechargeOrderController extends AdminController
         $grid->column('amount', '金额');
         $grid->column('notify_num', '回调次数');
         $grid->column('realname', '失败原因')->hide();
-        $grid->column('pay_name', '回掉返回')->hide();
+        $grid->column('pay_name', '回调返回')->hide();
         $grid->column('kh_ip', '商户ip')->hide();
         $grid->column('sf_id', '三方订单号')->hide();
         $grid->column('yh_bq', '银行标签/E2E')->hide();
