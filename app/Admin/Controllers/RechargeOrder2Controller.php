@@ -110,6 +110,7 @@ class RechargeOrder2Controller extends AdminController
         $grid->column('bank_open', '银行类型');
         $grid->column('account', '收款账号')->hide();
         $grid->column('bankname', '开户行');
+        $grid->column('yh_bq', '银行标签/E2E')->hide();
         $grid->column('status', '订单状态')->display(function ($input) {
             return isset(RechargeOrder::LIST_STATUS[$input]) ? RechargeOrder::LIST_STATUS[$input] : $input;
         })->dot(RechargeOrder::getStatusDot());
@@ -139,6 +140,7 @@ class RechargeOrder2Controller extends AdminController
             $filter->equal('merchantid', '商户ID')->width('350px');
             $filter->equal('orderid', '系统订单号')->width('350px');
             $filter->equal('account', '收款账号')->width('350px');
+            $filter->equal('yh_bq', '银行标签/E2E')->width('350px');
             $filter->equal('status', '状态')->select(RechargeOrder::LIST_STATUS);
             $filter->equal('inizt', '订单类型')->select(RechargeOrder::LIST_INIZT);
 
