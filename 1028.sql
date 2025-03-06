@@ -1,5 +1,4 @@
-
- CREATE TABLE `cd_order_250117` (
+ CREATE TABLE `cd_order_250223` (
   `order_id` int NOT NULL AUTO_INCREMENT,
   `orderid` varchar(50) NOT NULL,
   `merchantid` int DEFAULT NULL COMMENT '商户ID',
@@ -45,13 +44,9 @@
   `agent_commission` decimal(20,4) NOT NULL DEFAULT '0.0000' COMMENT '代理佣金',
   PRIMARY KEY (`order_id`),
   KEY `orderid` (`orderid`),
-  KEY `sf_id` (`sf_id`),
-  KEY `cd_order_merchantids_index` (`merchantid`),
-  KEY `cd_order_merchantnumber_index` (`merchantnumber`),
   KEY `cd_order_merchantid_merchantnumber_create_time_index` (`merchantid`,`merchantnumber`,`create_time`,`status`) USING BTREE,
   KEY `cd_order_merchantnumber_merchantid_create_time_status_index` (`merchantnumber`,`merchantid`,`create_time`,`status`),
   KEY `cd_order_proxy_id_create_time_status_index` (`proxy_id`,`create_time`,`status`),
-  KEY `cd_order_proxy_id_create_time_index` (`proxy_id`,`create_time`),
   KEY `cd_order_inizt_index` (`inizt`),
   KEY `sf_id_2` (`sf_id`,`inizt`),
   KEY `status` (`status`,`create_time`,`notify_status`,`notify_num`,`sdzt`),
@@ -113,7 +108,7 @@ DROP INDEX cd_order_proxy_id_index ON cd_order;
 DROP INDEX sf_id ON cd_order;
 DROP INDEX cd_order_merchantnumber_merchantid_create_time_status_index ON cd_order;
 
- CREATE TABLE `cd_moneylog_250117` (
+ CREATE TABLE `cd_moneylog_250223` (
   `moneylog_id` int NOT NULL AUTO_INCREMENT,
   `service_id` int DEFAULT NULL COMMENT '客服',
   `proxy_id` int DEFAULT NULL COMMENT '码商',
