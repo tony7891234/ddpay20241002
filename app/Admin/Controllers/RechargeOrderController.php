@@ -149,6 +149,7 @@ class RechargeOrderController extends AdminController
             $filter->equal('merchantid', '商户ID')->width('350px');
             $filter->equal('orderid', '系统订单号')->width('350px');
             $filter->equal('account', '收款账号')->width('350px');
+            $filter->equal('sf_id', '三方订单号')->width('350px');
             $filter->equal('yh_bq', '银行标签/E2E')->width('350px');
             $filter->equal('kh_ip', '商户ip')->width('350px');
             $filter->equal('notify_num', '回掉次数')->width('350px');
