@@ -21,7 +21,7 @@ class RechargeOrder1Controller extends AdminController
      */
     public function title()
     {
-        return '10.28以后';
+        return '3月15日以后';
     }
 
 
@@ -33,7 +33,7 @@ class RechargeOrder1Controller extends AdminController
     {
 
         $model = new RechargeOrder();
-        $tableName = 'cd_order_1028';
+        $tableName = 'cd_order_250315';
         $model->setConnection('rds')->setTable($tableName);
 
         /**
