@@ -44,7 +44,7 @@ class TelegramController extends WebController
     {
         $key = config('telegram.bots.mybot.token');
         $telegram = new Api($key);
-        return $telegram->setWebhook(['url' => config('app.url').'/api/telegram/webhook']);
+        return $telegram->setWebhook(['url' => config('app.url') . '/api/telegram/webhook']);
     }
 
     /**
@@ -65,6 +65,7 @@ class TelegramController extends WebController
      */
     public function ListenWebHook(TelegramService $telegramService)
     {
+        logToMe(time(), \Request::all());
         $response = $telegramService->listener();
         if (!$response) {
             if (date('H') > 11) {

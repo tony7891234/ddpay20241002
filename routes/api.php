@@ -23,7 +23,7 @@ Route::get('/test/', 'TestController@test');
 
 Route::get('/getChatList/', 'TelegramController@getChatList');
 // 创建一个 web hook  https://test107.hulinb.com/admin/log-viewer/logs
-// 创建一个 web hook  https://test107.hulinb.com/createWebHook
+// 创建一个 web hook  https://test107.hulinb.com/api/createWebHook
 Route::get('/createWebHook/', 'TelegramController@createWebHook');
 // 发送信息
 //    Route::get('/sendMessage/', 'TelegramController@sendMessage');

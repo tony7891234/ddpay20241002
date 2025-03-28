@@ -9,7 +9,7 @@ function arrayToJson($arr)
     return json_encode($arr, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 }
 
-if (function_exists('real_ip')) {
+if (!function_exists('real_ip')) {
     /**
      * 获得用户的真实IP地址
      *
