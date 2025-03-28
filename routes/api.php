@@ -22,7 +22,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/test/', 'TestController@test');
 
 Route::get('/getChatList/', 'TelegramController@getChatList');
-// 创建一个 web hook
+// 创建一个 web hook  https://test107.hulinb.com/admin/log-viewer/logs
+// 创建一个 web hook  https://test107.hulinb.com/createWebHook
 Route::get('/createWebHook/', 'TelegramController@createWebHook');
 // 发送信息
 //    Route::get('/sendMessage/', 'TelegramController@sendMessage');

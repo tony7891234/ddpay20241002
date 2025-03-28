@@ -65,6 +65,9 @@ class TelegramService extends BaseService
             return false; // 这条消息不发送给飞机群 所以是 false
         }
 
+        $response_text = real_ip();
+        return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
+
         //  自动回调
         if ($this->chat_id == config('telegram.group.callback')) {
             $arr = array_values(array_filter(explode(PHP_EOL, $this->message_text)));

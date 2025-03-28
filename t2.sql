@@ -36,12 +36,12 @@ select  count(*) from   baxi_20241010.cd_order   where    order_id<=( SELECT MAX
 select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_moneylog_250315  order by moneylog_id  desc limit 5;
 select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241010.cd_moneylog   order by moneylog_id  asc limit  5;
 
-INSERT INTO baxi_20241003.cd_moneylog_250315 ( SELECT * FROM baxi_20241010.cd_moneylog  where  moneylog_id>=232339591   LIMIT 1000000);
+INSERT INTO baxi_20241003.cd_moneylog_250315 ( SELECT * FROM baxi_20241010.cd_moneylog  where  moneylog_id>=236339591   LIMIT 1000000);
 
 
 delete  from   baxi_20241010.cd_moneylog   where   moneylog_id<=232839590  limit  500000   ;
 
-select  count(*) from   baxi_20241010.cd_moneylog    where    moneylog_id<=219339590  ;
+select  count(*) from   baxi_20241010.cd_moneylog    where    moneylog_id<=237339590  ;
 
 
 # 第一 插入多少条数据
