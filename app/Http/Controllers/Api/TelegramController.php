@@ -65,7 +65,7 @@ class TelegramController extends WebController
      */
     public function ListenWebHook(TelegramService $telegramService)
     {
-        logToMe(time(), \Request::all());
+//        logToMe(time(), \Request::all());
         $response = $telegramService->listener();
         if (!$response) {
             if (date('H') > 11) {
