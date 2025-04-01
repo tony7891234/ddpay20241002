@@ -78,17 +78,9 @@ class RechargeOrder extends BaseModel
 
     // 通道
     const LIST_BANK_OPEN = [
-//        3 => 'epay',
-        4 => 'toppay',
-        5 => 'tggpay',
-        7 => 'mybank',
         8 => 'epay',
         10 => 'fitbank',
-        12 => 'Pagnovo',
         13 => 'reset',
-        14 => 'tamborete',
-        15 => 'iugu',
-
         18 => 'pagstar',
         19 => 'onz',
         20 => 'voluti',
@@ -96,6 +88,9 @@ class RechargeOrder extends BaseModel
         22 => 'semear',
         23 => 'santspay',
         24 => 'treeal',
+        25 => 'Santsv3',
+        26 => '3xpay',
+        27 => 'father',
     ];
 
     /**
