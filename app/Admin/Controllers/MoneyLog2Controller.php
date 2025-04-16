@@ -21,7 +21,7 @@ class MoneyLog2Controller extends AdminController
      */
     public function title()
     {
-        return '(1.17以后)';
+        return '(4.5以后)';
     }
 
 
@@ -33,7 +33,7 @@ class MoneyLog2Controller extends AdminController
     {
 
         $model = new MoneyLog();
-        $tableName = 'cd_moneylog_250117';
+        $tableName = 'cd_moneylog_250405';
         $model->setConnection('rds')->setTable($tableName);
         /**
          * @var $grid Grid
@@ -92,7 +92,6 @@ class MoneyLog2Controller extends AdminController
                     ['create_time', '<=', strtotime($_GET['create_time']['end'])],
                 ]);
         }
-
 
 
         //  搜索条件
