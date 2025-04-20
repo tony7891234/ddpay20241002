@@ -55,7 +55,6 @@ CREATE TABLE `cd_order_250408` (
   KEY `bank_open` (`bank_open`) USING BTREE,
   KEY `bank_lx` (`bank_lx`) USING BTREE,
   KEY `createtime_completetime` (`create_time`,`completetime`) USING BTREE,
-  KEY `agent_commission` (`agent_commission`) USING BTREE,
   KEY `yh_bq` (`yh_bq`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3;
 -- 2025。3.19 号 备注
@@ -67,6 +66,8 @@ CREATE TABLE `cd_order_250408` (
 --   KEY `cd_order_proxy_id_index` (`proxy_id`) USING BTREE,
 --   KEY `cd_order_proxy_id_create_time_index` (`proxy_id`,`create_time`) USING BTREE,
 --   KEY `amount_real_pay` (`amount_real_pay`) USING BTREE,
+--   KEY `agent_commission` (`agent_commission`) USING BTREE,
+
 
 
 CREATE TABLE `cd_moneylog_250405` (

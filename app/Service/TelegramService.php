@@ -68,13 +68,13 @@ class TelegramService extends BaseService
         if ($this->chat_id == config('telegram.group.callback')) {
             $arr = array_values(array_filter(explode(PHP_EOL, $this->message_text)));
             if (isset($arr[0])) {
-                if ($arr[0] == 'time') {
-                    $response_text = $this->callback();
-                } else if ($arr[0] == 'sdht') {
-                    $response_text = $this->sdht();
-                } else {
-                    $response_text = $this->callbackForOrderId();
-                }
+//                if ($arr[0] == 'time') {
+//                    $response_text = $this->callback();
+//                } else if ($arr[0] == 'sdht') {
+//                    $response_text = $this->sdht();
+//                } else {
+                $response_text = $this->callbackForOrderId();
+//                }
                 if ($response_text) {
                     return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
                 }
