@@ -199,7 +199,7 @@ amount_real_pay-DocumentNumber：{$info->amount_real_pay} \r\n
         }
         $list = RechargeOrder::select(['order_id', 'orderid', 'create_time', 'inizt'])
             ->whereIn('orderid', $arr)
-            ->limit(1000)
+            ->limit(100)
             ->get();
 
         $response = [];
