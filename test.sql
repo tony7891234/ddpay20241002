@@ -305,3 +305,29 @@ mysql>
 | 161072004 | TX17310844860176589382 |        241 | 1109012618api_pay241924348639 | 100.0000 |      1 | NULL    |  1731086778 |  1731086803 |   1731086803 |       77 |           2002 | NULL     | 20241108172651 | NULL        | https://cbpay.1hd6.com/api/external/pay/wNotify/TX17310844860176589382 | 44894143828 | 44894143828 | pay  | CPF      |       NULL |             2 |          4 | NULL     | NULL  | 0       |            0 | NULL       |         | 352336581 |    0 |     1 |    0 |       | NULL |  NULL |       1 |        NULL |        10 |          0.0000 |        0 | 0.0000 |           0.0000 |
 +-----------+------------------------+------------+-------------------------------+----------+--------+---------+-------------+-------------+--------------+----------+----------------+----------+----------------+-------------+------------------------------------------------------------------------+-------------+-------------+------+----------+------------+---------------+------------+----------+-------+---------+--------------+------------+---------+-----------+------+-------+------+-------+------+-------+---------+-------------+-----------+-----------------+----------+--------+------------------+
 
+--
+-- --  查询  1742832000= 3.25
+-- 1. 订单  cd_order
+-- 2. 资金记录 cd_money_log
+-- 3. 短信通知  cd_message
+--
+-- SELECT count(*) FROM cd_order   where   create_time <=1742832000;
+-- SELECT count(*) FROM cd_moneylog   where   create_time <=1742832000;
+-- SELECT count(*) FROM cd_message   where   create_time <=1742832000;
+--
+--
+-- select  order_id, orderid,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from cd_order  where create_time >  1742832000   order by order_id  asc limit 5;
+-- select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from  cd_moneylog    where create_time <  1742832000   order by moneylog_id  asc limit  5;
+--
+--
+-- --  删除  1742832000= 3.25
+-- delete  FROM cd_order   where   create_time <=1742832000 limit   500000;
+-- delete  FROM cd_moneylog   where   create_time <=1742832000 limit   500000;
+-- delete  FROM cd_message   where   create_time <=1742832000  limit   500000;
+--
+
+
+
+
+
+
