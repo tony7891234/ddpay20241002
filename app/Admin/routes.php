@@ -12,8 +12,8 @@ Route::group([
     'middleware' => config('admin.route.middleware'),
 ], function (Router $router) {
 
-//    $router->get('/', 'HomeController@index');
-    $router->get('/', 'RechargeOrderController');
+    $router->get('/', 'HomeController@index');
+//    $router->get('/', 'RechargeOrderController');
 
     //  5.测试使用
     $router->resource('test', 'TestController');
