@@ -133,6 +133,7 @@ class MoneyLogController extends AdminController
             $filter->equal('adduser', '订单号')->width('350px');
 
             $filter->equal('bank_lx', '卡类型')->select(MoneyLog::PAY_LIST_ACTION);
+            $filter->equal('action', '方法')->select(MoneyLog::LIST_ACTION);
 
             $filter->whereBetween('create_time', function ($q) {
                 $start = $this->input['start'] ?? strtotime('today');
