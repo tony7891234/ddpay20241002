@@ -33,7 +33,7 @@ class MoneyLog1Controller extends AdminController
     {
 
         $model = new MoneyLog();
-        $tableName = 'cd_moneylog_250315';
+        $tableName = 'cd_moneylog_250701';
         $model->setConnection('rds')->setTable($tableName);
         /**
          * @var $grid Grid
