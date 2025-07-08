@@ -79,14 +79,47 @@ select  count(*) from   baxi_20241010.cd_moneylog   where    moneylog_id<=( SELE
 # WHERE table_schema = 'baxi_20241010' AND table_name = 'cd_moneylog';
 #
 # ALTER TABLE cd_moneylog   ENGINE=InnoDB;
-# ANALYZE TABLE cd_moneylog;
-#
-#
-# OPTIMIZE TABLE cd_moneylog;
-#
 #
 # SHOW TABLE STATUS LIKE  'cd_moneylog' \G;
 #
 
+# 2025。7。8号验证过的 清理空间的方法
+# 1。检查表的空间
+SELECT
+    table_name,
+    ROUND(data_length/1024/1024) AS data_mb,
+    ROUND(index_length/1024/1024) AS index_mb,
+    ROUND(data_free/1024/1024) AS free_mb
+FROM information_schema.tables
+WHERE table_schema = 'baxi_20241010'
+  AND table_name = 'cd_moneylog';
+# 2 执行  2分钟多
+OPTIMIZE TABLE cd_moneylog;
+# 3。 执行   几秒钟就好
+ANALYZE TABLE cd_moneylog;
 
+
+
+# 1。检查表的空间
+SELECT
+    table_name,
+    ROUND(data_length/1024/1024) AS data_mb,
+    ROUND(index_length/1024/1024) AS index_mb,
+    ROUND(data_free/1024/1024) AS free_mb
+FROM information_schema.tables
+WHERE table_schema = 'baxi_20241010'
+  AND table_name = 'cd_order';
+# 2 执行
+OPTIMIZE TABLE cd_order;
+# 3。 执行
+ANALYZE TABLE cd_order;
+
+SELECT
+    table_name,
+    ROUND(data_length/1024/1024) AS data_mb,
+    ROUND(index_length/1024/1024) AS index_mb,
+    ROUND(data_free/1024/1024) AS free_mb
+FROM information_schema.tables
+WHERE table_schema = 'baxi_20241003'
+  AND table_name = 'cd_order_250701';
 
