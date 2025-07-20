@@ -6,16 +6,16 @@
 #
 #
 #
-select  order_id, orderid,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_order_250701  order by order_id  desc limit 5;
+select  order_id, orderid,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.order_250718  order by order_id  desc limit 5;
 select  order_id, orderid,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241010.cd_order   order by order_id  asc limit  5;
 #
 # -- 3.查询大表的总数据
-# select  count(*)  from  baxi_20241003.cd_order_250701 ;
+# select  count(*)  from  baxi_20241003.order_250718 ;
 # -- 4。执行插入
-# INSERT INTO baxi_20241003.cd_order_250701 ( SELECT * FROM baxi_20241010.cd_order  where  order_id>=211312834  LIMIT 500000);
+# INSERT INTO baxi_20241003.order_250718 ( SELECT * FROM baxi_20241010.cd_order  where  order_id>=211312834  LIMIT 500000);
 #
 # --  5 取出最大值 比如 1001
-# select  order_id, orderid,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_order_250701  order by order_id  desc limit 5;
+# select  order_id, orderid,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.order_250718  order by order_id  desc limit 5;
 # -- 6。删除 小于5的数据
 # delete  from   baxi_20241010.cd_order   where    order_id<=211812840  limit 2  ;
 #
@@ -24,20 +24,20 @@ select  order_id, orderid,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H
 
 # 2025。6。15 号备注   上面的方式废弃了   使用下面的方式
 
-# 1.最大的 cd_order_250701.order_id   2. 这个id 之后的50w
+# 1.最大的 order_250718.order_id   2. 这个id 之后的50w
 # 第一 插入多少条数据
-INSERT INTO baxi_20241003.cd_order_250701 ( SELECT * FROM baxi_20241010.cd_order  WHERE order_id >= ( SELECT MAX(order_id) FROM baxi_20241003.cd_order_250701 ) LIMIT 300000 );
+INSERT INTO baxi_20241003.order_250718 ( SELECT * FROM baxi_20241010.cd_order  WHERE order_id >= ( SELECT MAX(order_id) FROM baxi_20241003.order_250718 ) LIMIT 300000 );
 # 第二 删除50w数据
-delete  from   baxi_20241010.cd_order   where    order_id<=( SELECT MAX(order_id) FROM baxi_20241003.cd_order_250701 )  limit 300000  ;
+delete  from   baxi_20241010.cd_order   where    order_id<=( SELECT MAX(order_id) FROM baxi_20241003.order_250718 )  limit 300000  ;
 # 第三 查看订单号   可以不看
-select  count(*) from   baxi_20241010.cd_order   where    order_id<=( SELECT MAX(order_id) FROM baxi_20241003.cd_order_250701 )  ;
+select  count(*) from   baxi_20241010.cd_order   where    order_id<=( SELECT MAX(order_id) FROM baxi_20241003.order_250718 )  ;
 
 --      上面订单  下面资金
 
-select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_moneylog_250701  order by moneylog_id  desc limit 5;
+select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_moneylog_250718  order by moneylog_id  desc limit 5;
 select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241010.cd_moneylog   order by moneylog_id  asc limit  5;
 
-# INSERT INTO baxi_20241003.cd_moneylog_250701 ( SELECT * FROM baxi_20241010.cd_moneylog  where  moneylog_id>=236339591   LIMIT 1000000);
+# INSERT INTO baxi_20241003.cd_moneylog_250718 ( SELECT * FROM baxi_20241010.cd_moneylog  where  moneylog_id>=236339591   LIMIT 1000000);
 #
 #
 # delete  from   baxi_20241010.cd_moneylog   where   moneylog_id<=232839590  limit  500000   ;
@@ -46,11 +46,11 @@ select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s
 
 
 # 第一 插入多少条数据
-INSERT INTO baxi_20241003.cd_moneylog_250701 ( SELECT * FROM baxi_20241010.cd_moneylog  WHERE moneylog_id >= ( SELECT MAX(moneylog_id) FROM baxi_20241003.cd_moneylog_250701 ) LIMIT 500000 );
+INSERT INTO baxi_20241003.cd_moneylog_250718 ( SELECT * FROM baxi_20241010.cd_moneylog  WHERE moneylog_id >= ( SELECT MAX(moneylog_id) FROM baxi_20241003.cd_moneylog_250718 ) LIMIT 500000 );
 # 第二 删除50w数据
-delete  from   baxi_20241010.cd_moneylog   where    moneylog_id<=( SELECT MAX(moneylog_id) FROM baxi_20241003.cd_moneylog_250701 )  limit 500000  ;
+delete  from   baxi_20241010.cd_moneylog   where    moneylog_id<=( SELECT MAX(moneylog_id) FROM baxi_20241003.cd_moneylog_250718 )  limit 500000  ;
 # 第三 查看订单号   可以不看
-select  count(*) from   baxi_20241010.cd_moneylog   where    moneylog_id<=( SELECT MAX(moneylog_id) FROM baxi_20241003.cd_moneylog_250701 )  ;
+select  count(*) from   baxi_20241010.cd_moneylog   where    moneylog_id<=( SELECT MAX(moneylog_id) FROM baxi_20241003.cd_moneylog_250718 )  ;
 
 
 #
@@ -121,5 +121,7 @@ SELECT
     ROUND(data_free/1024/1024) AS free_mb
 FROM information_schema.tables
 WHERE table_schema = 'baxi_20241003'
-  AND table_name = 'cd_order_250701';
+  AND table_name = 'order_250718';
+
+
 

@@ -32,7 +32,7 @@ class RechargeOrder2Controller extends AdminController
     protected function grid()
     {
         $model = new RechargeOrder();
-        $tableName = 'cd_order_250117';
+        $tableName = 'cd_order_250718';
         $model->setConnection('rds')->setTable($tableName);
 
         /**
