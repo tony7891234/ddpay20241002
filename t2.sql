@@ -35,7 +35,7 @@ select  count(*) from   baxi_20241010.cd_order   where    order_id<=( SELECT MAX
 
 --      上面订单  下面资金
 
-select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_moneylog_250718  order by moneylog_id  desc limit 5;
+select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_moneylog_250718  order by moneylog_id  desc limit 20;
 select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241010.cd_moneylog   order by moneylog_id  asc limit  5;
 
 # INSERT INTO baxi_20241003.cd_moneylog_250718 ( SELECT * FROM baxi_20241010.cd_moneylog  where  moneylog_id>=236339591   LIMIT 1000000);
@@ -55,6 +55,24 @@ INSERT INTO baxi_20241003.cd_moneylog_250718 ( SELECT * FROM baxi_20241010.cd_mo
 delete  from   baxi_20241010.cd_moneylog   where    moneylog_id<=( SELECT MAX(moneylog_id) FROM baxi_20241003.cd_moneylog_250718 )  limit 500000  ;
 # 第三 查看订单号   可以不看
 select  count(*) from   baxi_20241010.cd_moneylog   where    moneylog_id<=( SELECT MAX(moneylog_id) FROM baxi_20241003.cd_moneylog_250718 )  ;
+
+
+# 7.23 号备注  如果数据超了需要的，回退原表
+# 1 查看这个时间  比如 7。22 号之后，有多少单。就是需要回退的数量   页可以用时间查询
+SELECT  count(*) FROM baxi_20241003.cd_moneylog_250718   WHERE moneylog_id >= 367794351  ;
+
+#  2 将1 的条件数据，插入到 cd_moneylog
+INSERT INTO baxi_20241010.cd_moneylog  ( SELECT * FROM baxi_20241003.cd_moneylog_250718   WHERE moneylog_id >= 367794351 ) ;
+
+# 需求2   需要将主表数据，移动到旧表，但是不删除主表
+# 1. 查看主表的最大值
+select  moneylog_id,  DATE_FORMAT(FROM_UNIXTIME(create_time), '%Y-%m-%d %H:%i:%s') AS formatted_time  from baxi_20241003.cd_moneylog_250718  order by moneylog_id  desc limit 10;
+# 2.moneylog_id 是从 cd_moneylog_250718 表获得的最大值
+INSERT INTO baxi_20241003.cd_moneylog_250718 ( SELECT * FROM baxi_20241010.cd_moneylog  WHERE moneylog_id > 367839609 LIMIT 2 );
+# 2 页可以这样
+INSERT INTO baxi_20241003.cd_moneylog_250718 ( SELECT * FROM baxi_20241010.cd_moneylog  WHERE moneylog_id > ( SELECT MAX(moneylog_id) FROM baxi_20241003.cd_moneylog_250718 ) LIMIT 2 );
+# 3. 如果需要限制在某个
+INSERT INTO baxi_20241003.cd_moneylog_250718 ( SELECT * FROM baxi_20241010.cd_moneylog  WHERE moneylog_id > ( SELECT MAX(moneylog_id) FROM baxi_20241003.cd_moneylog_250718 ) LIMIT 500000 );
 
 
 #

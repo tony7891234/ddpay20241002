@@ -327,6 +327,28 @@ mysql>
 --
 
 
+| cd_order_250101         |
+| cd_order_250117         |
+| cd_order_250223         |
+| cd_order_250315         |
+| cd_order_250408         |
+| cd_order_250518         |
+| cd_order_250701         |
+| cd_order_250718
+
+
+| cd_request_2506         |
+| cd_request_2507         |
+| cd_request_2508         |
+| cd_request_2509         |
+| cd_request_2510         |
+| cd_request_2511         |
+| cd_request_2512
+
+select *  from  cd_order_250518  where  yh_bq=''
+select  yh_bq ,orderid  from  cd_order_250518  where  orderid='01310029619710217972061';
+select  *  from  cd_request_3  where  order_id='01310029619710217972061';
+
 
 
 
