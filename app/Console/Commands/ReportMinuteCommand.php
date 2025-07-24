@@ -46,7 +46,8 @@ class ReportMinuteCommand extends BaseCommand
 
     private function report()
     {
-        $start_at = date('Y-m-d H:i:00', strtotime('-1 minute'));
+        $start_at = strtotime(date('Y-m-d H:i:00', strtotime('-1 minute')));
+        dump(date('H:i:s', $start_at));
         $end_at = $start_at + 60;
         $reportInfo = RechargeOrder::select(
             DB::raw('COUNT(id) as order_count'),
