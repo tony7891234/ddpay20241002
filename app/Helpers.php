@@ -400,11 +400,16 @@ if (!function_exists('getTimeString')) {
 if (!function_exists('formatTimeToString')) {
     /**
      * @param $timestamp
+     * @param $remove_year bool
      * @return string
      */
-    function formatTimeToString($timestamp)
+    function formatTimeToString($timestamp, $remove_year = false)
     {
-        return date('Y-m-d H:i:s', $timestamp);
+        if ($remove_year) {
+            return date('m-d H:i:s', $timestamp);
+        } else {
+            return date('Y-m-d H:i:s', $timestamp);
+        }
     }
 }
 

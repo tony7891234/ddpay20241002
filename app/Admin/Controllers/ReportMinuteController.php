@@ -74,11 +74,11 @@ class ReportMinuteController extends AdminController
         $grid->column('id', 'ID');
 
         $grid->column('start_at', '统计开始时间')->display(function ($input) {
-            return formatTimeToString($input);
+            return formatTimeToString($input, true);
         });
 
         $grid->column('end_at', '统计结束时间')->display(function ($input) {
-            return formatTimeToString($input);
+            return formatTimeToString($input, true);
         });
 
         $grid->column('request_count', '请求比数');
@@ -88,7 +88,7 @@ class ReportMinuteController extends AdminController
         $grid->column('complete_count', '回掉数量');
         $grid->column('complete_amount', '回掉金额');
         $grid->column('created_at', '统计时间')->display(function ($input) {
-            return formatTimeToString($input);
+            return formatTimeToString($input, true);
         });
 
         // 过滤器  查询字段
