@@ -55,7 +55,7 @@ class ReportMinuteCommand extends BaseCommand
         )->where([
             ['create_time', '>=', $start_at],
             ['create_time', '<', $end_at],
-        ])->find();
+        ])->first();
         dump($reportInfo);
 
         $reportInfo = RechargeOrder::select(
@@ -65,7 +65,7 @@ class ReportMinuteCommand extends BaseCommand
             ['create_time', '>=', $start_at],
             ['create_time', '<', $end_at],
             ['status', '=', RechargeOrder::STATUS_SUCCESS],
-        ])->find();
+        ])->first();
         dd($reportInfo);
     }
 
