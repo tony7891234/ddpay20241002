@@ -50,7 +50,7 @@ class ReportMinuteCommand extends BaseCommand
         dump(date('H:i:s', $start_at));
         $end_at = $start_at + 60;
         $reportInfo = RechargeOrder::select(
-            DB::raw('COUNT(id) as order_count'),
+            DB::raw('COUNT(order_id) as order_count'),
             DB::raw('SUM(amount) as sum_amount')
         )->where([
             ['create_time', '>=', $start_at],
@@ -59,7 +59,7 @@ class ReportMinuteCommand extends BaseCommand
         dump($reportInfo);
 
         $reportInfo = RechargeOrder::select(
-            DB::raw('COUNT(id) as order_count'),
+            DB::raw('COUNT(order_id) as order_count'),
             DB::raw('SUM(amount) as sum_amount')
         )->where([
             ['create_time', '>=', $start_at],
