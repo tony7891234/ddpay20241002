@@ -350,6 +350,19 @@ select  yh_bq ,orderid  from  cd_order_250518  where  orderid='01310029619710217
 select  *  from  cd_request_3  where  order_id='01310029619710217972061';
 
 
+CREATE TABLE `cd_report_minute` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+`request_count` INT(11) UNSIGNED default null COMMENT '请求比数',
+`request_amount` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '请求金额',
+`finished_count` INT(11) UNSIGNED default null COMMENT '完成比数',
+`finished_amount` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '完成金额',
+`start_at` INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT '统计开始时间',
+`end_at` INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT '统计结束时间',
+`created_at` INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT '统计时间',
+   PRIMARY KEY (`id`) USING BTREE,
+    INDEX `start_at` (`start_at`) USING BTREE,
+    INDEX `end_at` (`end_at`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 

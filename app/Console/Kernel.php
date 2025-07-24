@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-//        $schedule->command('notify left')->everyTenMinutes(); // 十分钟执行一次遗漏的订单
+        $schedule->command('report_minute')->everyMinute(); // 分钟报表
 
 //        $schedule->command('notify_left')->everyFiveMinutes(); // 5分钟执行一次遗漏的订单 2.13 号添加
 

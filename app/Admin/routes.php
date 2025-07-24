@@ -43,6 +43,9 @@ Route::group([
 
     $router->resource('recharge_order4', 'RechargeOrder4Controller');
 
+    //  分钟报表
+    $router->resource('report_minute', 'ReportMinuteController');
+
     //  最新日志
     $router->resource('money_log', 'MoneyLogController');
 
