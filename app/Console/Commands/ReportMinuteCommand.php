@@ -70,7 +70,7 @@ class ReportMinuteCommand extends BaseCommand
             $arr['request_count'] = $requestOrder->order_count;
             $arr['request_amount'] = $requestOrder->sum_amount;
         }
-        dump($requestOrder);
+//        dump($requestOrder);
 
         $finishedOrder = RechargeOrder::select(
             DB::raw('COUNT(order_id) as order_count'),
