@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 
 use App\Models\RechargeOrder;
+use App\Models\ReportMinute;
 use DB;
 
 /**
@@ -49,16 +50,29 @@ class ReportMinuteCommand extends BaseCommand
         $start_at = strtotime(date('Y-m-d H:i:00', strtotime('-1 minute')));
         dump(date('H:i:s', $start_at));
         $end_at = $start_at + 60;
-        $reportInfo = RechargeOrder::select(
+        $arr = [
+            'request_count' => 0,
+            'request_amount' => 0,
+            'finished_count' => 0,
+            'finished_amount' => 0,
+            'start_at' => $start_at,
+            'end_at' => $end_at,
+            'created_at' => time(),
+        ];
+        $requestOrder = RechargeOrder::select(
             DB::raw('COUNT(order_id) as order_count'),
             DB::raw('SUM(amount) as sum_amount')
         )->where([
             ['create_time', '>=', $start_at],
             ['create_time', '<', $end_at],
         ])->first();
-        dump($reportInfo);
+        if ($requestOrder) {
+            $arr['request_count'] = $requestOrder->order_count;
+            $arr['request_amount'] = $requestOrder->sum_amount;
+        }
+        dump($requestOrder);
 
-        $reportInfo = RechargeOrder::select(
+        $finishedOrder = RechargeOrder::select(
             DB::raw('COUNT(order_id) as order_count'),
             DB::raw('SUM(amount) as sum_amount')
         )->where([
@@ -66,7 +80,15 @@ class ReportMinuteCommand extends BaseCommand
             ['create_time', '<', $end_at],
             ['status', '=', RechargeOrder::STATUS_SUCCESS],
         ])->first();
-        dd($reportInfo);
+        if ($finishedOrder) {
+            $arr['finished_count'] = $finishedOrder->order_count;
+            $arr['finished_amount'] = $finishedOrder->sum_amount;
+        }
+        if ($arr['request_count'] == 0 && $arr['finished_count'] == 0) {
+            echo '没单子';
+        } else {
+            ReportMinute::create($arr);
+        }
     }
 
 
