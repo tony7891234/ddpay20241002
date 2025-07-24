@@ -55,6 +55,8 @@ class ReportMinuteCommand extends BaseCommand
             'request_amount' => 0,
             'finished_count' => 0,
             'finished_amount' => 0,
+            'complete_count' => 0,
+            'complete_amount' => 0,
             'start_at' => $start_at,
             'end_at' => $end_at,
             'created_at' => time(),
@@ -80,14 +82,34 @@ class ReportMinuteCommand extends BaseCommand
             ['create_time', '<', $end_at],
             ['status', '=', RechargeOrder::STATUS_SUCCESS],
         ])->first();
+
         if ($finishedOrder) {
             $arr['finished_count'] = $finishedOrder->order_count;
             $arr['finished_amount'] = $finishedOrder->sum_amount;
         }
-        if ($arr['request_count'] == 0 && $arr['finished_count'] == 0) {
+        // 完成时间的统计
+        $completeOrder = RechargeOrder::select(
+            DB::raw('COUNT(order_id) as order_count'),
+            DB::raw('SUM(amount) as sum_amount')
+        )->where([
+            ['completetime', '>=', $start_at],
+            ['completetime', '<', $end_at],
+        ])->first();
+
+        if ($completeOrder) {
+            $arr['complete_count'] = $completeOrder->order_count;
+            $arr['complete_amount'] = $completeOrder->sum_amount;
+        }
+
+        if ($arr['request_count'] == 0 && $arr['finished_count'] == 0 && $arr['complete_count']) {
             echo '没单子';
         } else {
-            ReportMinute::create($arr);
+            try {
+                // start_at  是唯一索引
+                ReportMinute::create($arr);
+            } catch (\Exception $exception) {
+//                dump($exception->getMessage());
+            }
         }
     }
 

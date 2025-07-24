@@ -178,3 +178,18 @@ MySQL [test_baxi_20241010]> select *  from cd_order limit 100;
   KEY `agent_commission` (`agent_commission`) USING BTREE,
   KEY `yh_bq` (`yh_bq`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=249814422 DEFAULT CHARSET=utf8mb3 |
+
+drop table cd_report_minute;
+CREATE TABLE `cd_report_minute` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `request_count` int unsigned DEFAULT NULL COMMENT '请求比数',
+  `request_amount` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '请求金额',
+  `finished_count` int unsigned DEFAULT NULL COMMENT '完成比数',
+  `finished_amount` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '完成金额',
+  `start_at` int unsigned NOT NULL DEFAULT '0' COMMENT '统计开始时间',
+  `end_at` int unsigned NOT NULL DEFAULT '0' COMMENT '统计结束时间',
+  `created_at` int unsigned NOT NULL DEFAULT '0' COMMENT '统计时间',
+  PRIMARY KEY (`id`) USING BTREE,
+   UNIQUE  KEY `start_at` (`start_at`) USING BTREE,
+  KEY `end_at` (`end_at`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

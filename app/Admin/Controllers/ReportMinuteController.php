@@ -85,11 +85,11 @@ class ReportMinuteController extends AdminController
         $grid->column('request_amount', '请求金额');
         $grid->column('finished_count', '完成比数');
         $grid->column('finished_amount', '完成金额');
-
+        $grid->column('complete_count', '回掉数量');
+        $grid->column('complete_amount', '回掉金额');
         $grid->column('created_at', '统计时间')->display(function ($input) {
             return formatTimeToString($input);
         });
-
 
         // 过滤器  查询字段
         $grid->filter(function (Grid\Filter $filter) {

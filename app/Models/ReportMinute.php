@@ -10,6 +10,8 @@ namespace App\Models;
  * @property int finished_count 完成比数
  * @property float request_amount 请求金额
  * @property float finished_amount 完成金额
+ * @property float complete_count 回掉数量
+ * @property float complete_amount 回掉金额
  * @property int start_at 统计开始时间
  * @property int end_at 统计结束时间
  * @property int created_at 统计时间
