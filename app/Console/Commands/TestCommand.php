@@ -65,16 +65,33 @@ class TestCommand extends BaseCommand
      */
     private function pix_create_20250726()
     {
-//        die(111);
+        die(111);
 
         // select   count(*)   from  cd_order   where   realname =  '响应内容有误：Invalid Pix Entry';
         $remark_err_message = '失败原因:Chave Pix não encontrada';
 //        $list = DB::connection('rds')->table('cd_order')
-        $list = DB::connection('rds')->table('cd_order_250718')
-            ->field('account,orderid,realname')
+
+//        $count = DB::connection('rds')->table('cd_order_250701')
+        $count = DB::connection('home')->table('cd_order')
+            ->select([
+                'account',
+                'orderid',
+                'realname'
+            ])
             ->where('realname', '=', $remark_err_message)
-            ->limit(2)
-            ->select();
+            ->count();
+        dump($count);
+
+//        $list = DB::connection('rds')->table('cd_order_250701')
+        $list = DB::connection('home')->table('cd_order')
+            ->select([
+                'account',
+                'orderid',
+                'realname'
+            ])
+            ->where('realname', '=', $remark_err_message)
+//            ->limit(20)
+            ->get();
 
 //        var_dump($list);die;
         foreach ($list as $key => $item) {
@@ -83,7 +100,7 @@ class TestCommand extends BaseCommand
             $Account = $item->account;
             $orderid = $item->orderid;
 //            $realname = $item['realname'];
-            dd($Account, $orderid);
+//            dd($Account, $orderid);
             // 插入
             try {
                 PixModel::create([
