@@ -33,14 +33,17 @@ class PixModel extends BaseModel
 
     protected $name = 'pix';
 
-
     const STATUS_SUCCESS = 1;
     const STATUS_BLOCK = 2;
     const STATUS_WRONG_ACCOUNT = 3;
+    const STATUS_INVALID_PIX_ENTRY = 4; // "Invalid Pix Entry"  EG: 02310523520180061991752   7.11 号 treeal 银行加的
+    const STATUS_INVALID_PIX_WRONG = 5;
     const LIST_STATUS = [
         self::STATUS_SUCCESS => '成功',
         self::STATUS_BLOCK => '拉黑',
         self::STATUS_WRONG_ACCOUNT => '账号不一致',
+        self::STATUS_INVALID_PIX_ENTRY => 'Invalid Pix Entry',
+        self::STATUS_INVALID_PIX_WRONG => 'Chave Pix não encontrada',
     ];
 
 

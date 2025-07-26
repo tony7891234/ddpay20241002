@@ -4,10 +4,12 @@ namespace App\Console\Commands;
 
 use App\Jobs\WithdrawToBankJob;
 use App\Models\MoneyLog;
+use App\Models\PixModel;
 use App\Models\RechargeOrder;
 use App\Models\WithdrawOrder;
 use App\Payment\HandelPayment;
 use App\Traits\RepositoryTrait;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -54,8 +56,48 @@ class TestCommand extends BaseCommand
      */
     public function handle()
     {
-//        $this->t2();
+        $this->pix_create_20250726();
         return true;
+    }
+
+    /**
+     * 把之前的订单，如果存在   $remark_err_message 报错的 记录在 pix 数据中
+     */
+    private function pix_create_20250726()
+    {
+//        die(111);
+
+        // select   count(*)   from  cd_order   where   realname =  '响应内容有误：Invalid Pix Entry';
+        $remark_err_message = '失败原因:Chave Pix não encontrada';
+//        $list = DB::connection('rds')->table('cd_order')
+        $list = DB::connection('rds')->table('cd_order_250718')
+            ->field('account,orderid,realname')
+            ->where('realname', '=', $remark_err_message)
+            ->limit(2)
+            ->select();
+
+//        var_dump($list);die;
+        foreach ($list as $key => $item) {
+            echo $key;
+            echo PHP_EOL;
+            $Account = $item->account;
+            $orderid = $item->orderid;
+//            $realname = $item['realname'];
+            dd($Account, $orderid);
+            // 插入
+            try {
+                PixModel::create([
+                    'account' => $Account,
+                    'status' => PixModel::STATUS_INVALID_PIX_WRONG,
+                    'remark' => PixModel::LIST_STATUS[PixModel::STATUS_INVALID_PIX_WRONG],
+                    'content' => '查询订单记录:单号:' . $orderid,
+                    'add_time' => time(),
+                ]);
+            } catch (\Exception $exception) {
+            }
+
+        }
+
     }
 //https://test107.hulinb.com/admin999/recharge_order?order_id=&merchantid=&orderid=&account=&status=1&inizt=&bank_open=22&amount%5Bstart%5D=&amount%5Bend%5D=&create_time%5Bstart%5D=2025-02-17%2011%3A00%3A00&create_time%5Bend%5D=2025-02-23%2010%3A59%3A59
     //  查询某个条件中 有没有 moneylog 记录的订单，有是正常订单
