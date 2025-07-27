@@ -91,6 +91,9 @@ class RechargeOrder extends BaseModel
         25 => 'Santsv3',
         26 => '3xpay',
         27 => 'father',
+        28 => 'creditag',
+        29 => 'suitpay',
+        30 => 'neo', // 2025.7.26
     ];
 
     /**
