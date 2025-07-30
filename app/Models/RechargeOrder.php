@@ -80,6 +80,7 @@ class RechargeOrder extends BaseModel
     const LIST_BANK_OPEN = [
         8 => 'epay',
         10 => 'fitbank',
+        12 => 'Pagnovo',
         13 => 'reset',
         18 => 'pagstar',
         19 => 'onz',
