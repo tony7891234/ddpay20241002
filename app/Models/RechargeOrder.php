@@ -75,12 +75,14 @@ class RechargeOrder extends BaseModel
         self::STATUS_AUTO_DEVICE => '设备待出款',
     ];
 
-
     // 通道
     const LIST_BANK_OPEN = [
+        24 => 'treeal',
+        30 => 'neo', // 2025.7.26
+        12 => 'Pagnovo',
+        29 => 'suitpay',
         8 => 'epay',
         10 => 'fitbank',
-        12 => 'Pagnovo',
         13 => 'reset',
         18 => 'pagstar',
         19 => 'onz',
@@ -88,13 +90,10 @@ class RechargeOrder extends BaseModel
         21 => 'Microcashif',
         22 => 'semear',
         23 => 'santspay',
-        24 => 'treeal',
         25 => 'Santsv3',
         26 => '3xpay',
         27 => 'father',
         28 => 'creditag',
-        29 => 'suitpay',
-        30 => 'neo', // 2025.7.26
     ];
 
     /**
