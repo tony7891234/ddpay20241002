@@ -1,12 +1,150 @@
 <?php
 
-function arrayToJson($arr)
-{
-    if (!is_array($arr)) {
-        return $arr;
-    }
 
-    return json_encode($arr, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+if (!function_exists('TgToIndiaBaxi')) {
+
+    /**
+     * 2。13 号添加   <[工具]巴西自动回调群>
+     * @param $message
+     */
+    function TgToIndiaBaxi($message)
+    {
+        $url = 'https://api.telegram.org/bot7569527568:AAEZkIiGoq-ekZBp1PBaww8LGMfAd9C3DGg/sendMessage?chat_id=-4574102230&parse_mode=Markdown&text=333' . urlencode($message);
+        curlRequest($url, '', [], 'get');
+    }
+}
+
+if (!function_exists('curlPostJson')) {
+    /**
+     * 发送 JSON POST 请求
+     *
+     * @param string $url 完整 URL
+     * @param array $data 要发送的数组
+     * @param array $headers 额外 Header，可选
+     * @param int $timeout 超时时间（秒）
+     * @return string
+     */
+    function curlPostJson($url, $data, $headers = [], $timeout = 10)
+    {
+        $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+
+        $defaultHeaders = [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($jsonData)
+        ];
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge($defaultHeaders, $headers));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        return curl_exec($ch);
+    }
+}
+
+if (!function_exists('getLocalRedis')) {
+    /**
+     * @return Redis
+     */
+    function getLocalRedis()
+    {
+        $redis = new \Redis();
+        $redis->connect('127.0.0.1', 6379, 10);//账户
+        $redis->select(0);
+        return $redis;
+    }
+}
+
+if (!function_exists('TgBotMessage')) {
+    /**
+     * 《巴西监控群》
+     * @param $message
+     */
+    function TgBotMessage($message)
+    {
+        $url = 'https://api.telegram.org/bot7506189673:AAHY7fZJPiBV0DYCxpznbK9kz7iVR3yArkI/sendMessage?chat_id=-4709220188&parse_mode=Markdown&text=' . urlencode($message);
+        curlRequest($url, '', [], 'get');
+    }
+}
+
+if (!function_exists('arrayToJson')) {
+    /**
+     * @param $arr
+     * @return false|string
+     */
+    function arrayToJson($arr)
+    {
+        if (!is_array($arr)) {
+            return $arr;
+        }
+        return json_encode($arr, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+}
+
+if (!function_exists('curlRequest')) {
+    /**
+     * @param $url
+     * @param string $params
+     * @param array $header
+     * @param string $method
+     * @param int $timeout
+     * @return bool|string
+     */
+    function curlRequest($url, $params = '', $header = [], $method = 'post', $timeout = 10)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+        if ($header) curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+
+        switch ($method) {
+            case 'get' :
+                curl_setopt($curl, CURLOPT_HTTPGET, true);
+                break;
+            case 'put':
+                if (is_array($params)) $params = json_encode($params);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/json; charset=utf-8',
+                    'Content-Length: ' . strlen($params),
+                ));
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+                break;
+            case 'post' :
+                curl_setopt($curl, CURLOPT_POST, 1);
+                if (is_array($params)) {
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
+                } else {
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+                }
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                break;
+            # 异步发送
+            case 'asynchronousPost' :
+                if ($params) {
+                    curl_setopt($curl, CURLOPT_POST, 1);
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+                    curl_setopt($curl, CURLOPT_HTTPHEADER, ['cache-control: no-cache',
+                        'content-type: application/json']);
+                }
+                break;
+        }
+        $data = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return ($err);
+        }
+        return $data;
+
+    }
 }
 
 if (!function_exists('real_ip')) {
@@ -179,14 +317,25 @@ if (!function_exists('curlPost')) {
 if (!function_exists('logToResponse')) {
     /**
      * 写入数据到某个文件  临时导出数据使用
-     * @param $message
-     * @param string $fileName
+     * @param $message string|array
+     * @param string $file_name
+     * @param bool $write_ip 是否需要记录ip
      */
-    function logToResponse($message, $fileName = 'response.txt')
+    function logToResponse($message, $file_name = 'response.txt', $write_ip = true)
     {
-        $fileName = 'logs/' . $fileName;
-        file_put_contents($fileName, $message, FILE_APPEND);
-        file_put_contents($fileName, "\n", FILE_APPEND);
+        $message = is_array($message) ? json_encode($message, JSON_UNESCAPED_UNICODE) : $message;
+        if ($write_ip) {
+            $message = real_ip() . '  ' . $message;
+        }
+
+        if (!$file_name) {
+            $file_name = date('Ymd');
+        }
+        $file_name = $file_name . date('md') . '.txt';
+
+        $file_name = 'logs/' . $file_name;
+        file_put_contents($file_name, $message, FILE_APPEND);
+        file_put_contents($file_name, "\n", FILE_APPEND);
     }
 }
 

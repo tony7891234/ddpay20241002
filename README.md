@@ -162,3 +162,7 @@ awk '{print $4}' /www/wwwlogs/www.hulinb.com.log  | cut -d: -f2,3 | tr -d "[" | 
 tail -n 100000  /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f1,2 | tr -d "[" | sort | uniq -c
 
 ````
+
+
+##  备注
+request_2507  日志修改baxi的时候，这个程序也要改
