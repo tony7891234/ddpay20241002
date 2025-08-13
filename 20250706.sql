@@ -1,4 +1,4 @@
- CREATE TABLE `cd_order_250801` (
+ CREATE TABLE `cd_order_250811` (
   `order_id` int NOT NULL AUTO_INCREMENT,
   `orderid` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `merchantid` int DEFAULT NULL COMMENT '商户ID',
@@ -59,7 +59,7 @@
 
 
 
- CREATE TABLE `cd_moneylog_250801` (
+ CREATE TABLE `cd_moneylog_250811` (
   `moneylog_id` int NOT NULL AUTO_INCREMENT,
   `service_id` int DEFAULT NULL COMMENT '客服',
   `proxy_id` int DEFAULT NULL COMMENT '码商',

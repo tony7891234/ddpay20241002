@@ -21,7 +21,7 @@ class MoneyLog1Controller extends AdminController
      */
     public function title()
     {
-        return '3月15日以后';
+        return '日志';
     }
 
 
@@ -33,7 +33,7 @@ class MoneyLog1Controller extends AdminController
     {
 
         $model = new MoneyLog();
-        $tableName = 'cd_moneylog_250701';
+        $tableName = 'cd_moneylog_250811';
         $model->setConnection('rds')->setTable($tableName);
         /**
          * @var $grid Grid
