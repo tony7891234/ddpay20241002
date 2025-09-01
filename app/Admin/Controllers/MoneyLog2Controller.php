@@ -16,16 +16,6 @@ class MoneyLog2Controller extends AdminController
 {
 
     /**
-     * header 标题
-     * @return string
-     */
-    public function title()
-    {
-        return '(4.5以后)';
-    }
-
-
-    /**
      * 列表
      * @return Grid
      */
@@ -33,7 +23,7 @@ class MoneyLog2Controller extends AdminController
     {
 
         $model = new MoneyLog();
-        $tableName = 'cd_moneylog_250718';
+        $tableName = 'cd_moneylog_250828';
         $model->setConnection('rds')->setTable($tableName);
         /**
          * @var $grid Grid

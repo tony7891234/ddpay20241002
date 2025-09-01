@@ -1,4 +1,8 @@
- CREATE TABLE `cd_order_250811` (
+use  baxi_20241003;
+
+show tables;
+
+ CREATE TABLE `cd_order_250828` (
   `order_id` int NOT NULL AUTO_INCREMENT,
   `orderid` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `merchantid` int DEFAULT NULL COMMENT '商户ID',
@@ -52,14 +56,13 @@
   KEY `bank_open` (`bank_open`) USING BTREE,
   KEY `bank_lx` (`bank_lx`) USING BTREE,
   KEY `createtime_completetime` (`create_time`,`completetime`) USING BTREE,
+  KEY `idx_sf_id` (`sf_id`) USING BTREE,
   KEY `yh_bq` (`yh_bq`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3;
 
 
 
-
-
- CREATE TABLE `cd_moneylog_250811` (
+ CREATE TABLE `cd_moneylog_250828` (
   `moneylog_id` int NOT NULL AUTO_INCREMENT,
   `service_id` int DEFAULT NULL COMMENT '客服',
   `proxy_id` int DEFAULT NULL COMMENT '码商',

@@ -15,16 +15,6 @@ use Dcat\Admin\Show;
 class RechargeOrder3Controller extends AdminController
 {
 
-    /**
-     * header 标题
-     * @return string
-     */
-    public function title()
-    {
-//        return '(10.10以前)';
-        return '(7.1号以后)';
-    }
-
 
     /**
      * 列表
@@ -34,7 +24,7 @@ class RechargeOrder3Controller extends AdminController
     {
 
         $model = new RechargeOrder();
-        $tableName = 'cd_order_250701';
+        $tableName = 'cd_order_250828';
         $model->setConnection('rds')->setTable($tableName);
 
         /**

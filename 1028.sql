@@ -227,3 +227,4 @@ CREATE TABLE `cd_map_order` (
 ) ENGINE=InnoDB AUTO_INCREMENT=15356583 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci COMMENT='日志'
 
 
+ALTER TABLE cd_order_250718  ADD INDEX idx_sf_id (sf_id);
