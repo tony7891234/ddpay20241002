@@ -83,6 +83,9 @@ class RechargeOrder extends BaseModel
         30 => 'neo', // 2025.7.26
         21 => 'Microcashif',
         32 => 'williammic',
+        33 => 'e2',
+        34 => 'valo',
+        35 => 'newetc',
         12 => 'Pagnovo',
         29 => 'suitpay',
         8 => 'epay',
