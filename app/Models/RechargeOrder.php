@@ -79,6 +79,11 @@ class RechargeOrder extends BaseModel
 
     // 通道
     const LIST_BANK_OPEN = [
+        40 => '40',
+        39 => '39',
+        38 => 'owem',
+        37 => 'treeal2',
+        36 => 'a55',
         24 => 'treeal',
         30 => 'neo', // 2025.7.26
         21 => 'Microcashif',
