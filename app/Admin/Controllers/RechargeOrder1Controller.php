@@ -33,7 +33,7 @@ class RechargeOrder1Controller extends AdminController
     {
 
         $model = new RechargeOrder();
-        $tableName = 'cd_order_250811';
+        $tableName = 'cd_order_251008';
         $model->setConnection('rds')->setTable($tableName);
 
         /**
