@@ -179,3 +179,19 @@ INSERT INTO   cd_moneylog_250630   ( SELECT * FROM  cd_moneylog  WHERE moneylog_
 # 3. 如果需要限制在某个
 INSERT INTO   cd_moneylog_250630   ( SELECT * FROM  cd_moneylog  WHERE moneylog_id > ( SELECT MAX(moneylog_id) FROM   cd_moneylog_250630   ) LIMIT 500000 );
 
+
+
+-- cd_request_log
+select  id,  DATE_FORMAT(FROM_UNIXTIME(createtime), '%Y-%m-%d %H:%i:%s') AS formatted_time  from   cd_request_log_1024    order by id  desc limit 5;
+select  id,  DATE_FORMAT(FROM_UNIXTIME(createtime), '%Y-%m-%d %H:%i:%s') AS formatted_time  from  cd_request_log   order by id  asc limit  5;
+
+
+
+CREATE TABLE `cd_request_log_1024` LIKE `cd_request_log`;
+INSERT INTO `cd_request_log_1024` SELECT * FROM `cd_request_log`;
+
+INSERT INTO   cd_request_log_1024   ( SELECT * FROM  cd_request_log  WHERE id > ( SELECT MAX(id) FROM   cd_request_log_1024   ) LIMIT 1000000 );
+
+delete  from    cd_request_log   where    id<=( SELECT MAX(id) FROM   cd_request_log_1024   )  limit 1000000  ;
+
+select  count(*)   from  cd_request_log;

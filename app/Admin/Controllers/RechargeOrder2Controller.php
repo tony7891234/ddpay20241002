@@ -21,7 +21,7 @@ class RechargeOrder2Controller extends AdminController
      */
     public function title()
     {
-        return '(1.17以后)';
+        return '订单';
     }
 
 
@@ -32,7 +32,7 @@ class RechargeOrder2Controller extends AdminController
     protected function grid()
     {
         $model = new RechargeOrder();
-        $tableName = 'cd_order_250718';
+        $tableName = 'cd_order_251026';
         $model->setConnection('rds')->setTable($tableName);
 
         /**
