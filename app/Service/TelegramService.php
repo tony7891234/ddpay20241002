@@ -73,10 +73,14 @@ class TelegramService extends BaseService
 //                } else if ($arr[0] == 'sdht') {
 //                    $response_text = $this->sdht();
 //                } else {
-                $response_text = $this->callbackForOrderId();
 //                }
-                if ($response_text) {
-                    return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
+                try {
+                    $response_text = $this->callbackForOrderId();
+                    if ($response_text) {
+                        return $this->getTelegramRepository()->replayMessage($this->chat_id, $response_text);
+                    }
+                } catch (\Exception $exception) {
+                    return $this->getTelegramRepository()->replayMessage($this->chat_id, $exception->getMessage());
                 }
             }
 
