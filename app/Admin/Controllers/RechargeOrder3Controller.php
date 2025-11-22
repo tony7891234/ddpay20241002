@@ -5,8 +5,13 @@ namespace App\Admin\Controllers;
 use App\Models\RechargeOrder;
 use Dcat\Admin\Controllers\AdminController;
 use Dcat\Admin\Grid;
-use App\Admin\Extensions\Exports\LargeCsvExporter; // 引入刚才创建的类
+use Dcat\Admin\Show;
+use App\Admin\Extensions\Exports\LargeCsvExporter; // 引入刚才建的类
 
+/**
+ * Class RechargeOrder3Controller
+ * @package App\Admin\Controllers
+ */
 class RechargeOrder3Controller extends AdminController
 {
     /**
@@ -19,41 +24,68 @@ class RechargeOrder3Controller extends AdminController
         $tableName = 'cd_order_250101';
         $model->setConnection('rds')->setTable($tableName);
 
+        /**
+         * @var $grid Grid
+         */
         $grid = new Grid($model);
 
-        // =================================================
-        // 核心修改：使用自定义的大数据 CSV 导出类
-        // =================================================
+        // ======================================================
+        // 【修改点】这里改成了使用自定义 CSV 导出类
+        // 原来的 export()->titles()->rows() 写法处理不了100万条
+        // ======================================================
         $grid->export(new LargeCsvExporter());
 
-        // 如果你想保留禁用其他按钮的逻辑，写在这里
-        // $grid->disableBatchActions();
-        // ... 其他禁用代码 ...
+        // ======================================================
+        // 【保留】以下是你原本的禁用按钮和多选逻辑，完全没动
+        // ======================================================
 
-        // =================================================
-        // 下面是您的筛选和列表逻辑 (保持不变)
-        // =================================================
+        // 禁用批量操作 (多选框)
+        $grid->disableBatchActions();
+        $grid->disableRowSelector();
 
-        // 默认筛选条件
-        $grid->model()
-            ->where('inizt', '=', RechargeOrder::INIZT_WITHDRAW)
-            ->where('status', '=', RechargeOrder::STATUS_SUCCESS)
-            ->orderBy('order_id', 'asc');
+        // 禁用删除按钮
+        $grid->disableDeleteButton();
+        // 禁用编辑按钮
+        $grid->disableEditButton();
+        // 隐藏 创建按钮
+        $grid->disableCreateButton();
+        // 禁用 查看按钮
+        $grid->disableViewButton();
 
-        // 如果有自定义的 GET 参数筛选逻辑，建议尽量使用 Dcat 的 filter() 方法，
-        // 但如果您必须保留原来手动处理 $_GET 的逻辑，请确保它作用在 $grid->model() 上
-        // (您原来的代码这部分逻辑是没问题的，导出类会自动继承这些筛选)
+        // ======================================================
+        // 【保留】以下是你原本的筛选和查询逻辑
+        // ======================================================
 
         if (isset($_GET['create_time']['start']) && ($_GET['create_time']['start'])) {
-            $grid->model()->where('create_time', '>=', strtotime($_GET['create_time']['start']));
-        }
-        if (isset($_GET['create_time']['end']) && ($_GET['create_time']['end'])) {
-            $grid->model()->where('create_time', '<=', strtotime($_GET['create_time']['end']));
+            $grid->model()
+                ->where([
+                    ['create_time', '>=', strtotime($_GET['create_time']['start'])],
+                ]);
         }
 
-        // 列表显示的列
+        if (isset($_GET['create_time']['end']) && ($_GET['create_time']['end'])) {
+            $grid->model()
+                ->where([
+                    ['create_time', '<=', strtotime($_GET['create_time']['end'])],
+                ]);
+        }
+
+        //  搜索条件
+        $grid->model()
+            ->select([
+                'order_id',     // 列表显示用到
+                'orderid',      // 列表和导出用到
+                'amount',       // 列表和导出用到
+                'account',      // 列表和导出用到
+                'bankname',     // 列表和导出用到
+                'create_time'   // 列表和导出用到
+            ])
+            ->where('inizt', '=', RechargeOrder::INIZT_WITHDRAW)
+            ->where('status', '=', RechargeOrder::STATUS_SUCCESS)
+            ->orderBy('order_id', 'asc'); // 按照ID 倒序排序
+
         $grid->column('order_id', 'ID');
-        $grid->column('orderid', '系统订单号');
+        $grid->column('orderid', '系统订单号'); // 直接对此字段查询
         $grid->column('amount', '金额');
         $grid->column('account', '收款账号');
         $grid->column('bankname', '开户行');
@@ -61,19 +93,16 @@ class RechargeOrder3Controller extends AdminController
             return formatTimeToString($input);
         });
 
-        // 过滤器
+        // 过滤器  查询字段
         $grid->filter(function (Grid\Filter $filter) {
-            $filter->disableIdFilter(); // 通常不需要默认的ID查询
             $filter->between('order_id');
-
-            // 您的时间筛选逻辑
             $filter->whereBetween('create_time', function ($q) {
-                $start = $this->input['start'] ?? null;
-                $end = $this->input['end'] ?? null;
-                if ($start) {
+                $start = $this->input['start'] ?? strtotime('today');
+                $end = $this->input['end'] ?? strtotime('today');
+                if ($start !== null) {
                     $q->where('create_time', '>=', strtotime($start));
                 }
-                if ($end) {
+                if ($end !== null) {
                     $q->where('create_time', '<=', strtotime($end) + 3600 * 24);
                 }
             })->datetime();
