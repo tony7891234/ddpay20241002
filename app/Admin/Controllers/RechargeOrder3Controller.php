@@ -85,7 +85,6 @@ class RechargeOrder3Controller extends AdminController
         //  搜索条件
         $grid->model()
             ->select([
-                'id',           // ⚠️ 必须包含主键，否则Grid内部逻辑可能会报错
                 'order_id',     // 列表显示用到
                 'orderid',      // 列表和导出用到
                 'amount',       // 列表和导出用到
@@ -97,7 +96,7 @@ class RechargeOrder3Controller extends AdminController
             ])
             ->where('inizt', '=', RechargeOrder::INIZT_WITHDRAW)
             ->where('status', '=', RechargeOrder::STATUS_SUCCESS)
-            ->orderBy('id', 'desc'); // 按照ID 倒序排序
+            ->orderBy('order_id', 'desc'); // 按照ID 倒序排序
         $grid->column('order_id', 'ID');
         $grid->column('orderid', '系统订单号'); // 直接对此字段查询
         $grid->column('amount', '金额');
