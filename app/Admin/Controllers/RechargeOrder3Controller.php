@@ -31,7 +31,14 @@ class RechargeOrder3Controller extends AdminController
             // ======================================================
             // 【核心修改】在这里使用我们的导出器
             // ======================================================
+
+            // 1. 指定我们的自定义导出器
             $grid->exporter(new \App\Admin\Extensions\Exports\LargeCsvExporter('充值订单数据'));
+
+            // 2. 【强制显示按钮】如果按钮不显示，用这行代码强制把它加回来
+            $grid->tools(function (\Dcat\Admin\Grid\Tools $tools) {
+                $tools->append(new \Dcat\Admin\Grid\Tools\ExportButton());
+            });
 
             // ======================================================
             // 您原本的禁用按钮和多选逻辑，保持不变
