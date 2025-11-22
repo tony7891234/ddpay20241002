@@ -33,13 +33,7 @@ class RechargeOrder3Controller extends AdminController
         // 【修改点】这里改成了使用自定义 CSV 导出类
         // 原来的 export()->titles()->rows() 写法处理不了100万条
         // ======================================================
-        $grid->export(function (Grid\Exporters\Exporter $exporter) {
-            // 设置您想要的文件名
-            $exporter->setFilename('充值订单数据.csv');
-
-            // 指定使用我们最终确定的导出器
-            $exporter->use(LargeCsvExporter::class);
-        });
+        $grid->exporter(new LargeCsvExporter('充值订单数据'));
         // ======================================================
         // 【保留】以下是你原本的禁用按钮和多选逻辑，完全没动
         // ======================================================
