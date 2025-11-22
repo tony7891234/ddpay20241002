@@ -37,7 +37,6 @@ class RechargeOrder3Controller extends AdminController
         $titles = [
             'orderid' => '系统订单号',
             'amount' => '订单金额',
-            'status' => '订单状态',
             'account' => '收款账号',
             'bankname' => '开户行',
             'create_time' => '下单时间',
@@ -88,10 +87,8 @@ class RechargeOrder3Controller extends AdminController
                 'order_id',     // 列表显示用到
                 'orderid',      // 列表和导出用到
                 'amount',       // 列表和导出用到
-                'status',       // 导出用到
                 'account',      // 列表和导出用到
                 'bankname',     // 列表和导出用到
-                'bank_open',    // 列表显示用到
                 'create_time'   // 列表和导出用到
             ])
             ->where('inizt', '=', RechargeOrder::INIZT_WITHDRAW)
@@ -100,7 +97,6 @@ class RechargeOrder3Controller extends AdminController
         $grid->column('order_id', 'ID');
         $grid->column('orderid', '系统订单号'); // 直接对此字段查询
         $grid->column('amount', '金额');
-        $grid->column('bank_open', '银行类型');
         $grid->column('account', '收款账号');
         $grid->column('bankname', '开户行');
         $grid->column('create_time', '添加时间')->display(function ($input) {
