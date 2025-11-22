@@ -7,47 +7,58 @@ use Illuminate\Support\Collection;
 
 class LargeCsvExporter extends AbstractExporter
 {
-    protected $filename = '充值订单导出.csv';
+    protected $filename = '充值订单导出';
 
     public function export()
     {
-        set_time_limit(0); // 防止超时
-        ini_set('memory_limit', '512M');
-
-        $headers = [
-            'Content-Encoding'    => 'UTF-8',
-            'Content-Type'        => 'text/csv;charset=UTF-8',
-            'Content-Disposition' => "attachment; filename=\"{$this->filename}\"",
-        ];
-
-        foreach ($headers as $key => $value) {
-            header("$key: $value");
+        // 1. 清理缓冲区（防报错核心）
+        if (ob_get_length()) {
+            ob_end_clean();
         }
 
+        // 2. 基础设置
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+        $filename = $this->filename . '_' . date('Ymd_His') . '.csv';
+
+        // 3. Header 设置
+        header('Content-Encoding: UTF-8');
+        header('Content-Type: text/csv; charset=UTF-8');
+        header("Content-Disposition: attachment; filename=\"{$filename}\"");
+        header('Cache-Control: max-age=0');
+
         $handle = fopen('php://output', 'w');
-        fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM头，防乱码
+        fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM 头
 
-        // 1. 设置表头
-        fputcsv($handle, ['系统订单号', '订单金额', '收款账号', '开户行', '下单时间']);
+        // 4. 写入表头 (ID, 系统订单号, 金额...)
+        fputcsv($handle, $this->titles());
 
-        // 2. 只查询导出需要的字段 (性能优化)
-        $query = $this->buildQuery()->select([
-            'orderid', 'amount', 'account', 'bankname', 'create_time'
-        ]);
+        // 5. 数据处理
+        // buildData 会自动应用你在 Controller 里写的 model()->where(...) 条件
+        $this->buildData(function (Collection $rows) use ($handle) {
+            foreach ($rows as $row) {
+                // $row 是一个数组，包含了 select 出来的字段
 
-        // 3. 核心优化：每次读 5000 条，写完释放内存
-        $query->chunk(5000, function (Collection $chunk) use ($handle) {
-            foreach ($chunk as $row) {
-                fputcsv($handle, [
-                    $row->orderid . "\t", // 加 \t 防止Excel把订单号变科学计数法
-                    $row->amount,
-                    $row->account . "\t",
-                    $row->bankname,
-                    date('Y-m-d H:i:s', $row->create_time) // 时间戳转格式
-                ]);
+                // 🚨 特殊处理：时间格式化
+                // 对应你 Controller 里的 display(function... formatTimeToString)
+                if (isset($row['create_time'])) {
+                    // 假设 formatTimeToString 是全局函数，如果不是请替换为 date()
+                    // 如果 formatTimeToString 不可用，可以用下面这行代替：
+                    $row['create_time'] = date('Y-m-d H:i:s', $row['create_time']);
+                }
+
+                // 🚨 特殊处理：防止长数字（如订单号、银行卡）在 Excel 变成科学计数法
+                // 在数字前面加一个制表符 "\t"
+                if (isset($row['orderid'])) {
+                    $row['orderid'] = "\t" . $row['orderid'];
+                }
+                if (isset($row['account'])) {
+                    $row['account'] = "\t" . $row['account'];
+                }
+
+                // 写入 CSV
+                fputcsv($handle, $row);
             }
-            if (ob_get_level() > 0) ob_flush();
-            flush();
         });
 
         fclose($handle);
