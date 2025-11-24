@@ -4,107 +4,137 @@ namespace App\Admin\Extensions\Exports;
 
 use Dcat\Admin\Grid\Exporters\AbstractExporter;
 use Illuminate\Support\Facades\DB;
+use ZipStream\ZipStream;
+use ZipStream\Option\Archive as ArchiveOptions;
 
 class LargeCsvExporter extends AbstractExporter
 {
     protected $filename;
 
-    public function __construct($filename = '代付')
+    public function __construct($filename = '订单导出')
     {
         $this->filename = $filename;
     }
 
     public function export()
     {
-        // 0. 极限配置
+        // 0. 基础配置：无限时间，1G内存
         set_time_limit(0);
-        ini_set('memory_limit', '1024M'); // 1000w数据建议给 1G 内存
+        ini_set('memory_limit', '1024M');
 
-        // 1. 清理缓冲区
+        // 1. 清理所有输出缓冲区，防止多余空格导致文件损坏
         while (ob_get_level()) {
             ob_end_clean();
         }
 
-        $table_name = 'cd_order_250101';
+        // 2. 配置 ZIP 流式输出
+        $opt = new ArchiveOptions();
+        $opt->setSendHttpHeaders(true);
+        $opt->setEnableZip64(true); // 开启 Zip64 支持大文件
+        $opt->setContentType('application/octet-stream');
 
-        // 2. 设置 HTTP 头
-        $filename = $this->filename . '_' . $table_name . '_' . date('Ymd_His') . '.csv';
-        header('Content-Type: text/csv; charset=UTF-8');
-        header("Content-Disposition: attachment; filename=\"$filename\"");
-        // 禁用 Nginx 缓冲 (非常重要，防止 Nginx 等待 PHP 执行完才吐数据)
+        // 设置直接输出到浏览器
+        $opt->setOutputStream(fopen('php://output', 'w'));
+
+        $zipName = $this->filename . '_' . date('Ymd_His') . '.zip';
+
+        // 手动发送 Header，确保 Nginx 不缓存
+        header("Content-Disposition: attachment; filename=\"$zipName\"");
         header('X-Accel-Buffering: no');
         header('Pragma: no-cache');
-        header('Expires: 0');
 
-        // 3. 打开输出流
-        $handle = fopen('php://output', 'w');
-        fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM
+        // 初始化 ZIP 对象
+        $zip = new ZipStream($zipName, $opt);
 
-        // 4. 写入表头
-        $headers = ['ID', '系统订单号', '金额', '收款账号', '开户行', '添加时间'];
-        fputcsv($handle, $headers);
+        // 3. 定义参数
+        $table_name = 'cd_order_250101';
+        $chunkSize = 500000; // 100万行切分一次
+        $headers = ['ID', '收款账号', '开户行'];
+        $bom = chr(0xEF) . chr(0xBB) . chr(0xBF); // UTF-8 BOM
 
-        // 5. 【核心优化】使用 ID 游标循环，而不是普通的 chunk
-        // 初始 lastId 设为极大值
+        // 4. 初始化游标和计数器
         $lastId = null;
-        $limit = 5000; // 每次取 5000 条
+        $currentCount = 0;
+        $fileIndex = 1;
 
+        // 创建临时流用于写入 CSV
+        $tempStream = fopen('php://temp', 'w+');
+        fwrite($tempStream, $bom);
+        fputcsv($tempStream, $headers);
+
+        // 5. 循环查询 (ID 游标法)
         do {
-            // 构建查询
             $query = DB::connection('rds')
                 ->table($table_name)
-                ->select(['order_id', 'orderid', 'amount', 'account', 'bankname', 'create_time'])
+                ->select(['order_id', 'account', 'bankname'])
                 ->where('inizt', '=', \App\Models\RechargeOrder::INIZT_WITHDRAW)
                 ->where('status', '=', \App\Models\RechargeOrder::STATUS_SUCCESS);
 
-            // 如果有 lastId，说明不是第一页，利用主键索引快速定位
+            // 游标定位
             if ($lastId) {
                 $query->where('order_id', '<', $lastId);
             }
 
-            // 必须按 ID 倒序，配合上面的 where < lastId
+            // 必须倒序，每次取 5000
             $records = $query->orderBy('order_id', 'desc')
-                ->limit($limit)
+                ->limit(5000)
                 ->get();
 
             if ($records->isEmpty()) {
                 break;
             }
 
-            // 遍历写入
             foreach ($records as $record) {
-                // 记录当前的 ID，用于下一次循环
                 $lastId = $record->order_id;
-
-                // 时间格式化
-                $createTime = $record->create_time;
-                if (function_exists('formatTimeToString')) {
-                    $createTime = formatTimeToString($createTime);
-                } elseif (is_numeric($createTime)) {
-                    $createTime = date('Y-m-d H:i:s', $createTime);
-                }
-
+                // 时间处理
                 $row = [
                     $record->order_id,
-                    $record->orderid . "\t",
-                    $record->amount,
                     $record->account . "\t",
                     $record->bankname,
-                    $createTime,
                 ];
 
-                fputcsv($handle, $row);
+                fputcsv($tempStream, $row);
+                $currentCount++;
+
+                // 6. 切片判断：如果满了 100w 行
+                if ($currentCount >= $chunkSize) {
+                    // 指针回到流开头
+                    rewind($tempStream);
+
+                    // 将流加入 ZIP (文件名为 order_part_1.csv)
+                    $zip->addFileFromStream("order_part_{$fileIndex}.csv", $tempStream);
+
+                    // 关闭旧流，开启新流
+                    fclose($tempStream);
+                    $tempStream = fopen('php://temp', 'w+');
+
+                    // 新文件写入 BOM 和表头
+                    fwrite($tempStream, $bom);
+                    fputcsv($tempStream, $headers);
+
+                    // 重置
+                    $currentCount = 0;
+                    $fileIndex++;
+
+                    // 刷新输出，保持连接活跃
+                    flush();
+                }
             }
 
-            // 释放内存
-            unset($records);
-
-            // 实时输出给浏览器，防止超时
-            flush();
+            unset($records); // 释放内存
 
         } while (true);
 
-        fclose($handle);
+        // 7. 处理剩余数据 (最后一部分不足 100w 的)
+        if ($currentCount > 0) {
+            rewind($tempStream);
+            $zip->addFileFromStream("order_part_{$fileIndex}.csv", $tempStream);
+        }
+
+        fclose($tempStream);
+
+        // 8. 结束 ZIP
+        $zip->finish();
         exit;
     }
 }
