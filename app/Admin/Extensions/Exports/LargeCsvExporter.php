@@ -3,113 +3,108 @@
 namespace App\Admin\Extensions\Exports;
 
 use Dcat\Admin\Grid\Exporters\AbstractExporter;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class LargeCsvExporter extends AbstractExporter
 {
     protected $filename;
 
-    public function __construct($filename = '导出数据')
+    public function __construct($filename = '代付')
     {
         $this->filename = $filename;
     }
 
     public function export()
     {
-        // 文件名带上时间戳
-        $filename = $this->filename . '_' . date('Ymd_His') . '.csv';
+        // 0. 极限配置
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M'); // 1000w数据建议给 1G 内存
 
-        $headers = [
-            'Content-Encoding'    => 'UTF-8',
-            'Content-Type'        => 'text/csv;charset=UTF-8',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-            'Pragma'              => 'no-cache',
-            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
-            'Expires'             => '0',
-        ];
-
-        $response = response()->stream(function () {
-            $handle = fopen('php://output', 'w');
-            // 写入 BOM 头，防止 Excel 打开中文乱码
-            fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
-
-            // ------------------------------------------------------------
-            // 1. 获取表头 (使用最稳妥的遍历方式，避开 titles() 报错)
-            // ------------------------------------------------------------
-            $titles = [];
-            // 获取 Grid 中定义的所有列对象
-            $columns = $this->grid()->columns();
-
-            foreach ($columns as $column) {
-                $name = $column->getName(); // 字段名 (如 id, amount)
-                $label = $column->getLabel(); // 显示名 (如 ID, 金额)
-
-                // 排除不需要导出的系统列
-                if (in_array($name, ['__row_selector__', 'actions', 'action'])) {
-                    continue;
-                }
-
-                // 建立 字段名 => 显示名 的映射
-                $titles[$name] = $label;
-            }
-
-            // 写入第一行：表头
-            fputcsv($handle, $titles);
-
-            // ------------------------------------------------------------
-            // 2. 构建查询并分块写入数据
-            // ------------------------------------------------------------
-            $query = $this->buildQuery();
-
-            // 每次处理 1000 条，防止内存溢出
-            $query->chunk(1000, function (Collection $records) use ($handle, $titles) {
-                foreach ($records as $record) {
-                    $row = [];
-
-                    // 严格按照表头的顺序填充数据
-                    foreach ($titles as $columnName => $label) {
-                        // data_get 支持数组和对象，也支持 'user.name' 这种关联写法
-                        $value = data_get($record, $columnName);
-
-                        // --- 这里可以做一些通用的格式化 ---
-
-                        // 例如：如果是 create_time 且是数字，转成日期字符串
-                        if (($columnName == 'create_time' || $columnName == 'created_at') && is_numeric($value)) {
-                            $value = date('Y-m-d H:i:s', $value);
-                        }
-
-                        $row[] = $value;
-                    }
-                    fputcsv($handle, $row);
-                }
-            });
-
-            fclose($handle);
-        }, 200, $headers);
-
-        return $response->send();
-    }
-
-    /**
-     * 构建数据库查询
-     */
-    protected function buildQuery()
-    {
-        // 1. 获取当前 Grid 的基础查询（带筛选条件）
-        $query = $this->grid()->model()->getQueryBuilder();
-
-        // 2. 检查是否有勾选特定的行
-        $ids = $this->grid()->model()->getIds();
-
-        // 注意：Dcat 中如果没有勾选，getIds() 返回空数组，此时导出全部
-        if (!empty($ids)) {
-            $keyName = $this->grid()->model()->getKeyName();
-            $query->whereIn($keyName, $ids);
+        // 1. 清理缓冲区
+        while (ob_get_level()) {
+            ob_end_clean();
         }
 
-        // 3. 加上排序，防止分块读取时数据乱序
-        $query->orderBy($this->grid()->model()->getKeyName(), 'desc');
+        $table_name = 'cd_order_250101';
 
-        return $query;
+        // 2. 设置 HTTP 头
+        $filename = $this->filename . '_' . $table_name . '_' . date('Ymd_His') . '.csv';
+        header('Content-Type: text/csv; charset=UTF-8');
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        // 禁用 Nginx 缓冲 (非常重要，防止 Nginx 等待 PHP 执行完才吐数据)
+        header('X-Accel-Buffering: no');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        // 3. 打开输出流
+        $handle = fopen('php://output', 'w');
+        fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM
+
+        // 4. 写入表头
+        $headers = ['ID', '系统订单号', '金额', '收款账号', '开户行', '添加时间'];
+        fputcsv($handle, $headers);
+
+        // 5. 【核心优化】使用 ID 游标循环，而不是普通的 chunk
+        // 初始 lastId 设为极大值
+        $lastId = null;
+        $limit = 5000; // 每次取 5000 条
+
+        do {
+            // 构建查询
+            $query = DB::connection('rds')
+                ->table($table_name)
+                ->select(['order_id', 'orderid', 'amount', 'account', 'bankname', 'create_time'])
+                ->where('inizt', '=', \App\Models\RechargeOrder::INIZT_WITHDRAW)
+                ->where('status', '=', \App\Models\RechargeOrder::STATUS_SUCCESS);
+
+            // 如果有 lastId，说明不是第一页，利用主键索引快速定位
+            if ($lastId) {
+                $query->where('order_id', '<', $lastId);
+            }
+
+            // 必须按 ID 倒序，配合上面的 where < lastId
+            $records = $query->orderBy('order_id', 'desc')
+                ->limit($limit)
+                ->get();
+
+            if ($records->isEmpty()) {
+                break;
+            }
+
+            // 遍历写入
+            foreach ($records as $record) {
+                // 记录当前的 ID，用于下一次循环
+                $lastId = $record->order_id;
+
+                // 时间格式化
+                $createTime = $record->create_time;
+                if (function_exists('formatTimeToString')) {
+                    $createTime = formatTimeToString($createTime);
+                } elseif (is_numeric($createTime)) {
+                    $createTime = date('Y-m-d H:i:s', $createTime);
+                }
+
+                $row = [
+                    $record->order_id,
+                    $record->orderid . "\t",
+                    $record->amount,
+                    $record->account . "\t",
+                    $record->bankname,
+                    $createTime,
+                ];
+
+                fputcsv($handle, $row);
+            }
+
+            // 释放内存
+            unset($records);
+
+            // 实时输出给浏览器，防止超时
+            flush();
+
+        } while (true);
+
+        fclose($handle);
+        exit;
     }
 }
