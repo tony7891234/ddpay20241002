@@ -3,114 +3,111 @@
 namespace App\Admin\Extensions\Exports;
 
 use Dcat\Admin\Grid\Exporters\AbstractExporter;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class LargeCsvExporter extends AbstractExporter
 {
-    // 导出的文件名
-    protected $filename = '充值订单导出';
+    // 定义文件名
+    protected $filename;
 
+    public function __construct($filename = '导出数据')
+    {
+        $this->filename = $filename;
+    }
+
+    /**
+     * 核心导出逻辑
+     */
     public function export()
     {
-        // 1. 清除之前的输出缓冲区，防止文件损坏或乱码
-        while (ob_get_level()) {
-            ob_end_clean();
-        }
-
-        // 2. 设置内存和超时，防止大数据量导致脚本挂掉
-        set_time_limit(0);
-        ini_set('memory_limit', '512M');
-
+        // 1. 设置文件名和响应头
         $filename = $this->filename . '_' . date('Ymd_His') . '.csv';
 
-        // 3. 设置 HTTP 头，告诉浏览器这是一个 CSV 文件下载
-        header('Content-Encoding: UTF-8');
-        header('Content-Type: text/csv; charset=UTF-8');
-        header("Content-Disposition: attachment; filename=\"{$filename}\"");
-        header('Cache-Control: max-age=0');
+        $headers = [
+            'Content-Encoding'    => 'UTF-8',
+            'Content-Type'        => 'text/csv;charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
 
-        // 打开 PHP 输出流
-        $handle = fopen('php://output', 'w');
+        // 2. 准备输出流
+        $response = response()->stream(function () {
+            $handle = fopen('php://output', 'w');
 
-        // 写入 BOM 头，防止 Excel 打开中文乱码
-        fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            // 添加 BOM 头，防止 Excel 打开中文乱码
+            fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-        // 4. 生成表头
-        $titles = [];
-        $columnNames = [];
+            // 3. 获取 Grid 定义的列名（表头）
+            // $this->titles() 是 Dcat 自动根据 Grid 里的 column 生成的
+            $titles = $this->titles();
+            fputcsv($handle, $titles);
 
-        foreach ($this->grid->columns() as $column) {
-            // 跳过“操作”列和“复选框”列
-            if ($column->getName() == '__actions__' || $column->getName() == '__row_selector__') {
-                continue;
-            }
-            $titles[] = $column->getLabel();
-            $columnNames[] = $column->getName();
-        }
-        fputcsv($handle, $titles);
+            // 4. 获取查询构建器 (Query Builder)
+            // 这里非常关键：它会自动带上你在 Controller 里写的 where 条件和 filter 筛选条件
+            $query = $this->buildQuery();
 
-        // ============================================================
-        // 【核心逻辑】构建查询条件
-        // ============================================================
+            // 5. 分块读取数据 (每次读 1000 条，防止内存爆掉)
+            $query->chunk(1000, function (Collection $records) use ($handle, $titles) {
+                // 获取原始数据数组
+                // 注意：这里拿到的是数据库原始字段，需要映射到 Grid 的列
+                foreach ($records as $record) {
+                    $row = [];
 
-        // A. 这一步至关重要：应用搜索框的筛选条件
-        // 如果没有这行，你按日期筛选后导出，依然会导出全部数据
-        $this->grid->processFilter(true);
+                    // 根据表头的 key (column name) 来提取数据
+                    foreach ($titles as $columnName => $titleLabel) {
+                        // 获取对应字段的值
+                        // 如果你有关联模型（比如 user.name），这里需要自行处理逻辑
+                        // 这里假设都是单表字段
+                        $value = data_get($record, $columnName);
 
-        // B. 获取带有模型功能的查询构建器 (Eloquent Builder)
-        // 替换掉了之前的 getQueryBuilder()，确保软删除等逻辑正常
-        /** @var Builder $query */
-        $query = $this->grid->model()->eloquent();
+                        // 特殊处理：比如时间戳转字符串
+                        if ($columnName == 'create_time' && is_numeric($value)) {
+                            $value = date('Y-m-d H:i:s', $value);
+                        }
 
-        // C. 处理“选中导出”逻辑
-        // Dcat 在勾选导出时，会通过 URL 参数 _ids_ 传递 ID
-        $ids = request('_ids_');
+                        // 特殊处理：状态映射 (示例)
+                        // if ($columnName == 'status') {
+                        //     $value = $value == 1 ? '成功' : '失败';
+                        // }
+
+                        $row[] = $value;
+                    }
+
+                    fputcsv($handle, $row);
+                }
+            });
+
+            fclose($handle);
+        }, 200, $headers);
+
+        return $response->send();
+    }
+
+    /**
+     * 构建查询语句
+     * 自动判断是“导出选中”还是“导出全部”
+     */
+    protected function buildQuery()
+    {
+        // 获取 Grid 的数据模型构建器
+        // 这一步会继承 Controller 中 grid() 里写的所有 where 条件
+        $query = $this->grid()->model()->getQueryBuilder();
+
+        // 获取用户勾选的 ID 列表 (如果你开启了 rowSelector)
+        $ids = $this->grid()->model()->getIds();
+
         if (!empty($ids)) {
-            // 兼容字符串 "1,2,3" 和数组格式
-            $ids = is_string($ids) ? explode(',', $ids) : (array)$ids;
-
-            // 强制只查询选中的 ID
-            $keyName = $query->getModel()->getKeyName();
+            // 如果用户勾选了特定的行，只导出这些 ID
+            // 获取主键名称，通常是 id 或 order_id
+            $keyName = $this->grid()->model()->getKeyName();
             $query->whereIn($keyName, $ids);
         }
 
-        // D. 默认按主键倒序，保证最新数据在最上面
-        $query->latest($query->getModel()->getKeyName());
+        // 这里的 orderBy 最好指定一下，防止分块数据乱序
+        $query->orderBy($this->grid()->model()->getKeyName(), 'desc');
 
-        // ============================================================
-        // 5. 分块读取并写入数据
-        // ============================================================
-
-        // 每次从数据库取 2000 条，避免一次性把内存撑爆
-        $query->chunk(2000, function ($rows) use ($handle, $columnNames) {
-            foreach ($rows as $row) {
-                $line = [];
-
-                foreach ($columnNames as $name) {
-                    // data_get 支持 'user.name' 这种关联字段取值
-                    $value = data_get($row, $name);
-
-                    // --- 数据格式化 ---
-
-                    // 1. 时间戳转日期字符串
-                    if (str_contains($name, 'time') && is_numeric($value)) {
-                        $value = date('Y-m-d H:i:s', $value);
-                    }
-
-                    // 2. 防止 Excel 科学计数法 (针对长数字字段)
-                    // 如果是纯数字且长度超过10位，前面加个制表符
-                    if (is_numeric($value) && strlen((string)$value) > 10) {
-                        $value = "\t" . $value;
-                    }
-
-                    $line[] = $value;
-                }
-                fputcsv($handle, $line);
-            }
-        });
-
-        // 关闭流并退出
-        fclose($handle);
-        exit;
+        return $query;
     }
 }
