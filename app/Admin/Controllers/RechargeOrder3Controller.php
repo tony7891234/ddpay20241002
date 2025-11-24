@@ -35,7 +35,7 @@ class RechargeOrder3Controller extends AdminController
 
             // 2. 【修正后的强制显示按钮代码】
             $grid->tools(function (\Dcat\Admin\Grid\Tools $tools) use ($grid) {
-                $tools->append(new \Dcat\Admin\Grid\Tools\ExportButton($grid));
+                $tools->append(new LargeCsvExporter($grid));
             });
 
             // ======================================================
