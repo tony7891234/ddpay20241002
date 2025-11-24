@@ -39,9 +39,8 @@ class LargeCsvExporter extends AbstractExporter
 
         // 设置直接输出到浏览器
         $opt->setOutputStream(fopen('php://output', 'w'));
-
-        $zipName = $this->filename . '_' . date('Ymd_His') . '.zip';
-
+        $table_name = 'cd_order_250101'; // 表名字
+        $zipName = $table_name . '.zip';
         // 【手动发送 Header】确保 Nginx 不缓存，浏览器能识别下载
         header('Content-Type: application/octet-stream');
         header("Content-Disposition: attachment; filename=\"$zipName\"");
@@ -54,7 +53,7 @@ class LargeCsvExporter extends AbstractExporter
         $zip = new ZipStream($zipName, $opt);
 
         // 3. 定义参数
-        $table_name = 'cd_order_250101';
+
         $chunkSize = 500000; // 50万行切分一次
         $headers = ['ID', '收款账号', '开户行'];
         $bom = chr(0xEF) . chr(0xBB) . chr(0xBF); // UTF-8 BOM
