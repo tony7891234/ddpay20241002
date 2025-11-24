@@ -18,19 +18,23 @@ class LargeCsvExporter extends AbstractExporter
 
     public function export()
     {
-        // 0. 基础配置：无限时间，1G内存
+        // 0. 基础配置
         set_time_limit(0);
         ini_set('memory_limit', '1024M');
 
-        // 1. 清理所有输出缓冲区，防止多余空格导致文件损坏
+        // 【关键】关闭 Laravel 的 SQL 日志，防止内存溢出
+        DB::connection('rds')->disableQueryLog();
+
+        // 1. 清理所有输出缓冲区，防止多余空格/报错信息混入 ZIP 导致文件损坏
         while (ob_get_level()) {
             ob_end_clean();
         }
 
         // 2. 配置 ZIP 流式输出
         $opt = new ArchiveOptions();
-        $opt->setSendHttpHeaders(true);
-        $opt->setEnableZip64(true); // 开启 Zip64 支持大文件
+        // 【修改】关闭库自动发送 Header，由下面手动发送，避免冲突
+        $opt->setSendHttpHeaders(false);
+        $opt->setEnableZip64(true);
         $opt->setContentType('application/octet-stream');
 
         // 设置直接输出到浏览器
@@ -38,17 +42,20 @@ class LargeCsvExporter extends AbstractExporter
 
         $zipName = $this->filename . '_' . date('Ymd_His') . '.zip';
 
-        // 手动发送 Header，确保 Nginx 不缓存
+        // 【手动发送 Header】确保 Nginx 不缓存，浏览器能识别下载
+        header('Content-Type: application/octet-stream');
         header("Content-Disposition: attachment; filename=\"$zipName\"");
-        header('X-Accel-Buffering: no');
+        header('Content-Transfer-Encoding: binary');
+        header('X-Accel-Buffering: no'); // Nginx 专用：禁用缓冲
         header('Pragma: no-cache');
+        header('Expires: 0');
 
         // 初始化 ZIP 对象
         $zip = new ZipStream($zipName, $opt);
 
         // 3. 定义参数
         $table_name = 'cd_order_250101';
-        $chunkSize = 500000; // 100万行切分一次
+        $chunkSize = 500000; // 50万行切分一次
         $headers = ['ID', '收款账号', '开户行'];
         $bom = chr(0xEF) . chr(0xBB) . chr(0xBF); // UTF-8 BOM
 
@@ -86,22 +93,21 @@ class LargeCsvExporter extends AbstractExporter
 
             foreach ($records as $record) {
                 $lastId = $record->order_id;
-                // 时间处理
+
                 $row = [
                     $record->order_id,
-                    $record->account . "\t",
+                    $record->account . "\t", // 防止科学计数法
                     $record->bankname,
                 ];
 
                 fputcsv($tempStream, $row);
                 $currentCount++;
 
-                // 6. 切片判断：如果满了 100w 行
+                // 6. 切片判断
                 if ($currentCount >= $chunkSize) {
-                    // 指针回到流开头
-                    rewind($tempStream);
+                    rewind($tempStream); // 指针回到流开头
 
-                    // 将流加入 ZIP (文件名为 order_part_1.csv)
+                    // 将流加入 ZIP
                     $zip->addFileFromStream("order_part_{$fileIndex}.csv", $tempStream);
 
                     // 关闭旧流，开启新流
@@ -116,7 +122,7 @@ class LargeCsvExporter extends AbstractExporter
                     $currentCount = 0;
                     $fileIndex++;
 
-                    // 刷新输出，保持连接活跃
+                    // 刷新输出，防止浏览器超时
                     flush();
                 }
             }
@@ -125,7 +131,7 @@ class LargeCsvExporter extends AbstractExporter
 
         } while (true);
 
-        // 7. 处理剩余数据 (最后一部分不足 100w 的)
+        // 7. 处理剩余数据
         if ($currentCount > 0) {
             rewind($tempStream);
             $zip->addFileFromStream("order_part_{$fileIndex}.csv", $tempStream);
