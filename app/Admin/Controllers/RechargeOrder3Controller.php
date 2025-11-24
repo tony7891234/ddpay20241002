@@ -18,37 +18,54 @@ class RechargeOrder3Controller extends AdminController
 {
     protected function grid()
     {
-        // 1. 准备 Model 对象
-        $model = new \App\Models\RechargeOrder(); // 请确保命名空间正确
+        $model = new \App\Models\RechargeOrder();
         $tableName = 'cd_order_250101';
         $model->setConnection('rds')->setTable($tableName);
 
-        // 2. 使用 Grid::make() 工厂模式
+        $tableName = 'cd_order';
+        $model->setConnection('home')->setTable($tableName);
+
+
         return Grid::make($model, function (Grid $grid) {
 
             // ======================================================
-            // 【核心部分】
+            // 【1. 修正导出配置】
             // ======================================================
-
-            // 1. 指定我们的自定义导出器
-            $grid->exporter(new \App\Admin\Extensions\Exports\LargeCsvExporter('充值订单数据'));
-
-            // 2. 【修正后的强制显示按钮代码】
-            $grid->tools(function (\Dcat\Admin\Grid\Tools $tools) use ($grid) {
-                $tools->append(new LargeCsvExporter($grid));
-            });
+            // 只要这一行就够了！不要用 $grid->tools(...)
+            // 这行代码会自动替换系统默认的导出功能
+            $grid->export(new LargeCsvExporter());
 
             // ======================================================
-            // 您原本的其他设置，保持不变
+            // 【2. 关键设置】
             // ======================================================
             $grid->disableBatchActions();
-            $grid->disableRowSelector();
+
+            // !!! 注意 !!!
+            // 如果你想支持“勾选导出”，下面这行必须注释掉或删掉！
+            // 否则左边的复选框没了，用户没法选。
+            // $grid->disableRowSelector();
+
             $grid->disableDeleteButton();
             $grid->disableEditButton();
             $grid->disableCreateButton();
             $grid->disableViewButton();
 
-            // 您原本的查询逻辑
+            // ======================================================
+            // 【3. 数据查询逻辑】
+            // ======================================================
+
+            // 这里的固定条件（状态、初始化）会一直生效，导出时也会生效
+            $grid->model()
+                ->select(['order_id', 'orderid', 'amount', 'account', 'bankname', 'create_time'])
+                ->where('inizt', '=', \App\Models\RechargeOrder::INIZT_WITHDRAW)
+                ->where('status', '=', \App\Models\RechargeOrder::STATUS_SUCCESS)
+                ->orderBy('order_id', 'asc');
+
+            // ======================================================
+            // 【4. 你的手动筛选逻辑】
+            // ======================================================
+            // 建议：尽量把逻辑写在下面的 $grid->filter 里，
+            // 但保留这里的逻辑也可以，导出器里的 processFilter 会尝试兼容它
             if (isset($_GET['create_time']['start']) && ($_GET['create_time']['start'])) {
                 $grid->model()->where('create_time', '>=', strtotime($_GET['create_time']['start']));
             }
@@ -56,13 +73,9 @@ class RechargeOrder3Controller extends AdminController
                 $grid->model()->where('create_time', '<=', strtotime($_GET['create_time']['end']));
             }
 
-            $grid->model()
-                ->select(['order_id', 'orderid', 'amount', 'account', 'bankname', 'create_time'])
-                ->where('inizt', '=', \App\Models\RechargeOrder::INIZT_WITHDRAW)
-                ->where('status', '=', \App\Models\RechargeOrder::STATUS_SUCCESS)
-                ->orderBy('order_id', 'asc');
-
-            // 您原本的列定义
+            // ======================================================
+            // 【5. 列定义】
+            // ======================================================
             $grid->column('order_id', 'ID');
             $grid->column('orderid', '系统订单号');
             $grid->column('amount', '金额');
@@ -72,22 +85,28 @@ class RechargeOrder3Controller extends AdminController
                 return formatTimeToString($input);
             });
 
-            // 您原本的过滤器
+            // ======================================================
+            // 【6. 过滤器】
+            // ======================================================
             $grid->filter(function (Grid\Filter $filter) {
-                $filter->between('order_id');
+                // 这里的设置非常重要，导出器会读取这里来判断用户搜了什么
+                $filter->disableIdFilter(); // 关掉默认的主键搜索，如果你不需要
+
+                $filter->equal('order_id', 'ID'); // 比如按ID搜
+
                 $filter->whereBetween('create_time', function ($q) {
-                    $start = $this->input['start'] ?? strtotime('today');
-                    $end = $this->input['end'] ?? strtotime('today');
-                    if ($start !== null) {
+                    $start = $this->input['start'] ?? null;
+                    $end = $this->input['end'] ?? null;
+                    if ($start) {
                         $q->where('create_time', '>=', strtotime($start));
                     }
-                    if ($end !== null) {
-                        $q->where('create_time', '<=', strtotime($end) + 3600 * 24);
+                    if ($end) {
+                        // 结束时间通常要加一天或者到当天23:59:59
+                        $q->where('create_time', '<=', strtotime($end) + 86399);
                     }
                 })->datetime();
             });
         });
     }
-
 
 }
