@@ -20,6 +20,7 @@ class ExportLargeCsvCommand extends Command
 
     public function handle()
     {
+        dump('start');
         // 0. 基础配置
         ini_set('memory_limit', '2048M'); // 适当增加内存
         set_time_limit(0); // 永不超时
@@ -163,8 +164,9 @@ class ExportLargeCsvCommand extends Command
         $this->info("导出完成！");
         $this->info("文件已保存至: {$fullPath}");
         $this->info("下载链接: " . url("exports/{$zipFilename}"));
-
+        dump('end');
         return 0;
+        
     }
 }
 
