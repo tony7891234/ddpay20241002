@@ -210,8 +210,8 @@ select  count(*)  from  cd_order_251026  ;
 
 
 select  count(*)  from  cd_order_250408  ;
-select order_id  from  cd_order_250518   order by order_id asc  limit 3;
-select order_id  from  cd_order_250518   order by order_id desc  limit 3;
+select order_id  from  cd_order_250408   order by order_id asc  limit 3;
+select order_id  from  cd_order_250408   order by order_id desc  limit 3;
 
 2 673 22850
 

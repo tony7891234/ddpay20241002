@@ -162,7 +162,7 @@ class ExportLargeCsvCommand extends Command
         fclose($fileStream);
         
         $bar->finish();
-        $this->newLine();
+        $this->info(''); // 换行替代 newLine()
         $this->info("导出完成！");
         $this->info("文件已保存至: {$fullPath}");
         $this->info("下载链接: " . url("exports/{$zipFilename}"));
