@@ -20,7 +20,6 @@ class ExportLargeCsvCommand extends Command
 
     public function handle()
     {
-        dump('start');
         // 0. 基础配置
         ini_set('memory_limit', '2048M'); // 适当增加内存
         set_time_limit(0); // 永不超时
@@ -28,7 +27,8 @@ class ExportLargeCsvCommand extends Command
 
         // 定义导出参数
         $tableName = 'cd_order_250408';
-        $zipFilename = $tableName . '_full_' . date('Ymd_His') . '.zip';
+        // 【修改】直接使用表名作为文件名
+        $zipFilename = $tableName . '.zip';
         
         // 确保导出目录存在 (放到 public 目录下方便下载，生产环境注意安全)
         // 如果你希望私密一点，可以改为 storage_path('app/exports')
@@ -61,7 +61,8 @@ class ExportLargeCsvCommand extends Command
         $zip = new ZipStream($zipFilename, $opt);
 
         // 2. 定义变量
-        $chunkSize = 100000; // 调整为 10万行切分一个 CSV 文件，减少小文件数量
+        // 【修改】50万行切分一个 CSV 文件
+        $chunkSize = 500000; 
         $headers = ['ID', '收款账号', '开户行'];
         $bom = chr(0xEF) . chr(0xBB) . chr(0xBF);
 
@@ -79,7 +80,7 @@ class ExportLargeCsvCommand extends Command
         // 进度条
         $bar = $this->output->createProgressBar();
         $bar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s% %memory:6s%');
-        // 由于去掉了 where 范围，我们不知道具体总数，或者先 count 一下
+        
         $this->info("正在统计总行数...");
         $totalRows = DB::connection('rds')
             ->table($tableName)
@@ -95,7 +96,7 @@ class ExportLargeCsvCommand extends Command
             $query = DB::connection('rds')
                 ->table($tableName)
                 ->select(['order_id', 'account', 'bankname'])
-                // 去掉了 ID 范围限制，导出全量
+                // 导出全量
                 ->where('inizt', '=', RechargeOrder::INIZT_WITHDRAW)
                 ->where('status', '=', RechargeOrder::STATUS_SUCCESS);
 
@@ -164,9 +165,7 @@ class ExportLargeCsvCommand extends Command
         $this->info("导出完成！");
         $this->info("文件已保存至: {$fullPath}");
         $this->info("下载链接: " . url("exports/{$zipFilename}"));
-        dump('end');
+
         return 0;
-        
     }
 }
-
