@@ -62,8 +62,8 @@ class ExportLargeCsvCommand extends Command
         $zip = new ZipStream($zipFilename, $opt);
 
         // 2. 定义变量
-        // 【修改】50万行切分一个 CSV 文件
-        $chunkSize = 500000; 
+        // 【修改】100万行切分一个 CSV 文件
+        $chunkSize = 1000000; 
         $headers = ['ID', '收款账号', '开户行'];
         $bom = chr(0xEF) . chr(0xBB) . chr(0xBF);
 

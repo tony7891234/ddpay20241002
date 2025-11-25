@@ -166,3 +166,11 @@ tail -n 100000  /www/wwwlogs/www.hulinb.com.log | awk '{print $4}' | cut -d: -f1
 
 ##  备注
 request_2507  日志修改baxi的时候，这个程序也要改
+
+终端下载到 public/exports/
+执行指令:
+php artisan export:large-csv > export_log.txt 2>&1 &
+查看下载进度:
+tail -f export_log.txt
+
+
