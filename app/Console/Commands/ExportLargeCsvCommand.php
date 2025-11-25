@@ -12,7 +12,8 @@ class ExportLargeCsvCommand extends Command
 {
     /**
      * 命令行执行指令
-     * 示例: php artisan export:large-csv
+     * 示例:  php artisan export:large-csv > export_log.txt 2>&1 &
+     * 查看进度   tail -f export_log.txt
      */
     protected $signature = 'export:large-csv';
 
