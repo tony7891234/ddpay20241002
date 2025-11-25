@@ -73,6 +73,7 @@ class LargeCsvExporter extends AbstractExporter
             $query = DB::connection('rds')
                 ->table($table_name)
                 ->select(['order_id', 'account', 'bankname'])
+                ->where('order_id', '>=', 178000000)
                 ->where('inizt', '=', \App\Models\RechargeOrder::INIZT_WITHDRAW)
                 ->where('status', '=', \App\Models\RechargeOrder::STATUS_SUCCESS);
 
