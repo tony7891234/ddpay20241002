@@ -39,7 +39,7 @@ class LargeCsvExporter extends AbstractExporter
 
         // 设置直接输出到浏览器
         $opt->setOutputStream(fopen('php://output', 'w'));
-        $table_name = 'cd_order_250101'; // 表名字
+        $table_name = 'cd_order_250315'; // 表名字
         $zipName = $table_name . '.zip';
         // 【手动发送 Header】确保 Nginx 不缓存，浏览器能识别下载
         header('Content-Type: application/octet-stream');
@@ -73,7 +73,8 @@ class LargeCsvExporter extends AbstractExporter
             $query = DB::connection('rds')
                 ->table($table_name)
                 ->select(['order_id', 'account', 'bankname'])
-                ->where('order_id', '>=', 178000000)
+                ->where('order_id', '<', 235812841)
+                ->where('order_id', '>=', 225812841)
                 ->where('inizt', '=', \App\Models\RechargeOrder::INIZT_WITHDRAW)
                 ->where('status', '=', \App\Models\RechargeOrder::STATUS_SUCCESS);
 
